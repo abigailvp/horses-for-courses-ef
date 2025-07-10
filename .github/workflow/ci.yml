@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  glados-verification:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: HorsesForCourses.Core
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - run: dotnet restore HorsesForCourses.sln
+      - run: dotnet build HorsesForCourses.sln
+      - run: dotnet test HorsesForCourses.sln
