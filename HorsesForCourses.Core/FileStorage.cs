@@ -1,4 +1,4 @@
-namespace HorsesForCourses.Course;
+namespace HorsesForCourses.Core;
 //coaches
 
 

@@ -1,9 +1,9 @@
-namespace HorsesForCourses.Course;
+namespace HorsesForCourses.Core;
 
 public class Timeslot
 {
     public DateOnly DayTimeslot { get; set; }
-    public Weekdays WeekdayTimeslot { get; set; }
+    public Weekday WeekdayTimeslot { get; set; }
     public int BeginTimeslot { get; set; }
     public int EndTimeslot { get; set; }
     public int DurationTimeslot => EndTimeslot - BeginTimeslot; //methode want is nog niet ingevuld
@@ -27,7 +27,7 @@ public class Timeslot
             throw new ArgumentException("Timeslot times don't makes sense");
 
 
-        WeekdayTimeslot = (Weekdays)dayTimeslot.DayOfWeek; //omzetten naar enum
+        WeekdayTimeslot = (Weekday)dayTimeslot.DayOfWeek; //omzetten naar enum
         return new Timeslot(beginTimeslot, endTimeslot, dayTimeslot);
     }
 

@@ -1,6 +1,6 @@
 using HorsesForCourses.Core;
 
-namespace HorsesForCourses.Course;
+namespace HorsesForCourses.Core;
 
 public class Course
 {
@@ -9,8 +9,13 @@ public class Course
     public DateOnly StartDateCourse { get; set; }
     public DateOnly EndDateCourse { get; set; }
     public int DurationCourse { get; }
+    public Coach CoachForCourse { get; }
 
-    public readonly Dictionary<Weekdays, Timeslot> CourseTimeslots = new Dictionary<Weekdays, Timeslot>();
+    public bool enoughTime { get; set; }
+    public bool coachAdded { get; set; }
+
+
+    public Dictionary<DateOnly, Timeslot> CourseTimeslots = new Dictionary<DateOnly, Timeslot>();
     private readonly List<Competence> ListOfCourseCompetences = new List<Competence>();
 
     public Course(string nameCourse, DateOnly startcourse, DateOnly endcourse)
@@ -29,7 +34,7 @@ public class Course
 
     public void AddTimeslotToCourse(Timeslot timeslot)
     {
-        CourseTimeslots.Add(timeslot.WeekdayTimeslot, timeslot);
+        CourseTimeslots.Add(timeslot.DayTimeslot, timeslot);
     }
 
     public StatusCourse ValidateCourseBasedOnTimeslots()
@@ -37,7 +42,7 @@ public class Course
         if (CourseTimeslots.Count == 0)
             return StatusCourse.PendingForTimeslots;
         var onlyTimeslots = CourseTimeslots.Select(x => x.Value);
-        bool enoughTime = onlyTimeslots.Any(t => t.DurationTimeslot >= 1);
+        enoughTime = onlyTimeslots.Any(t => t.DurationTimeslot >= 1);
 
         if (enoughTime == true)
         {
@@ -46,5 +51,11 @@ public class Course
 
         return StatusCourse.PendingForTimeslots;
     }
+
+    // public void AddCoach(Coach coach)
+    // {
+    //     if(availabilityCheckMethod == true)
+    //     CoachForCourse = coach;
+    // }
 
 }

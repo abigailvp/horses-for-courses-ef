@@ -1,6 +1,6 @@
-namespace HorsesForCourses.Course;
+namespace HorsesForCourses.Core;
 
-public enum Weekdays
+public enum Weekday
 {
     Monday = 1,
     Tuesday = 2,

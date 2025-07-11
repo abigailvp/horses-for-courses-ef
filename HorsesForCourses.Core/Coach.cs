@@ -1,6 +1,7 @@
+using System.Security.Cryptography.X509Certificates;
 using HorsesForCourses.Core;
 
-namespace HorsesForCourses.Course;
+namespace HorsesForCourses.Core;
 
 public class Coach //aggregate root
 {
@@ -11,7 +12,7 @@ public class Coach //aggregate root
     private readonly List<Competence> ListOfCompetences = new List<Competence>();
 
     public record NumberOfWeek(int numberOfWeek);
-    public readonly Dictionary<Weekdays, Timeslot> AvailableTimeslots = new Dictionary<Weekdays, Timeslot>();
+    public readonly Dictionary<DateOnly, Timeslot> AvailableTimeslots = new Dictionary<DateOnly, Timeslot>();
 
     private Coach(Id<Coach> coachid, string name, string email)
     {
@@ -43,23 +44,40 @@ public class Coach //aggregate root
 
     public void AddTimeSlot(Timeslot availableMoment)
     {
-        AvailableTimeslots.Add(availableMoment.WeekdayTimeslot, availableMoment);
+        AvailableTimeslots.Add(availableMoment.DayTimeslot, availableMoment);
     }
 
     public void RemoveTimeslot(Timeslot availableMoment)
     {
-        AvailableTimeslots.Remove(availableMoment.WeekdayTimeslot);
+        AvailableTimeslots.Remove(availableMoment.DayTimeslot);
     }
 
-    // public bool CheckAvailability()
+    // public bool CheckAvailability(Course course)
     // {
-    //     if(AvailableTimeslots.Contains())
-    //     return true;
+    //     var courseTimeslots = course.CourseTimeslots;
+    //     var onlyMatchingDates = courseTimeslots.Join(AvailableTimeslots,//list for coach
+    //     c => c.Key,
+    //     a => a.Key,
+    //     (c, a) => new { courseTimeslot = c.Value, coachTimeslot = a.Value });
 
-    //     if ()
-    //         return false;
+    //     //genoeg pairs????
+
+
+    //     foreach (var pair in onlyMatchingDates)
+    //     {
+    //         var courseSlot = pair.courseTimeslot;
+    //         var coachSlot = pair.coachTimeslot;
+
+    //         if (courseSlot.BeginTimeslot <= coachSlot.BeginTimeslot &&
+    //             courseSlot.EndTimeslot <= coachSlot.EndTimeslot)
+    //             return true;
+    //         else
+    //             return false;
+    //     }
     // }
 }
+
+
 
 
 
