@@ -14,8 +14,8 @@ public class Course
     public bool enoughTime { get; set; }
     public bool coachAdded { get; set; }
 
-
-    public Dictionary<DateOnly, Timeslot> CourseTimeslots = new Dictionary<DateOnly, Timeslot>();
+    private List<Timeslot> CourseTimeslotsPerDate = new List<Timeslot>();
+    public Dictionary<DateOnly, List<Timeslot>> CourseTimeslots = new Dictionary<DateOnly, List<Timeslot>>();
     private readonly List<Competence> ListOfCourseCompetences = new List<Competence>();
 
     public Course(string nameCourse, DateOnly startcourse, DateOnly endcourse)
@@ -34,15 +34,16 @@ public class Course
 
     public void AddTimeslotToCourse(Timeslot timeslot)
     {
-        CourseTimeslots.Add(timeslot.DayTimeslot, timeslot);
+        CourseTimeslotsPerDate.Add(timeslot);
+        CourseTimeslots.Add(timeslot.DayTimeslot, CourseTimeslotsPerDate);
     }
 
     public StatusCourse ValidateCourseBasedOnTimeslots()
     {
         if (CourseTimeslots.Count == 0)
             return StatusCourse.PendingForTimeslots;
-        var onlyTimeslots = CourseTimeslots.Select(x => x.Value);
-        enoughTime = onlyTimeslots.Any(t => t.DurationTimeslot >= 1);
+        var listOfTimeSlots = CourseTimeslots.SelectMany(x => x.Value);//SelectMany want je wilt maar 1 lijst (niet meerdere lijsten)
+        enoughTime = listOfTimeSlots.Any(t => t.DurationTimeslot >= 1);
 
         if (enoughTime == true)
         {
@@ -54,7 +55,7 @@ public class Course
 
     // public void AddCoach(Coach coach)
     // {
-    //     if(availabilityCheckMethod == true)
+    //     if(CheckAvailability(course) == true)
     //     CoachForCourse = coach;
     // }
 

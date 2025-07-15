@@ -19,13 +19,17 @@ public class Timeslot
     public Timeslot Create(int beginTimeslot, int endTimeslot, DateOnly dayTimeslot)
     {
         if (beginTimeslot < 9 || beginTimeslot > 17)
-            throw new ArgumentException("Timeslot must be between 9 and 17h");
+            throw new ArgumentException("Timeslot must start between 9 and 17h");
         if (endTimeslot < 9 || endTimeslot > 17)
-            throw new ArgumentException("Timeslot must be between 9 and 17h");
+            throw new ArgumentException("Timeslot must end between 9 and 17h");
 
         if (endTimeslot - beginTimeslot <= 0)
-            throw new ArgumentException("Timeslot times don't makes sense");
+            throw new ArgumentException("Timeslot must have a duration longer than 0 hours");
 
+        if ((int)dayTimeslot.DayOfWeek == 0)
+            throw new ArgumentException("Timeslot can't take place on Sunday");
+        if ((int)dayTimeslot.DayOfWeek == 6)
+            throw new ArgumentException("Timeslot can't take place on Saturday");
 
         WeekdayTimeslot = (Weekday)dayTimeslot.DayOfWeek; //omzetten naar enum
         return new Timeslot(beginTimeslot, endTimeslot, dayTimeslot);

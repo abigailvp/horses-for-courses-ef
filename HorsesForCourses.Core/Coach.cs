@@ -1,5 +1,6 @@
-using System.Security.Cryptography.X509Certificates;
+using System.Net;
 using HorsesForCourses.Core;
+using Microsoft.VisualBasic;
 
 namespace HorsesForCourses.Core;
 
@@ -10,9 +11,7 @@ public class Coach //aggregate root
     public string Email { get; }
 
     private readonly List<Competence> ListOfCompetences = new List<Competence>();
-
-    public record NumberOfWeek(int numberOfWeek);
-    public readonly Dictionary<DateOnly, Timeslot> AvailableTimeslots = new Dictionary<DateOnly, Timeslot>();
+    public readonly Dictionary<DateOnly, List<Timeslot>> AvailableTimeslots = new Dictionary<DateOnly, List<Timeslot>>();
 
     private Coach(Id<Coach> coachid, string name, string email)
     {
@@ -44,7 +43,29 @@ public class Coach //aggregate root
 
     public void AddTimeSlot(Timeslot availableMoment)
     {
-        AvailableTimeslots.Add(availableMoment.DayTimeslot, availableMoment);
+        IEnumerable<DateOnly> onlyDates = AvailableTimeslots.Select(c => c.Key);
+        if (onlyDates.Contains(availableMoment.DayTimeslot))
+        {
+            DateOnly availableDate = availableMoment.DayTimeslot;
+            IEnumerable<Timeslot> timeslotsWithSameDate = AvailableTimeslots.Where(t => t.Key == availableDate).SelectMany(t => t.Value);
+            bool hasSameBeginHours = timeslotsWithSameDate.Any(b => b.BeginTimeslot == availableMoment.BeginTimeslot);
+            bool hasSameEndHours = timeslotsWithSameDate.Any(e => e.EndTimeslot == availableMoment.EndTimeslot);
+
+            if (hasSameBeginHours && hasSameEndHours)
+                throw new Exception("Can't add same timeslot twice");
+            else
+            {
+                var list = AvailableTimeslots[availableDate];
+                list.Add(availableMoment);
+                AvailableTimeslots.Add(availableMoment.DayTimeslot, list);
+            }
+        }
+        else
+        {
+            List<Timeslot> TimeslotsPerDate = new List<Timeslot>();
+            TimeslotsPerDate.Add(availableMoment);
+            AvailableTimeslots.Add(availableMoment.DayTimeslot, TimeslotsPerDate);
+        }
     }
 
     public void RemoveTimeslot(Timeslot availableMoment)
@@ -52,29 +73,36 @@ public class Coach //aggregate root
         AvailableTimeslots.Remove(availableMoment.DayTimeslot);
     }
 
-    // public bool CheckAvailability(Course course)
-    // {
-    //     var courseTimeslots = course.CourseTimeslots;
-    //     var onlyMatchingDates = courseTimeslots.Join(AvailableTimeslots,//list for coach
-    //     c => c.Key,
-    //     a => a.Key,
-    //     (c, a) => new { courseTimeslot = c.Value, coachTimeslot = a.Value });
+    public bool CheckAvailability(Course course)
+    {
+        //condition1: samedates in course and coach
+        var courseTimeslots = course.CourseTimeslots;
+        var onlyMatchingDates = courseTimeslots.Join(AvailableTimeslots,//list for coach
+                                c => c.Key,//sleutel=datum
+                                a => a.Key,
+                                (c, a) => new { courseTimeslot = c.Value, coachTimeslot = a.Value });
+        IEnumerable<List<Timeslot>> numberOfMatches = onlyMatchingDates.Select(x => x.courseTimeslot);
+        if (courseTimeslots.Keys.Count() != numberOfMatches.Count())
+            return false;
 
-    //     //genoeg pairs????
 
+        foreach (var matchingDates in onlyMatchingDates)
+        {
+            foreach (var courseSlot in matchingDates.courseTimeslot)
+            {
+                //condition 2: PER DAY: coachslot has starthour <= courselot && endhour>=courselot
+                bool coachCovers = matchingDates.coachTimeslot.Any(coachSlot =>
+                                    coachSlot.BeginTimeslot <= courseSlot.BeginTimeslot &&
+                                    coachSlot.EndTimeslot >= courseSlot.EndTimeslot
+                );
 
-    //     foreach (var pair in onlyMatchingDates)
-    //     {
-    //         var courseSlot = pair.courseTimeslot;
-    //         var coachSlot = pair.coachTimeslot;
+                if (!coachCovers)
+                    return false;
+            }
+        }
 
-    //         if (courseSlot.BeginTimeslot <= coachSlot.BeginTimeslot &&
-    //             courseSlot.EndTimeslot <= coachSlot.EndTimeslot)
-    //             return true;
-    //         else
-    //             return false;
-    //     }
-    // }
+        return true;
+    }
 }
 
 
