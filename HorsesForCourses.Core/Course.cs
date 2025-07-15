@@ -14,7 +14,6 @@ public class Course
     public bool enoughTime { get; set; }
     public bool coachAdded { get; set; }
 
-    private List<Timeslot> CourseTimeslotsPerDate = new List<Timeslot>();
     public Dictionary<DateOnly, List<Timeslot>> CourseTimeslots = new Dictionary<DateOnly, List<Timeslot>>();
     private readonly List<Competence> ListOfCourseCompetences = new List<Competence>();
 
@@ -32,13 +31,36 @@ public class Course
     }
 
 
-    public void AddTimeslotToCourse(Timeslot timeslot)
+    public StatusCourse AddTimeSlotToCourse(Timeslot availableMoment)
     {
-        CourseTimeslotsPerDate.Add(timeslot);
-        CourseTimeslots.Add(timeslot.DayTimeslot, CourseTimeslotsPerDate);
+        IEnumerable<DateOnly> onlyDates = CourseTimeslots.Select(c => c.Key);
+        if (onlyDates.Contains(availableMoment.DayTimeslot))
+        {
+            DateOnly availableDate = availableMoment.DayTimeslot;
+            IEnumerable<Timeslot> timeslotsWithSameDate = CourseTimeslots.Where(t => t.Key == availableDate).SelectMany(t => t.Value);
+            bool hasSameBeginHours = timeslotsWithSameDate.Any(b => b.BeginTimeslot == availableMoment.BeginTimeslot);
+            bool hasSameEndHours = timeslotsWithSameDate.Any(e => e.EndTimeslot == availableMoment.EndTimeslot);
+
+            if (hasSameBeginHours && hasSameEndHours)
+                return StatusCourse.PendingForTimeslots;
+            else
+            {
+                var list = CourseTimeslots[availableDate];
+                list.Add(availableMoment);
+                CourseTimeslots.Add(availableMoment.DayTimeslot, list);
+                return StatusCourse.WaitingForTimeslotCheck;
+            }
+        }
+        else
+        {
+            List<Timeslot> TimeslotsPerDate = new List<Timeslot>();
+            TimeslotsPerDate.Add(availableMoment);
+            CourseTimeslots.Add(availableMoment.DayTimeslot, TimeslotsPerDate);
+            return StatusCourse.WaitingForTimeslotCheck;
+        }
     }
 
-    public StatusCourse ValidateCourseBasedOnTimeslots()
+    public StatusCourse ValidateCourseBasedOnTimeslots(StatusCourse status)
     {
         if (CourseTimeslots.Count == 0)
             return StatusCourse.PendingForTimeslots;
@@ -50,13 +72,14 @@ public class Course
             return StatusCourse.PendingForCoach;
         }
 
-        return StatusCourse.PendingForTimeslots;
+        return StatusCourse.WaitingForTimeslotCheck;
     }
 
-    // public void AddCoach(Coach coach)
-    // {
-    //     if(CheckAvailability(course) == true)
-    //     CoachForCourse = coach;
-    // }
+    public StatusCourse AddCoach(Coach coach)
+    {
+        if (coach.CheckAvailability(this) == StatusCourse.PendingForCoach)
+            return StatusCourse.Assigned;
+        return StatusCourse.PendingForCoach;
+    }
 
 }

@@ -41,7 +41,7 @@ public class Coach //aggregate root
         ListOfCompetences.Remove(competence);
     }
 
-    public void AddTimeSlot(Timeslot availableMoment)
+    public StatusCourse AddTimeSlot(Timeslot availableMoment)
     {
         IEnumerable<DateOnly> onlyDates = AvailableTimeslots.Select(c => c.Key);
         if (onlyDates.Contains(availableMoment.DayTimeslot))
@@ -52,12 +52,13 @@ public class Coach //aggregate root
             bool hasSameEndHours = timeslotsWithSameDate.Any(e => e.EndTimeslot == availableMoment.EndTimeslot);
 
             if (hasSameBeginHours && hasSameEndHours)
-                throw new Exception("Can't add same timeslot twice");
+                return StatusCourse.PendingForTimeslots;
             else
             {
                 var list = AvailableTimeslots[availableDate];
                 list.Add(availableMoment);
                 AvailableTimeslots.Add(availableMoment.DayTimeslot, list);
+                return StatusCourse.WaitingForTimeslotCheck;
             }
         }
         else
@@ -65,6 +66,7 @@ public class Coach //aggregate root
             List<Timeslot> TimeslotsPerDate = new List<Timeslot>();
             TimeslotsPerDate.Add(availableMoment);
             AvailableTimeslots.Add(availableMoment.DayTimeslot, TimeslotsPerDate);
+            return StatusCourse.WaitingForTimeslotCheck;
         }
     }
 
@@ -73,7 +75,7 @@ public class Coach //aggregate root
         AvailableTimeslots.Remove(availableMoment.DayTimeslot);
     }
 
-    public bool CheckAvailability(Course course)
+    public StatusCourse CheckAvailability(Course course)
     {
         //condition1: samedates in course and coach
         var courseTimeslots = course.CourseTimeslots;
@@ -83,25 +85,25 @@ public class Coach //aggregate root
                                 (c, a) => new { courseTimeslot = c.Value, coachTimeslot = a.Value });
         IEnumerable<List<Timeslot>> numberOfMatches = onlyMatchingDates.Select(x => x.courseTimeslot);
         if (courseTimeslots.Keys.Count() != numberOfMatches.Count())
-            return false;
+            return StatusCourse.WaitingForTimeslotCheck;
 
 
         foreach (var matchingDates in onlyMatchingDates)
         {
+            //condition 2: PER DAY: coachslot has starthour <= courselot && endhour>=courselot
             foreach (var courseSlot in matchingDates.courseTimeslot)
             {
-                //condition 2: PER DAY: coachslot has starthour <= courselot && endhour>=courselot
+
                 bool coachCovers = matchingDates.coachTimeslot.Any(coachSlot =>
                                     coachSlot.BeginTimeslot <= courseSlot.BeginTimeslot &&
-                                    coachSlot.EndTimeslot >= courseSlot.EndTimeslot
-                );
+                                    coachSlot.EndTimeslot >= courseSlot.EndTimeslot);
 
                 if (!coachCovers)
-                    return false;
+                    return StatusCourse.WaitingForTimeslotCheck;
             }
         }
 
-        return true;
+        return StatusCourse.PendingForCoach;
     }
 }
 
