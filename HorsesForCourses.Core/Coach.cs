@@ -1,4 +1,5 @@
 using System.Net;
+using System.Reflection.Metadata.Ecma335;
 using HorsesForCourses.Core;
 using Microsoft.VisualBasic;
 
@@ -10,24 +11,20 @@ public class Coach //aggregate root
     public string NameCoach { get; }
     public string Email { get; }
 
-    private readonly List<Competence> ListOfCompetences = new List<Competence>();
+    public readonly List<Competence> ListOfCompetences = new List<Competence>();
     public readonly Dictionary<DateOnly, List<Timeslot>> AvailableTimeslots = new Dictionary<DateOnly, List<Timeslot>>();
 
-    private Coach(Id<Coach> coachid, string name, string email)
-    {
-        NameCoach = name;
-        Email = email;
-        CoachId = coachid;
-    }
-    public Coach AddCoach(Id<Coach> value, string name, string email)
+    public Coach(Id<Coach> coachid, string name, string email)
     {
         if (!email.Contains("@"))
             throw new ArgumentException("Email isn't valid.");
         if (string.IsNullOrWhiteSpace(email))
             throw new ArgumentException("Email cannot be empty.");
-        var newCoach = new Coach(value, name, email);
 
-        return newCoach;
+        CoachId = coachid;
+        NameCoach = name;
+        Email = email;
+
     }
 
     public void AddCompetence(string name, int level)
