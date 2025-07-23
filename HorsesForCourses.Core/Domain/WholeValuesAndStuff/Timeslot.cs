@@ -16,7 +16,7 @@ public class Timeslot
         DayTimeslot = dayTimeslot;
     }
 
-    public Timeslot Create(int beginTimeslot, int endTimeslot, DateOnly dayTimeslot)
+    public static Timeslot Create(int beginTimeslot, int endTimeslot, DateOnly dayTimeslot)
     {
         if (beginTimeslot < 9 || beginTimeslot > 17)
             throw new ArgumentException("Timeslot must start between 9 and 17h");
@@ -26,12 +26,10 @@ public class Timeslot
         if (endTimeslot - beginTimeslot <= 0)
             throw new ArgumentException("Timeslot must have a duration longer than 0 hours");
 
-        if ((int)dayTimeslot.DayOfWeek == 0)
+        if ((int)dayTimeslot.DayOfWeek == 0 || (int)dayTimeslot.DayOfWeek == 6)
             throw new ArgumentException("Timeslot can't take place on Sunday");
-        if ((int)dayTimeslot.DayOfWeek == 6)
-            throw new ArgumentException("Timeslot can't take place on Saturday");
 
-        WeekdayTimeslot = (Weekday)dayTimeslot.DayOfWeek; //omzetten naar enum
+        // WeekdayTimeslot = (Weekday)dayTimeslot.DayOfWeek; //omzetten naar enum
         return new Timeslot(beginTimeslot, endTimeslot, dayTimeslot);
     }
 

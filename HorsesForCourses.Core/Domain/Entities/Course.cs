@@ -1,21 +1,21 @@
+using System.ComponentModel.DataAnnotations;
 using HorsesForCourses.Core;
 
-namespace HorsesForCourses.Core;
+namespace HorsesForCourses.Core.DomainEntities;
 
 public class Course
 {
-    public record Id<Course>(Guid Value);
     public string NameCourse { get; set; }
     public DateOnly StartDateCourse { get; set; }
     public DateOnly EndDateCourse { get; set; }
     public int DurationCourse { get; }
-    public Coach CoachForCourse { get; }
+    public Coach CoachForCourse { get; set; }
 
-    public bool enoughTime { get; set; }
-    public bool coachAdded { get; set; }
+    public bool enoughTime { get; set; } = false;
+    public bool coachAdded { get; set; } = false;
 
     public Dictionary<DateOnly, List<Timeslot>> CourseTimeslots = new Dictionary<DateOnly, List<Timeslot>>();
-    private readonly List<Competence> ListOfCourseCompetences = new List<Competence>();
+    public List<Competence> ListOfCourseCompetences = new List<Competence>();
 
     public Course(string nameCourse, DateOnly startcourse, DateOnly endcourse)
     {
@@ -25,8 +25,9 @@ public class Course
         EndDateCourse = endcourse;
     }
 
-    public void AddRequiredCompetentence(Competence comp)
+    public void AddRequiredCompetentence(string name, int level)
     {
+        Competence comp = new Competence(name, level);
         ListOfCourseCompetences.Add(comp);
     }
 
@@ -47,14 +48,12 @@ public class Course
             {
                 var list = CourseTimeslots[availableDate];
                 list.Add(availableMoment);
-                CourseTimeslots.Add(availableMoment.DayTimeslot, list);
                 return StatusCourse.WaitingForTimeslotCheck;
             }
         }
         else
         {
-            List<Timeslot> TimeslotsPerDate = new List<Timeslot>();
-            TimeslotsPerDate.Add(availableMoment);
+            List<Timeslot> TimeslotsPerDate = [availableMoment];
             CourseTimeslots.Add(availableMoment.DayTimeslot, TimeslotsPerDate);
             return StatusCourse.WaitingForTimeslotCheck;
         }
@@ -69,17 +68,10 @@ public class Course
 
         if (enoughTime == true)
         {
-            return StatusCourse.PendingForCoach;
+            return StatusCourse.PendingForCompetenceCheck;
         }
 
         return StatusCourse.WaitingForTimeslotCheck;
-    }
-
-    public StatusCourse AddCoach(Coach coach)
-    {
-        if (coach.CheckAvailability(this) == StatusCourse.PendingForCoach)
-            return StatusCourse.Assigned;
-        return StatusCourse.PendingForCoach;
     }
 
 }
