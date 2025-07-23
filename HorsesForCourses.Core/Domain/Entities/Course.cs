@@ -35,7 +35,7 @@ public class Course
     }
 
 
-    public StatusCourse AddTimeSlotToCourse(Timeslot availableMoment)
+    public void AddTimeSlotToCourse(Timeslot availableMoment)
     {
         IEnumerable<DateOnly> onlyDates = CourseTimeslots.Select(c => c.Key);
         if (onlyDates.Contains(availableMoment.DayTimeslot))
@@ -45,36 +45,32 @@ public class Course
             bool hasSameBeginHours = timeslotsWithSameDate.Any(b => b.BeginTimeslot == availableMoment.BeginTimeslot);
             bool hasSameEndHours = timeslotsWithSameDate.Any(e => e.EndTimeslot == availableMoment.EndTimeslot);
 
-            if (hasSameBeginHours && hasSameEndHours)
-                return StatusCourse.PendingForTimeslots;
-            else
+            if (!hasSameBeginHours && !hasSameEndHours)
             {
                 var list = CourseTimeslots[availableDate];
                 list.Add(availableMoment);
-                return StatusCourse.WaitingForTimeslotCheck;
             }
         }
         else
         {
             List<Timeslot> TimeslotsPerDate = [availableMoment];
             CourseTimeslots.Add(availableMoment.DayTimeslot, TimeslotsPerDate);
-            return StatusCourse.WaitingForTimeslotCheck;
         }
     }
 
-    public StatusCourse ValidateCourseBasedOnTimeslots(StatusCourse status)
+    public StatusCourse ValidateCourseBasedOnTimeslots()
     {
         if (CourseTimeslots.Count == 0)
-            return StatusCourse.PendingForTimeslots;
+            return StatusCourse.WaitingForTimeslots;
         var listOfTimeSlots = CourseTimeslots.SelectMany(x => x.Value);//SelectMany want je wilt maar 1 lijst (niet meerdere lijsten)
         enoughTime = listOfTimeSlots.Any(t => t.DurationTimeslot >= 1);
 
         if (enoughTime == true)
         {
-            return StatusCourse.PendingForCompetenceCheck;
+            return StatusCourse.WaitingForMatchingTimeslots;
         }
 
-        return StatusCourse.WaitingForTimeslotCheck;
+        return StatusCourse.WaitingForTimeslots;
     }
 
 }

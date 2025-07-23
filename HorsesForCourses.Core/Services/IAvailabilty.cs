@@ -4,8 +4,8 @@ using HorsesForCourses.Core;
 
 public interface IAvailability
 {
-    StatusCourse CheckAvailability(Course course, Coach coach);
-    StatusCourse CheckCoach(Coach coach, Course course);
+    StatusCourse CheckCoachAvailability(Course course, Coach coach);
+    // StatusCourse CheckCoach(Coach coach, Course course);
     StatusCourse CheckCoachCompetences(Coach coach, Course course);
     // void AssignCourse(StatusCourse status, Course course, Coach coach);
 }

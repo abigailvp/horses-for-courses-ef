@@ -18,7 +18,8 @@ public class CoachService : ICoachService
     public string CreateAndAssignCoach(Course course, CoachDTO dto)
     {
         var coach = _adding.createCoach(dto);
-        var status = _availability.CheckCoach(coach, course);
+        var status = _availability.CheckCoachAvailability(course, coach);
+        // _availability.
 
         if (status != StatusCourse.Assigned)
             return "Coach isn't available or competent for course";

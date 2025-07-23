@@ -19,6 +19,5 @@ public class CourseService : ICourseService
     {
         var course = _adder.createCourse(dto);
         return $"Course has the name {course.NameCourse}. It starts at {course.EndDateCourse} and ends at {course.EndDateCourse}.";
-
     }
 }

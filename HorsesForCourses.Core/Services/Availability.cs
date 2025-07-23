@@ -6,7 +6,7 @@ namespace HorsesForCourses.Services;
 
 public class Availability : IAvailability
 {
-    public StatusCourse CheckAvailability(Course course, Coach coach)
+    public StatusCourse CheckCoachAvailability(Course course, Coach coach)
     {
         //condition1: samedates in course and coach
         var courseTimeslots = course.CourseTimeslots;
@@ -16,7 +16,7 @@ public class Availability : IAvailability
                                 (c, a) => new { courseTimeslot = c.Value, coachTimeslot = a.Value });
         IEnumerable<List<Timeslot>> numberOfMatches = onlyMatchingDates.Select(x => x.courseTimeslot);
         if (courseTimeslots.Keys.Count() != numberOfMatches.Count())
-            return StatusCourse.WaitingForTimeslotCheck;
+            return StatusCourse.WaitingForMatchingTimeslots;
 
 
         foreach (var matchingDates in onlyMatchingDates)
@@ -30,19 +30,19 @@ public class Availability : IAvailability
                                     coachSlot.EndTimeslot >= courseSlot.EndTimeslot);
 
                 if (!coachCovers)
-                    return StatusCourse.WaitingForTimeslotCheck;
+                    return StatusCourse.WaitingForMatchingTimeslots;
             }
         }
 
-        return StatusCourse.PendingForCompetenceCheck;
+        return StatusCourse.WaitingForMatchingCompetences;
     }
 
-    public StatusCourse CheckCoach(Coach coach, Course course)
-    {
-        if (CheckAvailability(course, coach) == StatusCourse.PendingForCompetenceCheck)
-            return StatusCourse.Assigned;
-        return StatusCourse.PendingForCompetenceCheck;
-    }
+    // public StatusCourse CheckCoach(Coach coach, Course course)
+    // {
+    //     if (CheckAvailability(course, coach) == StatusCourse.PendingForCompetenceCheck)
+    //         return StatusCourse.Assigned;
+    //     return StatusCourse.PendingForCompetenceCheck;
+    // }
 
     public StatusCourse CheckCoachCompetences(Coach coach, Course course)
     {
@@ -52,11 +52,11 @@ public class Availability : IAvailability
         {
             bool matching = list.All(c => c.Name == required.Name && c.Level >= required.Level);
             if (!matching)
-                return StatusCourse.PendingForCompetenceCheck;
+                return StatusCourse.WaitingForMatchingCompetences;
         }
         course.CoachForCourse = coach;
         course.coachAdded = true;
-        return StatusCourse.CompetetencesChecked;
+        return StatusCourse.Assigned;
     }
 
     // public void AssignCourse(StatusCourse status, Course course, Coach coach)

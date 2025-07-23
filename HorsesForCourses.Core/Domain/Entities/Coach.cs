@@ -50,19 +50,19 @@ public class Coach //aggregate root
             bool hasSameEndHours = timeslotsWithSameDate.Any(e => e.EndTimeslot == availableMoment.EndTimeslot);
 
             if (hasSameBeginHours && hasSameEndHours)
-                return StatusCourse.PendingForTimeslots;
+                return StatusCourse.WaitingForTimeslots;
             else
             {
                 var list = AvailableTimeslots[availableDate];
                 list.Add(availableMoment);
-                return StatusCourse.WaitingForTimeslotCheck;
+                return StatusCourse.WaitingForMatchingTimeslots;
             }
         }
         else
         {
             List<Timeslot> TimeslotsPerDate = [availableMoment];
             AvailableTimeslots.Add(availableMoment.DayTimeslot, TimeslotsPerDate);
-            return StatusCourse.WaitingForTimeslotCheck;
+            return StatusCourse.WaitingForMatchingTimeslots;
         }
     }
 
