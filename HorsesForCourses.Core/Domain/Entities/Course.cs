@@ -1,10 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using HorsesForCourses.Core;
+using HorsesForCourses.Core.WholeValuesAndStuff;
 
 namespace HorsesForCourses.Core.DomainEntities;
 
 public class Course
 {
+    public Id<Course> CourseId { get; set; }
     public string NameCourse { get; set; }
     public DateOnly StartDateCourse { get; set; }
     public DateOnly EndDateCourse { get; set; }
@@ -23,6 +25,7 @@ public class Course
         if (endcourse.DayNumber - startcourse.DayNumber > 0) //.DayNumber for duration
             StartDateCourse = startcourse;
         EndDateCourse = endcourse;
+        CourseId = new Id<Course>(Guid.NewGuid());
     }
 
     public void AddRequiredCompetentence(string name, int level)

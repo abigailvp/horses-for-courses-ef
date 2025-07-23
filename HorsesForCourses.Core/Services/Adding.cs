@@ -1,19 +1,28 @@
 using HorsesForCourses.Core.DomainEntities;
+using HorsesForCourses.Core.WholeValuesAndStuff;
 using HorsesForCourses.Core;
 
-public class Adding
+namespace HorsesForCourses.Services;
+
+public class Adding : IAdding
 {
-    public List<Coach> addCoach(StatusCourse status, Coach coach)
+    public Coach createCoach(CoachDTO dto)
     {
-        if (status == StatusCourse.Assigned)
-            AllData.allCoaches.Add(coach);
-        return AllData.allCoaches;
+        Coach coach = new Coach(dto.NameCoach, dto.Email)
+        {
+            CoachId = new Id<Coach>(dto.CoachId),
+            ListOfCompetences = dto.ListOfCompetences,
+            AvailableTimeslots = dto.AvailableTimeslots
+        };
+        AllData.allCoaches.Add(coach);
+        return coach;
+
     }
 
-    public List<Course> addCourse(StatusCourse status, Course course)
+    public Course createCourse(CourseDTO dto)
     {
-        if (status == StatusCourse.PendingForCompetenceCheck)
-            AllData.allCourses.Add(course);
-        return AllData.allCourses;
+        Course course = new(dto.NameCourse, DateOnly.Parse(dto.EndDateCourse), DateOnly.Parse(dto.StartDateCourse));
+        AllData.allCourses.Add(course);
+        return course;
     }
 }

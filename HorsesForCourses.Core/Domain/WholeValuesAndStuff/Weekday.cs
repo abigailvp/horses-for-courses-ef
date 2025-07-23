@@ -1,4 +1,4 @@
-namespace HorsesForCourses.Core;
+namespace HorsesForCourses.Core.WholeValuesAndStuff;
 
 public enum Weekday
 {

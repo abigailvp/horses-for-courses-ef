@@ -2,6 +2,7 @@ using System.Net;
 using System.Reflection.Metadata.Ecma335;
 using HorsesForCourses.Core;
 using Microsoft.VisualBasic;
+using HorsesForCourses.Core.WholeValuesAndStuff;
 
 namespace HorsesForCourses.Core.DomainEntities;
 

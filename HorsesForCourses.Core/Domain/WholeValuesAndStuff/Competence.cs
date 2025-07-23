@@ -1,3 +1,5 @@
+namespace HorsesForCourses.Core.WholeValuesAndStuff;
+
 public record Competence
 {
     public string Name { get; init; }

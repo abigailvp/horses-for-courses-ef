@@ -2,6 +2,8 @@ using HorsesForCourses.Core;
 using Microsoft.AspNetCore.Mvc;
 
 using HorsesForCourses.Core.DomainEntities;
+using HorsesForCourses.Core.WholeValuesAndStuff;
+using HorsesForCourses.Services;
 
 namespace CoachControllers
 {
@@ -9,11 +11,11 @@ namespace CoachControllers
     [Route("/[controller]")] //Coach wordt automatisch ingevuld hier
     public class CoachController : ControllerBase
     {
-        private readonly ICoachDTO _coachDTO; //field
+        private readonly ICoachService _coachService; //field
 
-        public CoachController(CoachDTO coachDto)//constructor
+        public CoachController(CoachService coachser)//constructor
         {
-            _coachDTO = coachDto;
+            _coachService = coachser;
         }
 
         [HttpGet]
@@ -30,9 +32,14 @@ namespace CoachControllers
         }
 
         [HttpPost]
-        [Route("Create")]
-        public ActionResult<Coach> CreateCoach([FromBody] CoachDTO request)
-        => Ok(_coachDTO.CreateCoach(request));
+        [Route("{courseId}/CreateCoach")]
+        public ActionResult<string> CreateCoach(Guid courseId, [FromBody] CoachDTO dto)
+        {
+            var course = AllData.allCourses.FirstOrDefault(c => c.CourseId.value == courseId); //getting coach with same id
+            var result = _coachService.CreateAndAssignCoach(course, dto);
+
+            return result.Contains("isn't") ? BadRequest(result) : Ok(result);
+        }
 
     }
 }

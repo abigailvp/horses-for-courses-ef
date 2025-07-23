@@ -2,16 +2,19 @@ using Microsoft.AspNetCore.Mvc;
 using HorsesForCourses.Core;
 
 using HorsesForCourses.Core.DomainEntities;
+using HorsesForCourses.Core.WholeValuesAndStuff;
+using HorsesForCourses.Services;
+
 
 [ApiController]
 [Route("/[controller]")]
 public class CourseController : ControllerBase
 {
-    private readonly ICourseDTO _courseDTO;
+    private readonly ICourseService _courseService;
 
-    public CourseController(CourseDTO coursedto)
+    public CourseController(CourseService courseSer)
     {
-        _courseDTO = coursedto;
+        _courseService = courseSer;
     }
 
     [HttpGet]
@@ -34,7 +37,7 @@ public class CourseController : ControllerBase
 
     [HttpPost]
     [Route("Create")]
-    public ActionResult<string> CreateEmptyCourse([FromBody] CourseDTO request)
-    => Ok(_courseDTO.CreateCourse(request));
+    public ActionResult<string> CreateEmptyCourse([FromBody] CourseDTO dto)
+    => Ok(_courseService.CreateEmptyCourse(dto));
 
 }

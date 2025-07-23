@@ -1,7 +1,10 @@
 using HorsesForCourses.Core.DomainEntities;
+using HorsesForCourses.Core.WholeValuesAndStuff;
 using HorsesForCourses.Core;
 
-public class Availability
+namespace HorsesForCourses.Services;
+
+public class Availability : IAvailability
 {
     public StatusCourse CheckAvailability(Course course, Coach coach)
     {
@@ -47,8 +50,8 @@ public class Availability
 
         foreach (var required in course.ListOfCourseCompetences)
         {
-            IEnumerable<Competence> matching = list.Where(c => c.Name == required.Name && c.Level >= required.Level);
-            if (matching.Count() < course.ListOfCourseCompetences.Count())
+            bool matching = list.All(c => c.Name == required.Name && c.Level >= required.Level);
+            if (!matching)
                 return StatusCourse.PendingForCompetenceCheck;
         }
         course.CoachForCourse = coach;
@@ -56,13 +59,11 @@ public class Availability
         return StatusCourse.CompetetencesChecked;
     }
 
-
-
-    public void AssignCourse(StatusCourse status, Course course, Coach coach)
-    {
-        if (status == StatusCourse.CompetetencesChecked && course.coachAdded == true)
-            coach.HasCourse = true;
-        else
-            coach.HasCourse = false;
-    }
+    // public void AssignCourse(StatusCourse status, Course course, Coach coach)
+    // {
+    //     if (status == StatusCourse.CompetetencesChecked && course.coachAdded == true)
+    //         coach.HasCourse = true;
+    //     else
+    //         coach.HasCourse = false;
+    // }
 }
