@@ -1,5 +1,7 @@
 using System.Reflection.Metadata.Ecma335;
 using HorsesForCourses.Core;
+using HorsesForCourses.Core.DomainEntities;
+using HorsesForCourses.Core.WholeValuesAndStuff;
 
 namespace HorsesForCoursesTests;
 

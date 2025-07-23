@@ -1,10 +1,12 @@
 
 
 
+using HorsesForCourses.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton<ICourseDTO, CourseDTO>();
-builder.Services.AddSingleton<ICoachDTO, CoachDTO>();
+builder.Services.AddSingleton<ICourseService, CourseService>();
+builder.Services.AddSingleton<ICoachService, CoachService>();
 
 builder.Services.AddControllers();
 

@@ -26,9 +26,9 @@ namespace CoachControllers
 
         [HttpGet("{coachId:Id<Coach}")]
         [Route("coachId")]
-        public Coach GetCoachById(Id<Coach> coachId)
+        public Coach GetCoachById(Guid coachId)
         {
-            return AllData.allCoaches.Where(c => c.CoachId == coachId).FirstOrDefault();
+            return AllData.allCoaches.Where(c => c.CoachId.value == coachId).FirstOrDefault();
         }
 
         [HttpPost]

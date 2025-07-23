@@ -2,8 +2,8 @@ namespace HorsesForCourses.Core.WholeValuesAndStuff;
 
 public record Competence
 {
-    public string Name { get; init; }
-    public int Level { get; init; }
+    public string Name { get; set; }
+    public int Level { get; set; }
 
     public Competence(string name, int level)
     {
