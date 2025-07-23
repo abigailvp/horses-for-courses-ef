@@ -20,4 +20,15 @@ public class CourseService : ICourseService
         var course = _adder.createCourse(dto);
         return $"Course has the name {course.NameCourse}. It starts at {course.EndDateCourse} and ends at {course.EndDateCourse}.";
     }
+
+    public string CreateAndAssignCourse(Coach coach, CourseDTO dto)
+    {
+        var course = _adder.createCourse(dto);
+        var status = _availability.CheckCoachCompetences(coach, course);
+
+        if (status != StatusCourse.Assigned)
+            return "Coach isn't available or competent for course";
+        AllData.assignedCoaches.Add(coach);
+        return $"Coach {coach.NameCoach} was added.";
+    }
 }

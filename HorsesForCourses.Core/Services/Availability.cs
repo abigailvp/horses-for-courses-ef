@@ -37,12 +37,6 @@ public class Availability : IAvailability
         return StatusCourse.WaitingForMatchingCompetences;
     }
 
-    // public StatusCourse CheckCoach(Coach coach, Course course)
-    // {
-    //     if (CheckAvailability(course, coach) == StatusCourse.PendingForCompetenceCheck)
-    //         return StatusCourse.Assigned;
-    //     return StatusCourse.PendingForCompetenceCheck;
-    // }
 
     public StatusCourse CheckCoachCompetences(Coach coach, Course course)
     {
@@ -55,15 +49,6 @@ public class Availability : IAvailability
                 return StatusCourse.WaitingForMatchingCompetences;
         }
         course.CoachForCourse = coach;
-        course.coachAdded = true;
         return StatusCourse.Assigned;
     }
-
-    // public void AssignCourse(StatusCourse status, Course course, Coach coach)
-    // {
-    //     if (status == StatusCourse.CompetetencesChecked && course.coachAdded == true)
-    //         coach.HasCourse = true;
-    //     else
-    //         coach.HasCourse = false;
-    // }
 }

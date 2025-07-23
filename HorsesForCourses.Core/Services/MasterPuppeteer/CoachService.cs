@@ -15,10 +15,16 @@ public class CoachService : ICoachService
         _availability = availability;
     }
 
+    public string CreateCoach(CoachDTO dto)
+    {
+        var coach = _adding.createCoach(dto);
+        return $"Coach {coach.NameCoach} has been added";
+    }
+
     public string CreateAndAssignCoach(Course course, CoachDTO dto)
     {
         var coach = _adding.createCoach(dto);
-        var status = _availability.CheckCoachAvailability(course, coach);
+        var status = _availability.CheckCoachCompetences(coach, course);
         // _availability.
 
         if (status != StatusCourse.Assigned)

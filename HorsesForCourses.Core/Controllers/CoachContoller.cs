@@ -32,7 +32,12 @@ namespace CoachControllers
         }
 
         [HttpPost]
-        [Route("{courseId}/CreateCoach")]
+        [Route("{courseId}/Create")]
+        public ActionResult<string> CreateEmptyCourse([FromBody] CoachDTO dto)
+        => Ok(_coachService.CreateCoach(dto));
+
+        [HttpPost]
+        [Route("{courseId}/Assign")]
         public ActionResult<string> CreateCoach(Guid courseId, [FromBody] CoachDTO dto)
         {
             var course = AllData.allCourses.FirstOrDefault(c => c.CourseId.value == courseId); //getting coach with same id

@@ -40,7 +40,7 @@ public class Coach //aggregate root
         ListOfCompetences.Remove(competence);
     }
 
-    public StatusCourse AddTimeSlot(Timeslot availableMoment)
+    public void AddTimeSlot(Timeslot availableMoment)
     {
         if (AvailableTimeslots.ContainsKey(availableMoment.DayTimeslot)) //coach
         {
@@ -49,20 +49,16 @@ public class Coach //aggregate root
             bool hasSameBeginHours = timeslotsWithSameDate.Any(b => b.BeginTimeslot == availableMoment.BeginTimeslot);
             bool hasSameEndHours = timeslotsWithSameDate.Any(e => e.EndTimeslot == availableMoment.EndTimeslot);
 
-            if (hasSameBeginHours && hasSameEndHours)
-                return StatusCourse.WaitingForTimeslots;
-            else
+            if (!hasSameBeginHours && !hasSameEndHours)
             {
                 var list = AvailableTimeslots[availableDate];
                 list.Add(availableMoment);
-                return StatusCourse.WaitingForMatchingTimeslots;
             }
         }
         else
         {
             List<Timeslot> TimeslotsPerDate = [availableMoment];
             AvailableTimeslots.Add(availableMoment.DayTimeslot, TimeslotsPerDate);
-            return StatusCourse.WaitingForMatchingTimeslots;
         }
     }
 
