@@ -1,6 +1,5 @@
 using HorsesForCourses.Core.DomainEntities;
 using HorsesForCourses.Core.WholeValuesAndStuff;
-using HorsesForCourses.Core;
 
 public interface IAvailability
 {

@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HorsesForCourses.Core", "Ho
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HorsesForCourses.Tests", "HorsesForCourses.Tests\HorsesForCourses.Tests.csproj", "{57ADC42F-7FFF-490C-BDF1-96E34554A146}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HorsesForCourses.WebApi", "HorsesForCourses.WebApi\HorsesForCourses.WebApi.csproj", "{BF6079C5-3162-43A9-86C4-1F38BAD83A8C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{57ADC42F-7FFF-490C-BDF1-96E34554A146}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{57ADC42F-7FFF-490C-BDF1-96E34554A146}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{57ADC42F-7FFF-490C-BDF1-96E34554A146}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF6079C5-3162-43A9-86C4-1F38BAD83A8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF6079C5-3162-43A9-86C4-1F38BAD83A8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF6079C5-3162-43A9-86C4-1F38BAD83A8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF6079C5-3162-43A9-86C4-1F38BAD83A8C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -1,9 +1,8 @@
-using HorsesForCourses.Core;
 using Microsoft.AspNetCore.Mvc;
 
 using HorsesForCourses.Core.DomainEntities;
-using HorsesForCourses.Core.WholeValuesAndStuff;
 using HorsesForCourses.Services;
+using HorsesForCourses.Core.WholeValuesAndStuff;
 
 namespace CoachControllers
 {
@@ -33,7 +32,7 @@ namespace CoachControllers
 
         [HttpPost]
         [Route("{courseId}/Create")]
-        public ActionResult<string> CreateEmptyCourse([FromBody] CoachDTO dto)
+        public ActionResult<string> CreateEmptyCoach([FromBody] CoachDTO dto)
         => Ok(_coachService.CreateCoach(dto));
 
         [HttpPost]
@@ -45,6 +44,22 @@ namespace CoachControllers
 
             return result.Contains("isn't") ? BadRequest(result) : Ok(result);
         }
+
+        [HttpPost]
+        [Route("{coachId}/skills")]
+        public ActionResult<string> AddCompetence(Guid coachId, Competence comp [FromBody] CoachDTO dto)
+        {
+            var coach = AllData.allCoaches.FirstOrDefault(c => c.CoachId.value == coachId);
+            var result = _coachService.AddCompetence(coach, comp);
+            return Ok(result);
+        }
+
+        //         POST /coaches/{id}/skills
+        //      Als administrator Wil ik competenties kunnen toevoegen of verwijderen 
+        //bij een coach Zodat zijn of haar geschiktheid aangepast kan worden
+
+        // Inkomende Dto bevat een lijst van alle skills, het domein verwijdert 
+        // of voegt deze toe naar gelang of maakt de coach skill lijst leeg en repopulate deze met binnenkomende.
 
     }
 }

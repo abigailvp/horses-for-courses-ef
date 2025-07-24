@@ -1,10 +1,9 @@
 using HorsesForCourses.Core.DomainEntities;
 using HorsesForCourses.Core.WholeValuesAndStuff;
-using HorsesForCourses.Core;
 
 namespace HorsesForCourses.Services;
 
-public class Availability : IAvailability
+public class Availability
 {
     public StatusCourse CheckCoachAvailability(Course course, Coach coach)
     {

@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using HorsesForCourses.Core;
 using HorsesForCourses.Core.WholeValuesAndStuff;
 
 namespace HorsesForCourses.Core.DomainEntities;

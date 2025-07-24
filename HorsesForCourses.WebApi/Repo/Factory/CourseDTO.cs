@@ -1,6 +1,7 @@
-using HorsesForCourses.Core;
 using HorsesForCourses.Core.DomainEntities;
 using HorsesForCourses.Core.WholeValuesAndStuff;
+
+namespace HorsesForCourses.WebApi.Repo;
 
 public class CourseDTO
 {

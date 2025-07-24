@@ -1,5 +1,6 @@
-using HorsesForCourses.Core;
 using HorsesForCourses.Core.DomainEntities;
+
+namespace HorsesForCourses.Repo;
 
 public static class AllData
 {

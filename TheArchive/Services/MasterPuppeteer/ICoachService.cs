@@ -8,4 +8,5 @@ public interface ICoachService
 {
     string CreateCoach(CoachDTO dto);
     string CreateAndAssignCoach(Course course, CoachDTO dto);
+    string AddCompetence(Coach coach, Competence comp);
 }

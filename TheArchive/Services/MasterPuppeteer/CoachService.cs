@@ -25,11 +25,16 @@ public class CoachService : ICoachService
     {
         var coach = _adding.createCoach(dto);
         var status = _availability.CheckCoachCompetences(coach, course);
-        // _availability.
 
         if (status != StatusCourse.Assigned)
             return "Coach isn't available or competent for course";
         AllData.assignedCoaches.Add(coach);
         return $"Coach {coach.NameCoach} was added.";
+    }
+
+    public string AddCompetence(Coach coach, Competence comp)
+    {
+        coach.ListOfCompetences.Add(comp);
+        return $"Competence {comp.Name} added.";
     }
 }
