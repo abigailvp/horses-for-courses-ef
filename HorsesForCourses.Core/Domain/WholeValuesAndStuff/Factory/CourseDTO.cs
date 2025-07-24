@@ -10,3 +10,12 @@ public class CourseDTO
     public string EndDateCourse { get; set; }
 
 }
+
+public class CourseMapper
+{
+    public static Course CreateEmptyCourse(CourseDTO dto)
+    {
+        return new Course(dto.NameCourse, DateOnly.Parse(dto.StartDateCourse), DateOnly.Parse(dto.EndDateCourse));
+        //omzetten naar DateOnly
+    }
+}

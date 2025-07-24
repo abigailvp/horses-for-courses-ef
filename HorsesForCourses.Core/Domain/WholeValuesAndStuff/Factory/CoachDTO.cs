@@ -1,4 +1,7 @@
+using HorsesForCourses.Core.DomainEntities;
+
 namespace HorsesForCourses.Core.WholeValuesAndStuff;
+
 
 public class CoachDTO
 {
@@ -7,4 +10,15 @@ public class CoachDTO
     public string Email { get; set; }
 
     //geen lijst met competenties of timeslots want zit in domein
+}
+
+public class CoachMapper
+{
+    public static Coach CreateCoach(CoachDTO dto)
+    {
+        return new Coach(dto.NameCoach, dto.Email)
+        {
+            CoachId = new Id<Coach>(dto.CoachId)
+        };
+    }
 }
