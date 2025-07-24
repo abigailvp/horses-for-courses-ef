@@ -11,8 +11,6 @@ public class Timeslot
 
     public Timeslot(int beginTimeslot, int endTimeslot, DateOnly dayTimeslot)
     {
-
-
         if (beginTimeslot < 9 || beginTimeslot > 17)
             throw new ArgumentException("Timeslot must start between 9 and 17h");
         if (endTimeslot < 9 || endTimeslot > 17)

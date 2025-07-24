@@ -1,3 +1,4 @@
+using System.Diagnostics.SymbolStore;
 using HorsesForCourses.Core.WholeValuesAndStuff;
 
 namespace HorsesForCourses.Core.DomainEntities;
@@ -11,7 +12,7 @@ public class Course
     public int DurationCourse { get; }
     public Coach CoachForCourse { get; set; }
 
-    public Dictionary<DateOnly, List<Timeslot>> CourseTimeslots = new();
+    public List<Timeslot> CourseTimeslots = new();
     public List<Competence> ListOfCourseCompetences = new();
 
     public Course(string nameCourse, DateOnly startcourse, DateOnly endcourse)
@@ -40,27 +41,12 @@ public class Course
     }
 
 
-    public void AddTimeSlotToCourse(Timeslot availableMoment)
+    public void AddTimeSlotToCourse(Timeslot moment) //start1 < end2 AND start2 < end1
     {
-        IEnumerable<DateOnly> onlyDates = CourseTimeslots.Select(c => c.Key);
-        if (onlyDates.Contains(availableMoment.DayTimeslot))
-        {
-            DateOnly availableDate = availableMoment.DayTimeslot;
-            IEnumerable<Timeslot> timeslotsWithSameDate = CourseTimeslots.Where(t => t.Key == availableDate).SelectMany(t => t.Value);
-            bool hasSameBeginHours = timeslotsWithSameDate.Any(b => b.BeginTimeslot == availableMoment.BeginTimeslot);
-            bool hasSameEndHours = timeslotsWithSameDate.Any(e => e.EndTimeslot == availableMoment.EndTimeslot);
-
-            if (!hasSameBeginHours && !hasSameEndHours)
-            {
-                var list = CourseTimeslots[availableDate];
-                list.Add(availableMoment);
-            }
-        }
-        else
-        {
-            List<Timeslot> TimeslotsPerDate = [availableMoment];
-            CourseTimeslots.Add(availableMoment.DayTimeslot, TimeslotsPerDate);
-        }
+        IEnumerable<Timeslot> slots = CourseTimeslots.Where(c => c.DayTimeslot == moment.DayTimeslot);
+        bool hasSameTime = slots.Any(c => c.BeginTimeslot < moment.EndTimeslot && c.EndTimeslot > moment.BeginTimeslot);
+        if (!hasSameTime)
+            CourseTimeslots.Add(moment);
     }
 
     public string AddTimeSlotList(List<Timeslot> timeList)
