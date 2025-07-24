@@ -29,6 +29,16 @@ public class Course
         ListOfCourseCompetences.Add(comp);
     }
 
+    public string AddCompetenceList(List<Competence> complist)
+    {
+        ListOfCourseCompetences.Clear();
+        foreach (Competence comp in complist)
+        {
+            ListOfCourseCompetences.Add(comp);
+        }
+        return $"Course has new required competences list";
+    }
+
 
     public void AddTimeSlotToCourse(Timeslot availableMoment)
     {
@@ -51,6 +61,16 @@ public class Course
             List<Timeslot> TimeslotsPerDate = [availableMoment];
             CourseTimeslots.Add(availableMoment.DayTimeslot, TimeslotsPerDate);
         }
+    }
+
+    public string AddTimeSlotList(List<Timeslot> timeList)
+    {
+        CourseTimeslots.Clear();
+        foreach (Timeslot slot in timeList)
+        {
+            AddTimeSlotToCourse(slot);
+        }
+        return $"Course now has new timeslotlist";
     }
 
 

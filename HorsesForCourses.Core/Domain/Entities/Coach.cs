@@ -36,6 +36,16 @@ public class Coach //aggregate root
         ListOfCompetences.Remove(competence);
     }
 
+    public string AddCompetenceList(List<Competence> complist)
+    {
+        ListOfCompetences.Clear();
+        foreach (Competence comp in complist)
+        {
+            ListOfCompetences.Add(comp);
+        }
+        return $"Coach has new competences list";
+    }
+
     public void AddTimeSlot(Timeslot availableMoment)
     {
         if (AvailableTimeslots.ContainsKey(availableMoment.DayTimeslot)) //coach

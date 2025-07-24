@@ -1,9 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-
-using HorsesForCourses.Core.DomainEntities;
-using HorsesForCourses.WebApi.Repo;
 using HorsesForCourses.Core.WholeValuesAndStuff;
-using HorsesForCourses.Core.Domain;
+using HorsesForCourses.WebApi.Repo;
 
 namespace CoachControllers
 {
@@ -12,38 +9,17 @@ namespace CoachControllers
     public class CoachesController : ControllerBase
     {
         [HttpPost]
-        public ActionResult<string> CreateEmptyCoach([FromBody] CoachDTO dto)
-        {
-            var result = dto.Create()
-            return Ok(result);
-        }
+        public ActionResult<string> CreateEmptyCoach([FromBody] CoachDTO dto) //de info uit de dto wordt automatisch opgevraagd
+        => Ok(AllData.CreateCoach(dto));
 
 
         [HttpPost]
-        [Route("{courseId}/Assign")]
-        public ActionResult<string> CreateCoach(Guid courseId, [FromBody] CoachDTO dto)
+        [Route("{coachId}/competences")]
+        public ActionResult<string> AddCompetencesList(Guid coachId, [FromBody] CompetentCoachDTO dto)
         {
-            var course = AllData.allCourses.FirstOrDefault(c => c.CourseId.value == courseId); //getting coach with same id
-            var result = _coachService.CreateAndAssignCoach(course, dto);
-
-            return result.Contains("isn't") ? BadRequest(result) : Ok(result);
+            var coach = AllData.allCoaches.FirstOrDefault(c => c.CoachId.value == coachId); //getting coach with same id
+            return Ok(coach.AddCompetenceList(dto.ListOfCompetences)); //geen update in repo want je hebt toegang tot coach met id
         }
-
-        [HttpPost]
-        [Route("{coachId}/skills")]
-        public ActionResult<string> AddCompetence(Guid coachId, Competence comp [FromBody] CoachDTO dto)
-        {
-            var coach = AllData.allCoaches.FirstOrDefault(c => c.CoachId.value == coachId);
-            var result = _coachService.AddCompetence(coach, comp);
-            return Ok(result);
-        }
-
-        //         POST /coaches/{id}/skills
-        //      Als administrator Wil ik competenties kunnen toevoegen of verwijderen 
-        //bij een coach Zodat zijn of haar geschiktheid aangepast kan worden
-
-        // Inkomende Dto bevat een lijst van alle skills, het domein verwijdert 
-        // of voegt deze toe naar gelang of maakt de coach skill lijst leeg en repopulate deze met binnenkomende.
 
     }
 }

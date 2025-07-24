@@ -1,5 +1,4 @@
-using HorsesForCourses.Core.WholeValuesAndStuff;
-namespace HorsesForCourses.WebApi.Repo;
+namespace HorsesForCourses.Core.WholeValuesAndStuff;
 
 public class CoachDTO
 {

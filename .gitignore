@@ -38,6 +38,7 @@ temp*.md
 # DotNet intermediate files and binaries
 obj/
 bin/ 
+TheArchive/
 
 # Exclude the pap
 Solution/
