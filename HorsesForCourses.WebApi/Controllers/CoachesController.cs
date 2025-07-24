@@ -28,6 +28,5 @@ namespace HorsesForCourses.WebApi.CoachControllers
                 return BadRequest();
             return Ok(coach.AddCompetenceList(dto.ListOfCompetences)); //geen update in repo want je hebt toegang tot coach met id
         }
-
     }
 }

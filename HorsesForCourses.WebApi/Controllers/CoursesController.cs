@@ -47,7 +47,10 @@ namespace CoursesController
             var course = AllData.allCourses.FirstOrDefault(c => c.CourseId.value == courseId);
             if (course == null)
                 return BadRequest();
-            return Ok(Availability.ValidateCourseBasedOnTimeslots(course));
+            var result = Availability.ValidateCourseBasedOnTimeslots(course);
+            if (result == StatusCourse.WaitingForMatchingTimeslots)
+                return Ok(result);
+            return BadRequest(result);
         }
 
 
@@ -58,7 +61,10 @@ namespace CoursesController
             var course = AllData.allCourses.FirstOrDefault(c => c.CourseId.value == courseId);
             if (course == null)
                 return BadRequest();
-            return Ok(Availability.CheckingCoach(course, dto.coach));
+            var result = Availability.CheckingCoach(course, dto.coach);
+            if (result == StatusCourse.Assigned)
+                return Ok(result);
+            return BadRequest(result);
         }
 
     }
