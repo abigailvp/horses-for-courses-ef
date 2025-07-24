@@ -16,22 +16,7 @@ public class Availability
         return StatusCourse.WaitingForTimeslots;
     }
 
-
-    public StatusCourse CheckCoachCompetencesForCourse(Coach coach, Course course)
-    {
-        var list = coach.ListOfCompetences;
-
-        foreach (var required in course.ListOfCourseCompetences)
-        {
-            bool matching = list.All(c => c.Name == required.Name && c.Level >= required.Level);
-            if (!matching)
-                return StatusCourse.WaitingForMatchingCompetences;
-        }
-        course.CoachForCourse = coach;
-        return StatusCourse.Assigned;
-    }
-
-    public StatusCourse CheckCoachAvailability(Course course, Coach coach)
+    public static StatusCourse CheckCoachAvailability(Course course, Coach coach)
     {
         //lege lijst voor matchende timeslots
         List<Timeslot> matchingTimeslots = new();
@@ -57,5 +42,30 @@ public class Availability
 
         }
         return StatusCourse.WaitingForMatchingCompetences;
+    }
+
+    public static StatusCourse CheckCoachCompetencesForCourse(Course course, Coach coach)
+    {
+        var list = coach.ListOfCompetences;
+
+        foreach (var required in course.ListOfCourseCompetences)
+        {
+            bool matching = list.All(c => c.Name == required.Name && c.Level >= required.Level);
+            if (!matching)
+                return StatusCourse.WaitingForMatchingCompetences;
+        }
+        course.CoachForCourse = coach;
+        return StatusCourse.Assigned;
+    }
+
+    public static StatusCourse CheckingCoach(Course course, Coach coach)
+    {
+        var status = CheckCoachAvailability(course, coach);
+        if (status != StatusCourse.WaitingForMatchingCompetences)
+            return StatusCourse.WaitingForMatchingTimeslots;
+        var statusTwo = CheckCoachCompetencesForCourse(course, coach);
+        if (statusTwo != StatusCourse.Assigned)
+            return StatusCourse.WaitingForMatchingCompetences;
+        return StatusCourse.Assigned;
     }
 }

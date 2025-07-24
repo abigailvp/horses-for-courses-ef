@@ -39,13 +39,13 @@ namespace CoursesController
         }
 
 
-        // [HttpPost]
-        // [Route("{courseId}/assign-coach")]
-        // public ActionResult<string> AssignCoach(Guid courseId, [FromBody] CourseDTO dto)
-        // {
-        //     var course = AllData.allCourses.FirstOrDefault(c => c.CourseId.value == courseId);
-
-        // }
+        [HttpPost]
+        [Route("{courseId}/assign-coach")]
+        public ActionResult<StatusCourse> AssignCoach(Guid courseId, [FromBody] AssignedCourseDTO dto)
+        {
+            var course = AllData.allCourses.FirstOrDefault(c => c.CourseId.value == courseId);
+            return Ok(Availability.CheckingCoach(course, dto.coach));
+        }
 
     }
 }
