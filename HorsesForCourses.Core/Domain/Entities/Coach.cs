@@ -19,8 +19,9 @@ public class Coach //aggregate root
         if (!email.Contains("@"))
             throw new DomainException("Email isn't valid.");
         if (string.IsNullOrWhiteSpace(email))
-            throw new ArgumentException("Email cannot be empty.");
-
+            throw new DomainException("Email cannot be empty.");
+        if (string.IsNullOrWhiteSpace(name))
+            throw new DomainException("Name can't be empty");
         NameCoach = name;
         Email = email;
         CoachId = new Id<Coach>(Guid.NewGuid()); //pas aanmaken als je een coach aanmaakt

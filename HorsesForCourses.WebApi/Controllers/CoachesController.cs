@@ -44,7 +44,7 @@ namespace HorsesForCourses.WebApi.Controllers
             var coach = _myMemory.allCoaches.FirstOrDefault(c => c.CoachId.value == coachId);
             if (coach == null)
                 return NotFound();
-            return Ok(coach.AddTimeSlotList(dto.CourseTimeslots));
+            return Ok(coach.AddTimeSlotList(dto.CoachTimeslots));
         }
 
         [HttpGet]
@@ -54,12 +54,12 @@ namespace HorsesForCourses.WebApi.Controllers
 
         [HttpGet]
         [Route("{coachId}")]
-        public ActionResult<string> GetCoachById(Guid coachId)
+        public ActionResult<Coach> GetCoachById(Guid coachId)
         {
             var coach = _myMemory.allCoaches.Where(c => c.CoachId.value == coachId).FirstOrDefault();
             if (coach == null)
                 return NotFound();
-            return Ok($"Coach has the name {coach.NameCoach} and email {coach.Email}");
+            return Ok(coach);
         }
 
 

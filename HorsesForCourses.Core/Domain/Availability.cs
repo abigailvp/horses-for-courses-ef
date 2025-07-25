@@ -61,7 +61,6 @@ public class Availability
             if (!matching)
                 return StatusCourse.WaitingForMatchingCompetences;
         }
-        course.CoachForCourse = coach;
         return StatusCourse.Assigned;
     }
 

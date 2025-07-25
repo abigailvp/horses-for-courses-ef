@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Hosting;
 
-namespace HorsesForCourses.Tests;
+namespace HorsesForCoursesTests;
 
 internal class CustomWebAppFactory : WebApplicationFactory<Program>
 {

@@ -45,7 +45,7 @@ app.Use(async (context, next) =>
         context.Response.ContentType = "application/problem+json";
         var problem = new ProblemDetails
         {
-            Status = 400,
+            Status = 409,
             Title = "Requirements aren't met",
             Detail = ex.Message,
         };
