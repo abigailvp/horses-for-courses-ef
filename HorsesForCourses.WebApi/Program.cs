@@ -25,8 +25,8 @@ var app = builder.Build();
 app.Use(async (context, next) =>
 {
     try
-    { await next(); } //wacht tussen methodes van controller
-    catch (DomainException ex) //bij maken van domeinobjecten
+    { await next(); } //waits between methods in controller
+    catch (DomainException ex) //for creation of domainobjects
     {
         context.Response.StatusCode = 400;
         context.Response.ContentType = "application/problem+json";
@@ -36,21 +36,21 @@ app.Use(async (context, next) =>
             Title = "Invalid Domain Arguments",
             Detail = ex.Message,
         };
-        await context.Response.WriteAsJsonAsync(problem); //zet problem om in json
+        await context.Response.WriteAsJsonAsync(problem); //transforms problem into json
     }
 
-    // catch (NotReadyException ex) //bij maken van domeinobjecten
-    // {
-    //     context.Response.StatusCode = 400;
-    //     context.Response.ContentType = "application/problem+json";
-    //     var problem = new ProblemDetails
-    //     {
-    //         Status = 400,
-    //         Title = "Invalid Domain Arguments",
-    //         Detail = ex.Message,
-    //     };
-    //     await context.Response.WriteAsJsonAsync(problem); //zet problem om in json
-    // }
+    catch (NotReadyException ex) //for validation methods
+    {
+        context.Response.StatusCode = 409; //conflict in state of domainobjects
+        context.Response.ContentType = "application/problem+json";
+        var problem = new ProblemDetails
+        {
+            Status = 400,
+            Title = "Requirements aren't met",
+            Detail = ex.Message,
+        };
+        await context.Response.WriteAsJsonAsync(problem);
+    }
 });
 
 // Configure the HTTP request pipeline.
