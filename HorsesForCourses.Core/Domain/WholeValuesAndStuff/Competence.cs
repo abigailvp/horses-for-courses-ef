@@ -1,3 +1,5 @@
+using HorsesForCourses.Core.HorsesOnTheLoose;
+
 namespace HorsesForCourses.Core.WholeValuesAndStuff;
 
 public record Competence
@@ -8,9 +10,9 @@ public record Competence
     public Competence(string name, int level)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Name must be filled in");
+            throw new DomainException("Name must be filled in");
         if (level <= 0 || level > 10)
-            throw new ArgumentException("Level must be between 0 and 10");
+            throw new DomainException("Level must be between 0 and 10");
         Name = name;
         Level = level;
     }

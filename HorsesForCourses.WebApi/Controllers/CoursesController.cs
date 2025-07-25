@@ -1,70 +1,72 @@
 using Microsoft.AspNetCore.Mvc;
-using HorsesForCourses.Core.WholeValuesAndStuff;
 using HorsesForCourses.Core.DomainEntities;
+using HorsesForCourses.Core.WholeValuesAndStuff;
+using HorsesForCourses.Core;
 using HorsesForCourses.WebApi.Repo;
-using HorsesForCourses.Services;
+using HorsesForCourses.WebApi.Factory;
 
-namespace CoursesController
+namespace HorsesForCourses.WebApi.Controllers
 {
     [ApiController]
     [Route("/[controller]")]
     public class CoursesController : ControllerBase
     {
-        [HttpPost] // met naam en periode
-        public ActionResult<string> CreateEmptyCourse([FromBody] CourseDTO dto)
+        private readonly AllData _myMemory; //veilige methode om storage te gebruiken
+        public CoursesController(AllData myMemory)
         {
-            var course = CourseMapper.CreateEmptyCourse(dto);
-            if (course == null)
-                return BadRequest("Course can't be added");
-            AllData.allCourses.Add(course);
-            return Ok($"Course {course.NameCourse} has been added");
+            _myMemory = myMemory;
+        }
+
+        [HttpPost] // met naam en periode
+        public ActionResult<string> CreateEmptyCourse([FromBody] CourseRequest dto)
+        {
+            var course = new Course(dto.NameCourse, DateOnly.Parse(dto.StartDateCourse), DateOnly.Parse(dto.EndDateCourse));
+            //omzetten naar DateOnly
+
+            _myMemory.allCourses.Add(course);
+            return Ok($"Course {course.NameCourse} has been added with ID {course.CourseId}");
         }
 
         [HttpPost]
-        [Route("{courseId}/competences")]
-        public ActionResult<string> AddCompetences(Guid courseId, [FromBody] CompetentCourseDTO dto)
+        [Route("{courseId}/competences")] //de id gaat van in de url naar de methode
+        public ActionResult<string> AddCompetences(Guid courseId, [FromBody] CompetentCourseRequest dto)
         {
-            var course = AllData.allCourses.FirstOrDefault(c => c.CourseId.value == courseId);
+            var course = _myMemory.allCourses.FirstOrDefault(c => c.CourseId.value == courseId);
             if (course == null)
-                return BadRequest();
+                return NotFound();
             return Ok(course.AddCompetenceList(dto.ListOfCourseCompetences));
         }
 
         [HttpPost]
         [Route("{courseId}/timeslots")]
-        public ActionResult<string> AddTimeslots(Guid courseId, [FromBody] ScheduledCourseDTO dto)
+        public ActionResult<string> AddTimeslots(Guid courseId, [FromBody] ScheduledCourseRequest dto)
         {
-            var course = AllData.allCourses.FirstOrDefault(c => c.CourseId.value == courseId);
+            var course = _myMemory.allCourses.FirstOrDefault(c => c.CourseId.value == courseId);
             if (course == null)
-                return BadRequest();
+                return NotFound();
             return Ok(course.AddTimeSlotList(dto.CourseTimeslots));
         }
 
         [HttpPost]
         [Route("{courseId}/confirm")]
-        public ActionResult<StatusCourse> ConfirmCourse(Guid courseId, [FromBody] CourseDTO dto)
+        public ActionResult<StatusCourse> ConfirmCourse(Guid courseId)
         {
-            var course = AllData.allCourses.FirstOrDefault(c => c.CourseId.value == courseId);
+            var course = _myMemory.allCourses.FirstOrDefault(c => c.CourseId.value == courseId);
             if (course == null)
-                return BadRequest();
-            var result = Availability.ValidateCourseBasedOnTimeslots(course);
-            if (result == StatusCourse.WaitingForMatchingTimeslots)
-                return Ok(result);
-            return BadRequest(result);
+                return NotFound();
+            Availability.ValidateCourseBasedOnTimeslots(course);
+            return Ok("Course is available");
         }
-
 
         [HttpPost]
         [Route("{courseId}/assign-coach")]
-        public ActionResult<StatusCourse> AssignCoach(Guid courseId, [FromBody] AssignedCourseDTO dto)
+        public ActionResult<StatusCourse> AssignCoach(Guid courseId, [FromBody] AssignedCourseRequest dto)
         {
-            var course = AllData.allCourses.FirstOrDefault(c => c.CourseId.value == courseId);
+            var course = _myMemory.allCourses.FirstOrDefault(c => c.CourseId.value == courseId);
             if (course == null)
-                return BadRequest();
-            var result = Availability.CheckingCoach(course, dto.coach);
-            if (result == StatusCourse.Assigned)
-                return Ok(result);
-            return BadRequest(result);
+                return BadRequest($"Course wasn't found with {courseId}");
+            Availability.CheckingCoach(course, dto.coach);
+            return Ok("Coach is assigned");
         }
 
     }

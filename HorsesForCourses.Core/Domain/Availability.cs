@@ -1,12 +1,13 @@
 using HorsesForCourses.Core.DomainEntities;
+using HorsesForCourses.Core.HorsesOnTheLoose;
 using HorsesForCourses.Core.WholeValuesAndStuff;
 
-namespace HorsesForCourses.Services;
+namespace HorsesForCourses.Core;
 
 public class Availability
 {
 
-    public static StatusCourse ValidateCourseBasedOnTimeslots(Course course)
+    public static StatusCourse DoesCourseHaveTimeslots(Course course)
     {
         if (course.CourseTimeslots.Count == 0)
             return StatusCourse.WaitingForTimeslots;
@@ -14,6 +15,12 @@ public class Availability
         if (enoughTime == true)
             return StatusCourse.WaitingForMatchingTimeslots;
         return StatusCourse.WaitingForTimeslots;
+    }
+
+    public static void ValidateCourseBasedOnTimeslots(Course course)
+    {
+        if (DoesCourseHaveTimeslots(course) == StatusCourse.WaitingForTimeslots)
+            throw new NotReadyException("Course isn't ready yet");
     }
 
     public static StatusCourse CheckCoachAvailability(Course course, Coach coach)
@@ -58,7 +65,7 @@ public class Availability
         return StatusCourse.Assigned;
     }
 
-    public static StatusCourse CheckingCoach(Course course, Coach coach)
+    public static StatusCourse CheckingCoachByStatus(Course course, Coach coach)
     {
         var status = CheckCoachAvailability(course, coach);
         if (status != StatusCourse.WaitingForMatchingCompetences)
@@ -67,5 +74,11 @@ public class Availability
         if (statusTwo != StatusCourse.Assigned)
             return StatusCourse.WaitingForMatchingCompetences;
         return StatusCourse.Assigned;
+    }
+
+    public static void CheckingCoach(Course course, Coach coach)
+    {
+        if (CheckingCoachByStatus(course, coach) == StatusCourse.WaitingForMatchingTimeslots)
+            throw new NotReadyException("Coach isn't suited for coach");
     }
 }

@@ -1,4 +1,5 @@
 using System.Diagnostics.SymbolStore;
+using HorsesForCourses.Core.HorsesOnTheLoose;
 using HorsesForCourses.Core.WholeValuesAndStuff;
 
 namespace HorsesForCourses.Core.DomainEntities;
@@ -17,9 +18,12 @@ public class Course
 
     public Course(string nameCourse, DateOnly startcourse, DateOnly endcourse)
     {
+        if (string.IsNullOrWhiteSpace(nameCourse))
+            throw new DomainException("Must give course a name");
         NameCourse = nameCourse;
-        if (endcourse.DayNumber - startcourse.DayNumber > 0) //.DayNumber for duration
-            StartDateCourse = startcourse;
+        if (endcourse.DayNumber - startcourse.DayNumber <= 0) //.DayNumber for duration
+            throw new DomainException("Startdate and enddate don't make sense");
+        StartDateCourse = startcourse;
         EndDateCourse = endcourse;
         CourseId = new Id<Course>(Guid.NewGuid());
     }

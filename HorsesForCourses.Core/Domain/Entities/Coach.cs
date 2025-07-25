@@ -1,10 +1,11 @@
 using HorsesForCourses.Core.WholeValuesAndStuff;
+using HorsesForCourses.Core.HorsesOnTheLoose;
 
 namespace HorsesForCourses.Core.DomainEntities;
 
 public class Coach //aggregate root
 {
-    public Id<Coach> CoachId = new Id<Coach>(Guid.NewGuid());
+    public Id<Coach> CoachId { get; set; }
     public string NameCoach { get; set; }
     public string Email { get; set; }
 
@@ -16,12 +17,13 @@ public class Coach //aggregate root
     public Coach(string name, string email)
     {
         if (!email.Contains("@"))
-            throw new ArgumentException("Email isn't valid.");
+            throw new DomainException("Email isn't valid.");
         if (string.IsNullOrWhiteSpace(email))
             throw new ArgumentException("Email cannot be empty.");
 
         NameCoach = name;
         Email = email;
+        CoachId = new Id<Coach>(Guid.NewGuid()); //pas aanmaken als je een coach aanmaakt
 
     }
 
