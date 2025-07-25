@@ -55,7 +55,7 @@ namespace HorsesForCourses.WebApi.Controllers
             if (course == null)
                 return NotFound();
             Availability.ValidateCourseBasedOnTimeslots(course);
-            return Ok("Course is available");
+            return Ok("Course is ready for a coach");
         }
 
         [HttpPost]
@@ -65,8 +65,26 @@ namespace HorsesForCourses.WebApi.Controllers
             var course = _myMemory.allCourses.FirstOrDefault(c => c.CourseId.value == courseId);
             if (course == null)
                 return BadRequest($"Course wasn't found with {courseId}");
-            Availability.CheckingCoach(course, dto.coach);
+            var coach = _myMemory.allCoaches.FirstOrDefault(c => c.CoachId.value == dto.coachId);
+            if (coach == null)
+                return BadRequest($"Coach wasn't found with {dto.coachId}");
+            Availability.CheckingCoach(course, coach);
             return Ok("Coach is assigned");
+        }
+
+        [HttpGet]
+        public IEnumerable<Course> GetCourses()
+        => _myMemory.allCourses;
+
+
+        [HttpGet]
+        [Route("{courseId}")]
+        public ActionResult<string> GetCourseById(Guid courseId)
+        {
+            var course = _myMemory.allCourses.Where(c => c.CourseId.value == courseId).FirstOrDefault();
+            if (course == null)
+                return NotFound();
+            return Ok($"Course has the name {course.NameCourse}. It starts at {course.StartDateCourse} and ends at {course.EndDateCourse}.");
         }
 
     }

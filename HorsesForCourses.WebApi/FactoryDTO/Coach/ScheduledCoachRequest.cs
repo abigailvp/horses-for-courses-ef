@@ -3,8 +3,8 @@ using HorsesForCourses.Core.WholeValuesAndStuff;
 
 namespace HorsesForCourses.WebApi.Factory;
 
-public class AssignedCourseRequest
+public class ScheduledCoachRequest
 {
-    public Guid CourseId { get; set; }
-    public Guid coachId { get; set; }
+    public Id<Course> CourseId { get; set; }
+    public List<Timeslot> CourseTimeslots { get; set; }
 }

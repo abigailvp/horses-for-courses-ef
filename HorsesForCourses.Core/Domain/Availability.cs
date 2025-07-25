@@ -79,6 +79,6 @@ public class Availability
     public static void CheckingCoach(Course course, Coach coach)
     {
         if (CheckingCoachByStatus(course, coach) == StatusCourse.WaitingForMatchingTimeslots)
-            throw new NotReadyException("Coach isn't suited for coach");
+            throw new NotReadyException("Coach isn't suited for course");
     }
 }

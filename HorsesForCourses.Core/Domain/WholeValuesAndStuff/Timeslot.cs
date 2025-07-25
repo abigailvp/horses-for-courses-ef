@@ -5,7 +5,6 @@ namespace HorsesForCourses.Core.WholeValuesAndStuff;
 public class Timeslot
 {
     public DateOnly DayTimeslot { get; set; }
-    public Weekday WeekdayTimeslot { get; set; }
     public int BeginTimeslot { get; set; }
     public int EndTimeslot { get; set; }
     public int DurationTimeslot => EndTimeslot - BeginTimeslot; //methode want is nog niet ingevuld

@@ -33,8 +33,36 @@ namespace HorsesForCourses.WebApi.Controllers
         {
             var coach = _myMemory.allCoaches.FirstOrDefault(c => c.CoachId.value == coachId); //getting coach with same id
             if (coach == null)
-                return BadRequest("Id doesn't match with a coach.");
+                return NotFound();
             return Ok(coach.AddCompetenceList(dto.ListOfCompetences)); //geen update in repo want je hebt toegang tot coach met id
         }
+
+        [HttpPost]
+        [Route("{coachId}/timeslots")]
+        public ActionResult<string> AddTimeslots(Guid coachId, [FromBody] ScheduledCoachRequest dto)
+        {
+            var coach = _myMemory.allCoaches.FirstOrDefault(c => c.CoachId.value == coachId);
+            if (coach == null)
+                return NotFound();
+            return Ok(coach.AddTimeSlotList(dto.CourseTimeslots));
+        }
+
+        [HttpGet]
+        public IEnumerable<Coach> GetCoaches()
+        => _myMemory.allCoaches;
+
+
+        [HttpGet]
+        [Route("{coachId}")]
+        public ActionResult<string> GetCoachById(Guid coachId)
+        {
+            var coach = _myMemory.allCoaches.Where(c => c.CoachId.value == coachId).FirstOrDefault();
+            if (coach == null)
+                return NotFound();
+            return Ok($"Coach has the name {coach.NameCoach} and email {coach.Email}");
+        }
+
+
     }
+
 }

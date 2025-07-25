@@ -56,6 +56,16 @@ public class Coach //aggregate root
             AvailableTimeslots.Add(moment);
     }
 
+    public string AddTimeSlotList(List<Timeslot> timeList)
+    {
+        AvailableTimeslots.Clear();
+        foreach (Timeslot slot in timeList)
+        {
+            AddTimeSlot(slot);
+        }
+        return $"Coach now has new timeslotlist";
+    }
+
     public void RemoveTimeslot(Timeslot availableMoment)
     {
         AvailableTimeslots.Remove(availableMoment);
