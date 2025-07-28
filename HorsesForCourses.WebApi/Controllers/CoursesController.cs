@@ -18,49 +18,51 @@ namespace HorsesForCourses.WebApi.Controllers
         }
 
         [HttpPost] // met naam en periode
-        public ActionResult<string> CreateEmptyCourse([FromBody] CourseRequest dto)
+        public ActionResult<CourseRequest> CreateEmptyCourse([FromBody] CourseRequest dto)
         {
             var course = new Course(dto.NameCourse, DateOnly.Parse(dto.StartDateCourse), DateOnly.Parse(dto.EndDateCourse));
             //omzetten naar DateOnly
 
             _myMemory.allCourses.Add(course);
-            return Ok($"Course {course.NameCourse} has been added with ID {course.CourseId}");
+            return Ok(_myMemory.ConvertToCourse(course));
         }
 
         [HttpPost]
         [Route("{courseId}/competences")] //de id gaat van in de url naar de methode
-        public ActionResult<string> AddCompetences(Guid courseId, [FromBody] CompetentCourseRequest dto)
+        public ActionResult<CompetentCourseRequest> AddCompetences(Guid courseId, [FromBody] CompetentCourseRequest dto)
         {
             var course = _myMemory.allCourses.FirstOrDefault(c => c.CourseId.value == courseId);
             if (course == null)
                 return NotFound();
-            return Ok(course.AddCompetenceList(dto.ListOfCourseCompetences));
+            course.AddCompetenceList(dto.ListOfCourseCompetences);
+            return Ok(_myMemory.ConvertToCompetentCourse(course));
         }
 
         [HttpPost]
         [Route("{courseId}/timeslots")]
-        public ActionResult<string> AddTimeslots(Guid courseId, [FromBody] ScheduledCourseRequest dto)
+        public ActionResult<ScheduledCourseRequest> AddTimeslots(Guid courseId, [FromBody] ScheduledCourseRequest dto)
         {
             var course = _myMemory.allCourses.FirstOrDefault(c => c.CourseId.value == courseId);
             if (course == null)
                 return NotFound();
-            return Ok(course.AddTimeSlotList(dto.CourseTimeslots));
+            course.AddTimeSlotList(dto.CourseTimeslots);
+            return Ok(_myMemory.ConvertToScheduledCourse(course));
         }
 
         [HttpPost]
         [Route("{courseId}/confirm")]
-        public ActionResult<StatusCourse> ConfirmCourse(Guid courseId)
+        public ActionResult<CourseRequest> ConfirmCourse(Guid courseId)
         {
             var course = _myMemory.allCourses.FirstOrDefault(c => c.CourseId.value == courseId);
             if (course == null)
                 return NotFound();
             Availability.ValidateCourseBasedOnTimeslots(course);
-            return Ok("Course is ready for a coach");
+            return Ok(_myMemory.ConvertToCourse(course));
         }
 
         [HttpPost]
         [Route("{courseId}/assign-coach")]
-        public ActionResult<StatusCourse> AssignCoach(Guid courseId, [FromBody] AssignedCourseRequest dto)
+        public ActionResult<AssignedCourseRequest> AssignCoach(Guid courseId, [FromBody] AssignedCourseRequest dto)
         {
             var course = _myMemory.allCourses.FirstOrDefault(c => c.CourseId.value == courseId);
             if (course == null)
@@ -69,7 +71,7 @@ namespace HorsesForCourses.WebApi.Controllers
             if (coach == null)
                 return BadRequest($"Coach wasn't found with {dto.coachId}");
             Availability.CheckingCoach(course, coach);
-            return Ok("Coach is assigned");
+            return Ok(_myMemory.ConvertToAssignedCourse(course, coach));
         }
 
         [HttpGet]

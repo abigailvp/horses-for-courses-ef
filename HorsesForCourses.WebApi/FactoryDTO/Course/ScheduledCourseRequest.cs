@@ -5,6 +5,6 @@ namespace HorsesForCourses.WebApi.Factory;
 
 public class ScheduledCourseRequest
 {
-    public Id<Course> CourseId { get; set; }
+    public Guid CourseId { get; set; }
     public List<Timeslot> CourseTimeslots { get; set; }
 }
