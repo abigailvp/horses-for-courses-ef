@@ -17,13 +17,13 @@ namespace HorsesForCourses.WebApi.Controllers
         }
 
         [HttpPost]
-        public ActionResult<string> CreateEmptyCoach([FromBody] CoachRequest dto) //de info uit de dto wordt automatisch opgevraagd
+        public ActionResult<CoachRequest> CreateEmptyCoach([FromBody] CoachRequest dto) //de info uit de dto wordt automatisch opgevraagd
         {
             var coach = new Coach(dto.NameCoach, dto.Email)
             { CoachId = new Id<Coach>(dto.CoachId) };
 
             _myMemory.allCoaches.Add(coach);
-            return Ok(_myMemory.ConvertToCoach(coach));
+            return Ok(CoachMapper.ConvertToCoachDto(coach));
         }
 
 
@@ -35,7 +35,7 @@ namespace HorsesForCourses.WebApi.Controllers
             if (coach == null)
                 return NotFound();
             coach.AddCompetenceList(dto.ListOfCompetences);
-            return Ok(_myMemory.ConvertToCompetentCoach(coach)); //geen update in repo want je hebt toegang tot coach met id
+            return Ok(CoachMapper.ConvertToCompetentCoach(coach)); //geen update in repo want je hebt toegang tot coach met id
         }
 
         [HttpPost]
@@ -46,7 +46,7 @@ namespace HorsesForCourses.WebApi.Controllers
             if (coach == null)
                 return NotFound();
             coach.AddTimeSlotList(dto.CoachTimeslots);
-            return Ok(_myMemory.ConvertToScheduledCoach(coach));
+            return Ok(CoachMapper.ConvertToScheduledCoach(coach));
         }
 
         [HttpGet]
@@ -61,7 +61,7 @@ namespace HorsesForCourses.WebApi.Controllers
             var coach = _myMemory.allCoaches.Where(c => c.CoachId.value == coachId).FirstOrDefault();
             if (coach == null)
                 return NotFound();
-            return Ok(_myMemory.ConvertToCoach(coach));
+            return Ok(CoachMapper.ConvertToCoachDto(coach));
         }
 
 

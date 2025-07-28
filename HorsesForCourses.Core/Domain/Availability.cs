@@ -17,13 +17,9 @@ public class Availability
         return StatusCourse.WaitingForTimeslots;
     }
 
-    public static void ValidateCourseBasedOnTimeslots(Course course)
-    {
-        if (DoesCourseHaveTimeslots(course) == StatusCourse.WaitingForTimeslots)
-            throw new NotReadyException("Course isn't ready yet");
-    }
 
-    public static StatusCourse CheckCoachAvailability(Course course, Coach coach)
+
+    private static StatusCourse CheckCoachAvailability(Course course, Coach coach)
     {
         //lege lijst voor matchende timeslots
         List<Timeslot> matchingTimeslots = new();
@@ -51,7 +47,7 @@ public class Availability
         return StatusCourse.WaitingForMatchingCompetences;
     }
 
-    public static StatusCourse CheckCoachCompetencesForCourse(Course course, Coach coach)
+    private static StatusCourse CheckCoachCompetencesForCourse(Course course, Coach coach)
     {
         var list = coach.ListOfCompetences;
 
@@ -75,9 +71,5 @@ public class Availability
         return StatusCourse.Assigned;
     }
 
-    public static void CheckingCoach(Course course, Coach coach)
-    {
-        if (CheckingCoachByStatus(course, coach) == StatusCourse.WaitingForMatchingTimeslots)
-            throw new NotReadyException("Coach isn't suited for course");
-    }
+
 }

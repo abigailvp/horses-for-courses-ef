@@ -36,8 +36,9 @@ public class CoachesControllerTests
         var result = controller.CreateEmptyCoach(dto);
 
         var okResult = Assert.IsType<OkObjectResult>(result.Result); //checkt en returnt type
-        var message = Assert.IsType<string>(okResult.Value);
-        Assert.Contains("Lola", message);
+        var coach = Assert.IsType<CoachRequest>(okResult.Value);
+        Assert.Equivalent(dto, coach);
+
     }
 
     [Fact]

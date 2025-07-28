@@ -63,5 +63,17 @@ public class Course
         return $"Course now has new timeslotlist";
     }
 
+    public void ValidateCourseBasedOnTimeslots(Course course)
+    {
+        if (Availability.DoesCourseHaveTimeslots(course) == StatusCourse.WaitingForTimeslots)
+            throw new NotReadyException("Course isn't ready yet");
+    }
+
+    public void CheckingCoach(Course course, Coach coach)
+    {
+        if (Availability.CheckingCoachByStatus(course, coach) == StatusCourse.WaitingForMatchingTimeslots)
+            throw new NotReadyException("Coach isn't suited for course");
+        CoachForCourse = coach;
+    }
 
 }
