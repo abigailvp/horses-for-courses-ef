@@ -28,10 +28,10 @@ namespace HorsesForCourses.WebApi.Controllers
         }
 
         [HttpPost]
-        [Route("{courseId}/competences")] //de id gaat van in de url naar de methode
-        public ActionResult<CompetentCourseRequest> AddCompetences(Guid courseId, [FromBody] CompetentCourseRequest dto)
+        [Route("{Id}/competences")] //de id gaat van in de url naar de methode
+        public ActionResult<CompetentCourseRequest> AddCompetences(Guid Id, [FromBody] CompetentCourseRequest dto)
         {
-            var course = _myMemory.allCourses.FirstOrDefault(c => c.CourseId.value == courseId);
+            var course = _myMemory.allCourses.FirstOrDefault(c => c.CourseId.value == Id);
             if (course == null)
                 return NotFound();
             course.AddCompetenceList(dto.ListOfCourseCompetences);
@@ -39,10 +39,10 @@ namespace HorsesForCourses.WebApi.Controllers
         }
 
         [HttpPost]
-        [Route("{courseId}/timeslots")]
-        public ActionResult<ScheduledCourseRequest> AddTimeslots(Guid courseId, [FromBody] ScheduledCourseRequest dto)
+        [Route("{Id}/timeslots")]
+        public ActionResult<ScheduledCourseRequest> AddTimeslots(Guid Id, [FromBody] ScheduledCourseRequest dto)
         {
-            var course = _myMemory.allCourses.FirstOrDefault(c => c.CourseId.value == courseId);
+            var course = _myMemory.allCourses.FirstOrDefault(c => c.CourseId.value == Id);
             if (course == null)
                 return NotFound();
             course.AddTimeSlotList(dto.CourseTimeslots);
@@ -50,10 +50,10 @@ namespace HorsesForCourses.WebApi.Controllers
         }
 
         [HttpPost]
-        [Route("{courseId}/confirm")]
-        public ActionResult<CourseRequest> ConfirmCourse(Guid courseId)
+        [Route("{Id}/confirm")]
+        public ActionResult<CourseRequest> ConfirmCourse(Guid Id)
         {
-            var course = _myMemory.allCourses.FirstOrDefault(c => c.CourseId.value == courseId);
+            var course = _myMemory.allCourses.FirstOrDefault(c => c.CourseId.value == Id);
             if (course == null)
                 return NotFound();
             course.ValidateCourseBasedOnTimeslots(course);
@@ -61,10 +61,10 @@ namespace HorsesForCourses.WebApi.Controllers
         }
 
         [HttpPost]
-        [Route("{courseId}/assign-coach")]
-        public ActionResult<AssignedCourseRequest> AssignCoach(Guid courseId, [FromBody] AssignedCourseRequest dto)
+        [Route("{Id}/assign-coach")]
+        public ActionResult<AssignedCourseRequest> AssignCoach(Guid Id, [FromBody] AssignedCourseRequest dto)
         {
-            var course = _myMemory.allCourses.FirstOrDefault(c => c.CourseId.value == courseId);
+            var course = _myMemory.allCourses.FirstOrDefault(c => c.CourseId.value == Id);
             if (course == null)
                 return NotFound();
             var coach = _myMemory.allCoaches.FirstOrDefault(c => c.CoachId.value == dto.coachId);
@@ -80,10 +80,10 @@ namespace HorsesForCourses.WebApi.Controllers
 
 
         [HttpGet]
-        [Route("{courseId}")]
-        public ActionResult<CourseRequest> GetCourseById(Guid courseId)
+        [Route("{Id}")]
+        public ActionResult<CourseRequest> GetCourseById(Guid Id)
         {
-            var course = _myMemory.allCourses.Where(c => c.CourseId.value == courseId).FirstOrDefault();
+            var course = _myMemory.allCourses.Where(c => c.CourseId.value == Id).FirstOrDefault();
             if (course == null)
                 return NotFound();
             return Ok(CourseMapper.ConvertToCourseDto(course));

@@ -28,10 +28,10 @@ namespace HorsesForCourses.WebApi.Controllers
 
 
         [HttpPost]
-        [Route("{coachId}/competences")]
-        public ActionResult<CompetentCoachRequest> AddCompetencesList(Guid coachId, [FromBody] CompetentCoachRequest dto)
+        [Route("{Id}/competences")]
+        public ActionResult<CompetentCoachRequest> AddCompetencesList(Guid Id, [FromBody] CompetentCoachRequest dto)
         {
-            var coach = _myMemory.allCoaches.FirstOrDefault(c => c.CoachId.value == coachId); //getting coach with same id
+            var coach = _myMemory.allCoaches.FirstOrDefault(c => c.CoachId.value == Id); //getting coach with same id
             if (coach == null)
                 return NotFound();
             coach.AddCompetenceList(dto.ListOfCompetences);
@@ -39,10 +39,10 @@ namespace HorsesForCourses.WebApi.Controllers
         }
 
         [HttpPost]
-        [Route("{coachId}/timeslots")]
-        public ActionResult<ScheduledCoachRequest> AddTimeslots(Guid coachId, [FromBody] ScheduledCoachRequest dto)
+        [Route("{Id}/timeslots")]
+        public ActionResult<ScheduledCoachRequest> AddTimeslots(Guid Id, [FromBody] ScheduledCoachRequest dto)
         {
-            var coach = _myMemory.allCoaches.FirstOrDefault(c => c.CoachId.value == coachId);
+            var coach = _myMemory.allCoaches.FirstOrDefault(c => c.CoachId.value == Id);
             if (coach == null)
                 return NotFound();
             coach.AddTimeSlotList(dto.CoachTimeslots);
@@ -55,10 +55,10 @@ namespace HorsesForCourses.WebApi.Controllers
 
 
         [HttpGet]
-        [Route("{coachId}")]
-        public ActionResult<CoachRequest> GetCoachById(Guid coachId)
+        [Route("{Id}")]
+        public ActionResult<CoachRequest> GetCoachById(Guid Id)
         {
-            var coach = _myMemory.allCoaches.Where(c => c.CoachId.value == coachId).FirstOrDefault();
+            var coach = _myMemory.allCoaches.Where(c => c.CoachId.value == Id).FirstOrDefault();
             if (coach == null)
                 return NotFound();
             return Ok(CoachMapper.ConvertToCoachDto(coach));

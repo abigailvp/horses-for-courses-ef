@@ -63,8 +63,20 @@ public class CoachesControllerTests
         AllData _myMemory = new AllData();
 
         var coach = new Coach("Lola", "l@example.com");
+        Id<Coach> coachId = coach.CoachId;
 
         _myMemory.allCoaches.Add(coach);
+        CoachesController controller = new(_myMemory);
+
+        var response = controller.GetCoachById(coachId.value);
+
+        Assert.IsType<OkObjectResult>(response.Result);
+    }
+
+    [Fact]
+    public void Coach_Controller_Doesnt_Get_NonExisting_Coach()
+    {
+        AllData _myMemory = new AllData();
         CoachesController controller = new(_myMemory);
 
         Guid coachId = Guid.NewGuid();
