@@ -21,7 +21,7 @@ public class Timeslot
             throw new DomainException("Timeslot must have a duration longer than 0 hours");
 
         if ((int)dayTimeslot.DayOfWeek == 0 || (int)dayTimeslot.DayOfWeek == 6)
-            throw new DomainException("Timeslot can't take place on Sunday");
+            throw new DomainException("Timeslot can't take place on Saturday or Sunday");
 
         BeginTimeslot = beginTimeslot;
         EndTimeslot = endTimeslot;
