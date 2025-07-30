@@ -1,14 +1,21 @@
 *Courses*
 **Domeinobjecten: Course en Timeslot**
-    [ ] Heeft een naam.
-    [ ] wordt ingepland over een bepaalde periode met een start- en einddatum.
-    [ ] heeft vaste lesmomenten, bijvoorbeeld op maandag en woensdag van 10u tot 12u.
-    [ ] heeft enkel les op weekdagen (maandag t.e.m. vrijdag).
-    [ ] plant lessen uitsluitend binnen de kantooruren (tussen 9u00 en 17u00).
-    [ ] moet in totaal minstens één uur duren.
+[x] Heeft een naam.
+[x] wordt ingepland over een bepaalde periode met een start- en einddatum.
+<!-- CourseTest: Course_Can_Add_Basic_Course -->
+
+[x] heeft vaste lesmomenten, bijvoorbeeld op maandag en woensdag van 10u tot 12u.
+[x] heeft enkel les op weekdagen (maandag t.e.m. vrijdag).
+[x] plant lessen uitsluitend binnen de kantooruren (tussen 9u00 en 17u00).
+[x] moet in totaal minstens één uur duren.
+<!-- CourseTest: Course_Can_Add_Timeslot -->
+<!-- CourseTest: Cant_Add_Timeslot_on_sunday -->
+<!-- CourseTest: Cant_Add_Timeslot_before_9 -->
+<!-- CourseTest: Cant_Add_Timeslot_with_duration_smaller_Than_1 -->
+
     [ ] vereist een lijst van coach-competenties.
     [ ] wordt begeleid door exact één coach.
-    <!-- Testen -->
+<!-- Testen -->
 
 **Domeinvalidatie: Course, Availability**
     - course.AddTimeSlotList() + Availabilty.DoesCourseHaveTimeslots() 
@@ -27,6 +34,7 @@
 **Domeinobjecten: Coach en Skill**
     [ ] beschikt over een lijst van skills (competenties).
 
+
 **Domeinvalidatie: Course, Availability**
     - course.CheckingCoach() 
         - via Availabilty.CheckingCoachByStatus()
@@ -37,20 +45,31 @@
 
 *Interaction in Domain*
     - new Coach(name, email)
-    [ ] Coach registreren: maak een coach aan met naam en e-mailadres.
+[x] Coach registreren: maak een coach aan met naam en e-mailadres.
+<!-- CoachTest: Coach_Can_Be_Added -->
+
 
     - coach methodes: AddCompetence(), AddCompetenceList(), RemoveCompetence()
-    [ ] Coach Competenties toevoegen/verwijderen
+[x] Coach Competenties toevoegen/verwijderen
+<!-- CoachTest: Coach_Can_Add_Skills -->
+<!-- CoachTest: Coach_Can_Remove_Skills -->
+<!-- CoachTest: Coach_Can_Add_List_Of_Skills_And_Removes_Old_Skills -->
 
     - new Course(name, startDate, endDate)
-    [ ] Cursus aanmaken: maak een lege cursus aan met naam en periode.
+[x] Cursus aanmaken: maak een lege cursus aan met naam en periode.
+<!-- CourseTest: Course_Can_Add_Basic_Course -->
 
     - course methodes: AddCompetenceList(), AddTimeSlotToCourse(), AddTimeSlotList()
-    [ ] Cursus Competenties toevoegen/verwijderen
-    [ ] Cursus Lesmomenten toevoegen/verwijderen (dag, beginuur, einduur).
+[x] Cursus Competenties toevoegen/verwijderen
+[x] Cursus Lesmomenten toevoegen/verwijderen (dag, beginuur, einduur).
+<!-- CourseTest: Course_Can_Add_And_Remove_Skills -->
+<!-- CourseTest: Course_Can_Add_And_Remove_Timeslots -->
+<!-- CourseTest: Coach_Can_Add_List_Of_Timeslots -->
 
     - course methode: ValidateCourseBasedOnTimeslots()
     [ ] Cursus bevestigen: markeer de cursus als geldig en definitief, mits hij aan alle voorwaarden voldoet (inclusief minstens één lesmoment).
+<!-- CourseTest: Course_Confirmed_When_Timeslot_Added -->
+<!-- CourseTest: Course_Not_Confirmed_When_No_Timeslot_Added -->
 
     - course methode: CheckingCoach()
     [ ] Coach toewijzen: wijs een coach toe, enkel indien de cursus bevestigd is en de coach geschikt én beschikbaar is.

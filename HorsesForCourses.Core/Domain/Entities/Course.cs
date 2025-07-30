@@ -59,6 +59,15 @@ public class Course
             CourseTimeslots.Add(moment);
     }
 
+    public void RemoveTimeSlot(Timeslot moment)
+    {
+        bool hasMoment = CourseTimeslots.Any(c => c.DateTimeslot == moment.DateTimeslot &&
+                                                    c.BeginTimeslot == moment.BeginTimeslot &&
+                                                    c.EndTimeslot == moment.EndTimeslot);
+        if (hasMoment)
+            CourseTimeslots.Remove(moment);
+    }
+
     public void AddTimeSlotList(List<Timeslot> timeList)
     {
         if (hasCoach == true)

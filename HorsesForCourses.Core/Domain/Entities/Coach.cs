@@ -36,19 +36,19 @@ public class Coach //aggregate root
         ListOfCompetences.Add(newCompetence);
     }
 
-    public void RemoveCompetence(Skill competence)
+    public void RemoveCompetence(string name)
     {
-        ListOfCompetences.Remove(competence);
+        if (ListOfCompetences.Select(c => c.Name).Contains(name))
+            ListOfCompetences.Remove(new Skill(name));
     }
 
-    public string AddCompetenceList(List<Skill> complist)
+    public void AddCompetenceList(List<Skill> complist)
     {
         ListOfCompetences.Clear();
         foreach (Skill comp in complist)
         {
             ListOfCompetences.Add(comp);
         }
-        return $"Coach has new competences list";
     }
 
 

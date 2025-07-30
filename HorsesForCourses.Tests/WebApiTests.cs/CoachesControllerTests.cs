@@ -11,77 +11,77 @@ namespace HorsesForCoursesTests;
 
 public class CoachesControllerTests
 {
-    [Fact(Skip = "notready")]
-    public void Coach_Controller_Gets_All_Coaches()
-    {
-        AllData _myMemory = new AllData();
-        CoachesController controller = new(_myMemory);
-        var response = controller.GetCoaches();
+    // [Fact(Skip = "notready")]
+    // public void Coach_Controller_Gets_All_Coaches()
+    // {
+    //     AllData _myMemory = new AllData();
+    //     CoachesController controller = new(_myMemory);
+    //     var response = controller.GetCoaches();
 
-        Assert.Equal(response, _myMemory.allCoaches);
-    }
+    //     Assert.Equal(response, _myMemory.allCoaches);
+    // }
 
-    [Fact(Skip = "notready")]
-    public void Coach_Controller_Creates_Empty_Coach()
-    {
-        AllData _myMemory = new AllData();
-        CoachesController controller = new(_myMemory);
+    // [Fact(Skip = "notready")]
+    // public void Coach_Controller_Creates_Empty_Coach()
+    // {
+    //     AllData _myMemory = new AllData();
+    //     CoachesController controller = new(_myMemory);
 
-        var dto = new CoachRequest
-        {
-            NameCoach = "Lola",
-            Email = "l@example.com",
-        };
-        var result = controller.CreateEmptyCoach(dto);
+    //     var dto = new CoachRequest
+    //     {
+    //         NameCoach = "Lola",
+    //         Email = "l@example.com",
+    //     };
+    //     var result = controller.CreateEmptyCoach(dto);
 
-        var okResult = Assert.IsType<OkObjectResult>(result.Result); //checkt en returnt type
-        var coach = Assert.IsType<CoachRequest>(okResult.Value);
-        Assert.Equivalent(dto, coach);
+    //     var okResult = Assert.IsType<OkObjectResult>(result.Result); //checkt en returnt type
+    //     var coach = Assert.IsType<CoachRequest>(okResult.Value);
+    //     Assert.Equivalent(dto, coach);
 
-    }
+    // }
 
-    [Fact(Skip = "notready")]
-    public void Coach_Throws_Exception_When_Coach_Parameters_Are_Missing()
-    {
-        AllData _myMemory = new AllData();
-        CoachesController controller = new(_myMemory);
+    // [Fact(Skip = "notready")]
+    // public void Coach_Throws_Exception_When_Coach_Parameters_Are_Missing()
+    // {
+    //     AllData _myMemory = new AllData();
+    //     CoachesController controller = new(_myMemory);
 
-        var dto = new CoachRequest
-        {
-            NameCoach = "",
-            Email = "l@example.com",
-        };
+    //     var dto = new CoachRequest
+    //     {
+    //         NameCoach = "",
+    //         Email = "l@example.com",
+    //     };
 
-        Assert.Throws<DomainException>(() => controller.CreateEmptyCoach(dto));
-    }
+    //     Assert.Throws<DomainException>(() => controller.CreateEmptyCoach(dto));
+    // }
 
-    [Fact(Skip = "notready")]
-    public void Coach_Controller_Gets_Coach_By_Id()
-    {
-        AllData _myMemory = new AllData();
+    // [Fact(Skip = "notready")]
+    // public void Coach_Controller_Gets_Coach_By_Id()
+    // {
+    //     AllData _myMemory = new AllData();
 
-        var coach = new Coach("Lola", "l@example.com");
-        int coachId = coach.CoachId;
+    //     var coach = new Coach("Lola", "l@example.com");
+    //     int coachId = coach.CoachId;
 
-        _myMemory.allCoaches.Add(coach);
-        CoachesController controller = new(_myMemory);
+    //     _myMemory.allCoaches.Add(coach);
+    //     CoachesController controller = new(_myMemory);
 
-        var response = controller.GetCoachById(coachId);
+    //     var response = controller.GetCoachById(coachId);
 
-        Assert.IsType<OkObjectResult>(response.Result);
-    }
+    //     Assert.IsType<OkObjectResult>(response.Result);
+    // }
 
-    [Fact(Skip = "notready")]
-    public void Coach_Controller_Doesnt_Get_NonExisting_Coach()
-    {
-        AllData _myMemory = new AllData();
-        CoachesController controller = new(_myMemory);
+    // [Fact(Skip = "notready")]
+    // public void Coach_Controller_Doesnt_Get_NonExisting_Coach()
+    // {
+    //     AllData _myMemory = new AllData();
+    //     CoachesController controller = new(_myMemory);
 
-        int coachId = 3;
-        var response = controller.GetCoachById(coachId);
+    //     int coachId = 3;
+    //     var response = controller.GetCoachById(coachId);
 
-        Assert.IsType<NotFoundResult>(response.Result);
-    }
+    //     Assert.IsType<NotFoundResult>(response.Result);
+    // }
 
     // [Fact]
     // public void Coach_Adds_Timeslots()
