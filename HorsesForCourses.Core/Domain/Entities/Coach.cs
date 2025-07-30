@@ -5,11 +5,13 @@ namespace HorsesForCourses.Core.DomainEntities;
 
 public class Coach //aggregate root
 {
-    public Id<Coach> CoachId { get; set; }
+    public int CoachId { get; set; }
     public string NameCoach { get; set; }
     public string Email { get; set; }
 
     public List<Competence> ListOfCompetences = new();
+    public List<Course> ListOfCoursesAssignedTo = new();
+    public int numberOfAssignedCourses = 0;
     public List<Timeslot> AvailableTimeslots = new();
 
     public bool HasCourse = false;
@@ -24,13 +26,12 @@ public class Coach //aggregate root
             throw new DomainException("Name can't be empty");
         NameCoach = name;
         Email = email;
-        CoachId = new Id<Coach>(Guid.NewGuid()); //pas aanmaken als je een coach aanmaakt
-
+        CoachId = new int(); //pas aanmaken als je een coach aanmaakt
     }
 
-    public void AddCompetence(string name, int level)
+    public void AddCompetence(string name)
     {
-        var newCompetence = new Competence(name, level);
+        var newCompetence = new Competence(name);
         ListOfCompetences.Add(newCompetence);
     }
 

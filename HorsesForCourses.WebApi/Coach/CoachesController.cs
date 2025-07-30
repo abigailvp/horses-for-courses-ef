@@ -17,32 +17,31 @@ namespace HorsesForCourses.WebApi.Controllers
         }
 
         [HttpPost]
-        public ActionResult<CoachRequest> CreateEmptyCoach([FromBody] CoachRequest dto) //de info uit de dto wordt automatisch opgevraagd
+        public ActionResult<int> CreateEmptyCoach([FromBody] CoachRequest dto) //de info uit de dto wordt automatisch opgevraagd
         {
-            var coach = new Coach(dto.NameCoach, dto.Email)
-            { CoachId = new Id<Coach>(dto.CoachId) };
+            var coach = new Coach(dto.NameCoach, dto.Email);
 
             _myMemory.allCoaches.Add(coach);
-            return Ok(CoachMapper.ConvertToCoachDto(coach));
+            return Ok(coach.CoachId);
         }
 
 
         [HttpPost]
         [Route("{Id}/competences")]
-        public ActionResult<CompetentCoachRequest> AddCompetencesList(Guid Id, [FromBody] CompetentCoachRequest dto)
+        public ActionResult<CompetentCoachRequest> AddCompetencesList(int Id, [FromBody] CompetentCoachRequest dto)
         {
-            var coach = _myMemory.allCoaches.FirstOrDefault(c => c.CoachId.value == Id); //getting coach with same id
+            var coach = _myMemory.allCoaches.FirstOrDefault(c => c.CoachId == Id); //getting coach with same id
             if (coach == null)
                 return NotFound();
             coach.AddCompetenceList(dto.ListOfCompetences);
-            return Ok(CoachMapper.ConvertToCompetentCoach(coach)); //geen update in repo want je hebt toegang tot coach met id
+            return Ok(); //geen update in repo want je hebt toegang tot coach met id
         }
 
         [HttpPost]
         [Route("{Id}/timeslots")]
-        public ActionResult<ScheduledCoachRequest> AddTimeslots(Guid Id, [FromBody] ScheduledCoachRequest dto)
+        public ActionResult<ScheduledCoachRequest> AddTimeslots(int Id, [FromBody] ScheduledCoachRequest dto)
         {
-            var coach = _myMemory.allCoaches.FirstOrDefault(c => c.CoachId.value == Id);
+            var coach = _myMemory.allCoaches.FirstOrDefault(c => c.CoachId == Id);
             if (coach == null)
                 return NotFound();
             coach.AddTimeSlotList(dto.CoachTimeslots);
@@ -50,18 +49,21 @@ namespace HorsesForCourses.WebApi.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Coach> GetCoaches()
-        => _myMemory.allCoaches;
+        public ActionResult<ListOfCoachesResponse> GetCoaches()
+        {
+            var lijstje = _myMemory.allCoaches;
+            return Ok(CoachMapper.ConvertToListOfCoaches(lijstje));
+        }
 
 
         [HttpGet]
         [Route("{Id}")]
-        public ActionResult<CoachRequest> GetCoachById(Guid Id)
+        public ActionResult<CoachRequest> GetCoachById(int Id)
         {
-            var coach = _myMemory.allCoaches.Where(c => c.CoachId.value == Id).FirstOrDefault();
+            var coach = _myMemory.allCoaches.Where(c => c.CoachId == Id).FirstOrDefault();
             if (coach == null)
                 return NotFound();
-            return Ok(CoachMapper.ConvertToCoachDto(coach));
+            return Ok(CoachMapper.ConvertToDetailedCoach(coach));
         }
 
 

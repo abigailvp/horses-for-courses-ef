@@ -39,7 +39,8 @@ public class Availability
         // overlap checken
         foreach (Timeslot slot in matchingTimeslots)
         {
-            var hasOverlap = coach.AvailableTimeslots.Any(c => c.BeginTimeslot < slot.EndTimeslot && c.EndTimeslot > slot.BeginTimeslot);
+            var hasOverlap = coach.AvailableTimeslots.Any(c => c.BeginTimeslot < slot.EndTimeslot &&
+            c.EndTimeslot > slot.BeginTimeslot);
             if (!hasOverlap)
                 return StatusCourse.WaitingForMatchingTimeslots;
 

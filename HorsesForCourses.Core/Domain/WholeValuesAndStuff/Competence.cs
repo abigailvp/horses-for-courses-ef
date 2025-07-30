@@ -5,15 +5,11 @@ namespace HorsesForCourses.Core.WholeValuesAndStuff;
 public record Competence
 {
     public string Name { get; set; }
-    public int Level { get; set; }
 
-    public Competence(string name, int level)
+    public Competence(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new DomainException("Name must be filled in");
-        if (level <= 0 || level > 10)
-            throw new DomainException("Level must be between 0 and 10");
+            throw new DomainException("Name of competence must be filled in");
         Name = name;
-        Level = level;
     }
 }

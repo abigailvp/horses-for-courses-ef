@@ -6,7 +6,7 @@ namespace HorsesForCourses.Core.DomainEntities;
 
 public class Course
 {
-    public Id<Course> CourseId { get; set; }
+    public int CourseId { get; set; }
     public string NameCourse { get; set; }
     public DateOnly StartDateCourse { get; set; }
     public DateOnly EndDateCourse { get; set; }
@@ -25,12 +25,12 @@ public class Course
             throw new DomainException("Startdate and enddate don't make sense");
         StartDateCourse = startcourse;
         EndDateCourse = endcourse;
-        CourseId = new Id<Course>(Guid.NewGuid());
+        CourseId = new int();
     }
 
-    public void AddRequiredCompetentence(string name, int level)
+    public void AddRequiredCompetentence(string name)
     {
-        Competence comp = new Competence(name, level);
+        Competence comp = new Competence(name);
         ListOfCourseCompetences.Add(comp);
     }
 
@@ -74,6 +74,8 @@ public class Course
         if (Availability.CheckingCoachByStatus(course, coach) == StatusCourse.WaitingForMatchingTimeslots)
             throw new NotReadyException("Coach isn't suited for course");
         CoachForCourse = coach;
+        coach.ListOfCoursesAssignedTo.Add(course);
+        coach.numberOfAssignedCourses = +1;
     }
 
 }
