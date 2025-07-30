@@ -8,7 +8,7 @@ public static class CoachMapper
         => new CoachRequest { NameCoach = coach.NameCoach, Email = coach.Email };
 
     public static CompetentCoachRequest ConvertToCompetentCoach(Coach coach)
-    => new CompetentCoachRequest { ListOfCompetences = coach.ListOfCompetences };
+    => new CompetentCoachRequest { ListOfSkills = coach.ListOfCompetences };
 
     public static ScheduledCoachRequest ConvertToScheduledCoach(Coach coach)
     => new ScheduledCoachRequest { CoachTimeslots = coach.AvailableTimeslots };
@@ -32,7 +32,7 @@ public static class CoachMapper
             AssignedCourse aCourse = new(course.CourseId, course.NameCourse);
             assignedCourses.Add(aCourse);
         }
-        return new DetailedCoachResponse { Id = coach.CoachId, Name = coach.NameCoach, Email = coach.Email, ListOfCompetences = coach.ListOfCompetences, ListOfAssignedCourses = assignedCourses };
+        return new DetailedCoachResponse { Id = coach.CoachId, Name = coach.NameCoach, Email = coach.Email, ListOfSkills = coach.ListOfCompetences, ListOfAssignedCourses = assignedCourses };
     }
 }
 

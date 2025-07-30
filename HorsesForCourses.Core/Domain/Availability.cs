@@ -13,7 +13,7 @@ public class Availability
             return StatusCourse.WaitingForTimeslots;
         var enoughTime = course.CourseTimeslots.Any(t => t.DurationTimeslot >= 1);
         if (enoughTime == true)
-            return StatusCourse.WaitingForMatchingTimeslots;
+            return StatusCourse.WaitingForAvailableCoach;
         return StatusCourse.WaitingForTimeslots;
     }
 
@@ -21,42 +21,25 @@ public class Availability
 
     private static StatusCourse CheckCoachAvailability(Course course, Coach coach)
     {
-        //lege lijst voor matchende timeslots
-        List<Timeslot> matchingTimeslots = new();
+        if (coach.numberOfAssignedCourses == 0)
+            return StatusCourse.WaitingForAvailableCoach;
 
-        // zelfde dagen van course en coach 
-        foreach (Timeslot slot in course.CourseTimeslots)
-        {
-            var sameDayTimeSlots = coach.AvailableTimeslots.Where(c => c.DayTimeslot == slot.DayTimeslot);
-            foreach (Timeslot timeslot in sameDayTimeSlots)
-            { matchingTimeslots.Add(timeslot); }
+        bool conflict = course.ConflictsWith(coach);
+        if (conflict)
+            return StatusCourse.WaitingForAvailableCoach;
+        return StatusCourse.WaitingForCompetentCoach;
 
-        }
-        if (!matchingTimeslots.Any())
-            return StatusCourse.WaitingForMatchingTimeslots;
-
-
-        // overlap checken
-        foreach (Timeslot slot in matchingTimeslots)
-        {
-            var hasOverlap = coach.AvailableTimeslots.Any(c => c.BeginTimeslot < slot.EndTimeslot &&
-            c.EndTimeslot > slot.BeginTimeslot);
-            if (!hasOverlap)
-                return StatusCourse.WaitingForMatchingTimeslots;
-
-        }
-        return StatusCourse.WaitingForMatchingCompetences;
     }
 
     private static StatusCourse CheckCoachCompetencesForCourse(Course course, Coach coach)
     {
         var list = coach.ListOfCompetences;
 
-        foreach (var required in course.ListOfCourseCompetences)
+        foreach (var required in course.ListOfCourseSkills)
         {
-            bool matching = list.All(c => c.Name == required.Name && c.Level >= required.Level);
+            bool matching = list.All(c => c.Name == required.Name);
             if (!matching)
-                return StatusCourse.WaitingForMatchingCompetences;
+                return StatusCourse.WaitingForCompetentCoach;
         }
         return StatusCourse.Assigned;
     }
@@ -64,11 +47,11 @@ public class Availability
     public static StatusCourse CheckingCoachByStatus(Course course, Coach coach)
     {
         var status = CheckCoachAvailability(course, coach);
-        if (status != StatusCourse.WaitingForMatchingCompetences)
-            return StatusCourse.WaitingForMatchingTimeslots;
+        if (status != StatusCourse.WaitingForCompetentCoach)
+            return StatusCourse.WaitingForAvailableCoach;
         var statusTwo = CheckCoachCompetencesForCourse(course, coach);
         if (statusTwo != StatusCourse.Assigned)
-            return StatusCourse.WaitingForMatchingCompetences;
+            return StatusCourse.WaitingForCompetentCoach;
         return StatusCourse.Assigned;
     }
 

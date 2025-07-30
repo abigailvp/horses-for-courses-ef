@@ -12,8 +12,8 @@ public class Course
     public DateOnly StartDateCourse { get; set; }
     public DateOnly EndDateCourse { get; set; }
     public int DurationCourse { get; }
-    public Coach CoachForCourse { get; set; }
 
+    public Coach CoachForCourse { get; set; }
     public List<Timeslot> CourseTimeslots = new();
     public List<Skill> ListOfCourseSkills = new();
 
@@ -35,20 +35,19 @@ public class Course
         hasCoach = false;
     }
 
-    public void AddRequiredCompetentence(string name)
-    {
-        Skill comp = new Skill(name);
-        ListOfCourseSkills.Add(comp);
-    }
 
-    public string AddCompetenceList(List<Skill> complist)
+    public void AddCompetenceList(List<Skill> complist)
     {
         ListOfCourseSkills.Clear();
         foreach (Skill comp in complist)
         {
             ListOfCourseSkills.Add(comp);
         }
-        return $"Course has new required competences list";
+    }
+
+    public void RemoveCompetence(Skill skill)
+    {
+        ListOfCourseSkills.Remove(skill);
     }
 
 
@@ -56,19 +55,41 @@ public class Course
     {
         IEnumerable<Timeslot> slots = CourseTimeslots.Where(c => c.DateTimeslot == moment.DateTimeslot);
         hasSchedule = slots.Any(c => c.BeginTimeslot < moment.EndTimeslot && c.EndTimeslot > moment.BeginTimeslot);
-        if (hasSchedule)
+        if (!hasSchedule)
             CourseTimeslots.Add(moment);
     }
 
-    public string AddTimeSlotList(List<Timeslot> timeList)
+    public void AddTimeSlotList(List<Timeslot> timeList)
     {
+        if (hasCoach == true)
+            throw new NotReadyException("Can't change schedule when coach is already added");
         CourseTimeslots.Clear();
         foreach (Timeslot slot in timeList)
         {
             AddTimeSlotToCourse(slot);
         }
-        return $"Course now has new timeslotlist";
+        hasSchedule = true;
     }
+
+    public bool Overlaps(Timeslot slot)
+    {
+        return CourseTimeslots.Any(c => c.DateTimeslot == slot.DateTimeslot &&
+                                c.BeginTimeslot < slot.EndTimeslot &&
+                                c.EndTimeslot > slot.BeginTimeslot); //als dit ook waar is, is er sws overlap
+    }
+
+    public bool ConflictsWith(Coach coach)
+    {
+        var timeslotsCourseOfCoach = coach.ListOfCoursesAssignedTo.SelectMany(c => c.CourseTimeslots);
+
+        foreach (Timeslot slot in timeslotsCourseOfCoach)
+        {
+            if (Overlaps(slot))
+                return true;
+        }
+        return false;
+    }
+
 
     public void ValidateCourseBasedOnTimeslots(Course course)
     {
@@ -78,7 +99,8 @@ public class Course
 
     public void CheckingCoach(Course course, Coach coach)
     {
-        if (Availability.CheckingCoachByStatus(course, coach) == StatusCourse.WaitingForMatchingTimeslots)
+        if (Availability.CheckingCoachByStatus(course, coach) == StatusCourse.WaitingForAvailableCoach ||
+        Availability.CheckingCoachByStatus(course, coach) == StatusCourse.WaitingForCompetentCoach)
             throw new NotReadyException("Coach isn't suited for course");
         CoachForCourse = coach;
         coach.ListOfCoursesAssignedTo.Add(course);

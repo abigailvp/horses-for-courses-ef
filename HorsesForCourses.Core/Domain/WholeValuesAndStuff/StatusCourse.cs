@@ -4,7 +4,7 @@ public enum StatusCourse
 {
     Created = 1,
     WaitingForTimeslots = 2,
-    WaitingForMatchingTimeslots = 3,
-    WaitingForMatchingCompetences = 4,
+    WaitingForAvailableCoach = 3,
+    WaitingForCompetentCoach = 4,
     Assigned = 5
 }

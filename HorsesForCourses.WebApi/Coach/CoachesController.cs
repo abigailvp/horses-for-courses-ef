@@ -27,26 +27,26 @@ namespace HorsesForCourses.WebApi.Controllers
 
 
         [HttpPost]
-        [Route("{Id}/skills")]
-        public IActionResult AddCompetencesList(int Id, [FromBody] CompetentCoachRequest dto)
+        [Route("{id}/skills")]
+        public IActionResult AddCompetencesList(int id, [FromBody] CompetentCoachRequest dto)
         {
-            var coach = _myMemory.allCoaches.FirstOrDefault(c => c.CoachId == Id); //getting coach with same id
+            var coach = _myMemory.allCoaches.FirstOrDefault(c => c.CoachId == id); //getting coach with same id
             if (coach == null)
                 return NotFound();
             coach.AddCompetenceList(dto.ListOfSkills);
             return Ok(); //geen update in repo want je hebt toegang tot coach met id
         }
 
-        [HttpPost]
-        [Route("{Id}/timeslots")]
-        public ActionResult<ScheduledCoachRequest> AddTimeslots(int Id, [FromBody] ScheduledCoachRequest dto)
-        {
-            var coach = _myMemory.allCoaches.FirstOrDefault(c => c.CoachId == Id);
-            if (coach == null)
-                return NotFound();
-            coach.AddTimeSlotList(dto.CoachTimeslots);
-            return Ok(CoachMapper.ConvertToScheduledCoach(coach));
-        }
+        // [HttpPost]
+        // [Route("{Id}/timeslots")]
+        // public ActionResult<ScheduledCoachRequest> AddTimeslots(int Id, [FromBody] ScheduledCoachRequest dto)
+        // {
+        //     var coach = _myMemory.allCoaches.FirstOrDefault(c => c.CoachId == Id);
+        //     if (coach == null)
+        //         return NotFound();
+        //     coach.AddTimeSlotList(dto.CoachTimeslots);
+        //     return Ok(CoachMapper.ConvertToScheduledCoach(coach));
+        // }
 
         [HttpGet]
         public ActionResult<ListOfCoachesResponse> GetCoaches()
@@ -57,10 +57,10 @@ namespace HorsesForCourses.WebApi.Controllers
 
 
         [HttpGet]
-        [Route("{Id}")]
-        public ActionResult<CoachRequest> GetCoachById(int Id)
+        [Route("{id}")]
+        public ActionResult<DetailedCoachResponse> GetCoachById(int id)
         {
-            var coach = _myMemory.allCoaches.Where(c => c.CoachId == Id).FirstOrDefault();
+            var coach = _myMemory.allCoaches.Where(c => c.CoachId == id).FirstOrDefault();
             if (coach == null)
                 return NotFound();
             return Ok(CoachMapper.ConvertToDetailedCoach(coach));

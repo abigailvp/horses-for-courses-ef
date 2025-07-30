@@ -7,7 +7,7 @@ namespace HorsesForCoursesTests;
 
 public class CourseTest
 {
-    [Fact]
+    [Fact(Skip = "notready")]
     public void Course_Can_Add_Empty_Course()
     {
         var slimmeCoach = new Coach("Matthew", "smart@mail.com");

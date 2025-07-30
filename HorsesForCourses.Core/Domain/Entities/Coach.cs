@@ -51,28 +51,6 @@ public class Coach //aggregate root
         return $"Coach has new competences list";
     }
 
-    public void AddTimeSlot(Timeslot moment)
-    {
-        IEnumerable<Timeslot> slots = AvailableTimeslots.Where(c => c.DateTimeslot == moment.DateTimeslot);
-        bool hasSameTime = slots.Any(c => c.BeginTimeslot < moment.EndTimeslot && c.EndTimeslot > moment.BeginTimeslot);
-        if (!hasSameTime)
-            AvailableTimeslots.Add(moment);
-    }
-
-    public string AddTimeSlotList(List<Timeslot> timeList)
-    {
-        AvailableTimeslots.Clear();
-        foreach (Timeslot slot in timeList)
-        {
-            AddTimeSlot(slot);
-        }
-        return $"Coach now has new timeslotlist";
-    }
-
-    public void RemoveTimeslot(Timeslot availableMoment)
-    {
-        AvailableTimeslots.Remove(availableMoment);
-    }
 
 }
 
