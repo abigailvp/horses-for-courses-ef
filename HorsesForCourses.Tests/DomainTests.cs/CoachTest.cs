@@ -19,9 +19,9 @@ public class CoachTest
     public void Coach_Can_Add_Competences()
     {
         var slimmeCoach = new Coach("Matthew", "mat@mail.com");
-        Competence brainsOverBody = new Competence("karate", 4);
+        Skill brainsOverBody = new Competence("karate", 4);
         slimmeCoach.AddCompetence("karate", 4);
-        List<Competence> lijstje = slimmeCoach.ListOfCompetences;
+        List<Skill> lijstje = slimmeCoach.ListOfCompetences;
 
         Assert.Contains(brainsOverBody, lijstje);
     }
@@ -30,10 +30,10 @@ public class CoachTest
     public void Coach_Can_Remove_Competences()
     {
         var slimmeCoach = new Coach("Matthew", "mat@mail.com");
-        Competence brainsOverBody = new Competence("karate", 4);
+        Skill brainsOverBody = new Competence("karate", 4);
         slimmeCoach.AddCompetence("karate", 4);
         slimmeCoach.RemoveCompetence(brainsOverBody);
-        List<Competence> lijstje = slimmeCoach.ListOfCompetences;
+        List<Skill> lijstje = slimmeCoach.ListOfCompetences;
 
         Assert.DoesNotContain(brainsOverBody, lijstje);
     }

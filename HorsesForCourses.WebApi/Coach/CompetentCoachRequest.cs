@@ -4,5 +4,6 @@ namespace HorsesForCourses.WebApi.Factory;
 
 public class CompetentCoachRequest
 {
-    public List<Competence> ListOfCompetences { get; set; }
+    public List<Skill> ListOfSkills { get; set; }
 }
+

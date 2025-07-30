@@ -1,5 +1,3 @@
-using HorsesForCourses.Core.DomainEntities;
-
 namespace HorsesForCourses.WebApi.Factory;
 
 

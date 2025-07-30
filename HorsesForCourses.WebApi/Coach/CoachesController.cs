@@ -27,13 +27,13 @@ namespace HorsesForCourses.WebApi.Controllers
 
 
         [HttpPost]
-        [Route("{Id}/competences")]
-        public ActionResult<CompetentCoachRequest> AddCompetencesList(int Id, [FromBody] CompetentCoachRequest dto)
+        [Route("{Id}/skills")]
+        public IActionResult AddCompetencesList(int Id, [FromBody] CompetentCoachRequest dto)
         {
             var coach = _myMemory.allCoaches.FirstOrDefault(c => c.CoachId == Id); //getting coach with same id
             if (coach == null)
                 return NotFound();
-            coach.AddCompetenceList(dto.ListOfCompetences);
+            coach.AddCompetenceList(dto.ListOfSkills);
             return Ok(); //geen update in repo want je hebt toegang tot coach met id
         }
 

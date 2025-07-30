@@ -1,4 +1,5 @@
 using System.Diagnostics.SymbolStore;
+using System.Security.Cryptography.X509Certificates;
 using HorsesForCourses.Core.HorsesOnTheLoose;
 using HorsesForCourses.Core.WholeValuesAndStuff;
 
@@ -14,7 +15,10 @@ public class Course
     public Coach CoachForCourse { get; set; }
 
     public List<Timeslot> CourseTimeslots = new();
-    public List<Competence> ListOfCourseCompetences = new();
+    public List<Skill> ListOfCourseSkills = new();
+
+    public bool hasSchedule { get; set; }
+    public bool hasCoach { get; set; }
 
     public Course(string nameCourse, DateOnly startcourse, DateOnly endcourse)
     {
@@ -26,20 +30,23 @@ public class Course
         StartDateCourse = startcourse;
         EndDateCourse = endcourse;
         CourseId = new int();
+
+        hasSchedule = false;
+        hasCoach = false;
     }
 
     public void AddRequiredCompetentence(string name)
     {
-        Competence comp = new Competence(name);
-        ListOfCourseCompetences.Add(comp);
+        Skill comp = new Skill(name);
+        ListOfCourseSkills.Add(comp);
     }
 
-    public string AddCompetenceList(List<Competence> complist)
+    public string AddCompetenceList(List<Skill> complist)
     {
-        ListOfCourseCompetences.Clear();
-        foreach (Competence comp in complist)
+        ListOfCourseSkills.Clear();
+        foreach (Skill comp in complist)
         {
-            ListOfCourseCompetences.Add(comp);
+            ListOfCourseSkills.Add(comp);
         }
         return $"Course has new required competences list";
     }
@@ -47,9 +54,9 @@ public class Course
 
     public void AddTimeSlotToCourse(Timeslot moment) //start1 < end2 AND start2 < end1
     {
-        IEnumerable<Timeslot> slots = CourseTimeslots.Where(c => c.DayTimeslot == moment.DayTimeslot);
-        bool hasSameTime = slots.Any(c => c.BeginTimeslot < moment.EndTimeslot && c.EndTimeslot > moment.BeginTimeslot);
-        if (!hasSameTime)
+        IEnumerable<Timeslot> slots = CourseTimeslots.Where(c => c.DateTimeslot == moment.DateTimeslot);
+        hasSchedule = slots.Any(c => c.BeginTimeslot < moment.EndTimeslot && c.EndTimeslot > moment.BeginTimeslot);
+        if (hasSchedule)
             CourseTimeslots.Add(moment);
     }
 
@@ -76,6 +83,7 @@ public class Course
         CoachForCourse = coach;
         coach.ListOfCoursesAssignedTo.Add(course);
         coach.numberOfAssignedCourses = +1;
+        hasCoach = true;
     }
 
 }

@@ -19,7 +19,7 @@ public class CoursesControllerTests : IClassFixture<CustomWebAppFactory>
         CompetentCourseRequest dto = new CompetentCourseRequest
         {
             CourseId = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa6"),
-            ListOfCourseCompetences = new List<Competence>{
+            ListOfCourseCompetences = new List<Skill>{
                 new Competence( "Agility" , 5),
                 new Competence( "Balance", 6 )
             }
@@ -44,7 +44,7 @@ public class CoursesControllerTests : IClassFixture<CustomWebAppFactory>
         CompetentCourseRequest dto = new CompetentCourseRequest
         {
             CourseId = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa6"),
-            ListOfCourseCompetences = new List<Competence>{
+            ListOfCourseCompetences = new List<Skill>{
                 new Competence( "Agility" , 5),
                 new Competence( "Balance", 6 )
             }

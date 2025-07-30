@@ -5,6 +5,5 @@ namespace HorsesForCourses.WebApi.Factory;
 
 public class AssignedCourseRequest
 {
-    public Guid CourseId { get; set; }
-    public Guid coachId { get; set; }
+    public int coachId { get; set; }
 }

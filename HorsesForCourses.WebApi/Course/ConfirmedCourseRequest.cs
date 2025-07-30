@@ -5,7 +5,6 @@ namespace HorsesForCourses.WebApi.Factory;
 
 public class ConfirmedCourseRequest
 {
-    public Guid CourseId { get; set; }
     public List<Timeslot> Timeslots { get; set; }
 
 }
