@@ -1,5 +1,3 @@
-using System.Reflection.Metadata.Ecma335;
-using HorsesForCourses.Core;
 using HorsesForCourses.Core.DomainEntities;
 using HorsesForCourses.Core.WholeValuesAndStuff;
 
@@ -40,7 +38,7 @@ public class CoachTest
 
         Assert.DoesNotContain(brains, list);
         Assert.Contains(new Skill("karate"), list);
-        Assert.Equal(1, list.Count());
+        Assert.Single(list); //1item in lijst
     }
 
     [Fact]

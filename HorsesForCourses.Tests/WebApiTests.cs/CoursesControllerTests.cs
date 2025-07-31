@@ -1,6 +1,7 @@
 using HorsesForCourses.Core.DomainEntities;
 using HorsesForCourses.Core.HorsesOnTheLoose;
 using HorsesForCourses.Core.WholeValuesAndStuff;
+using HorsesForCourses.WebApi;
 using HorsesForCourses.WebApi.Controllers;
 using HorsesForCourses.WebApi.Factory;
 using HorsesForCourses.WebApi.Repo;
@@ -8,101 +9,98 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HorsesForCoursesTests;
 
-public class CoursesControllerTests : IClassFixture<CustomWebAppFactory>
+public class CoursesControllerTests
 {
-    // [Fact(Skip = "notready")]
-    // public void Adds_Competences_To_The_Course()
-    // {
-    //     AllData memory = new AllData();
-    //     CoursesController controller = new CoursesController(memory);
+    [Fact]
+    public void Controller_Adds_Competences_To_The_Course()
+    {
+        AllData memory = new AllData();
+        CoursesController controller = new CoursesController(memory);
 
-    //     CompetentCourseRequest dto = new CompetentCourseRequest
-    //     {
-    //         ListOfCourseCompetences = new List<Skill>{
-    //             new Skill( "Agility"),
-    //             new Skill( "Balance" )
-    //         }
-    //     };
+        CompetentCourseRequest dto = new CompetentCourseRequest
+        {
+            ListOfCourseCompetences = new List<Skill>{
+                new Skill( "Agility"),
+                new Skill( "Balance" )
+            }
+        };
 
-    //     Course course = new Course("HorseBackRiding", new DateOnly(2025, 6, 29), new DateOnly(2025, 7, 28));
-    //     int idC = course.CourseId;
-    //     memory.allCourses.Add(course);
-    //     var result = controller.AddCompetences(idC, dto);
+        Course course = new Course("HorseBackRiding", new DateOnly(2025, 6, 29), new DateOnly(2025, 7, 28));
+        int id = course.CourseId;
+        memory.allCourses.Add(course);
 
-    //     OkObjectResult dtotje = Assert.IsType<OkObjectResult>(result.Result);
-    //     var inhoud = Assert.IsType<CompetentCourseRequest>(dtotje.Value);
-    //     Assert.Contains(new Skill("Agility"), inhoud.ListOfCourseCompetences);
-    // }
+        var result = controller.AddCompetences(id, dto);
 
-    // [Fact(Skip = "notready")]
-    // public void Doesnt_Add_Competences_To_Nonexisting_Course()
-    // {
-    //     AllData memory = new AllData();
-    //     CoursesController controller = new CoursesController(memory);
+        Assert.IsType<OkResult>(result);
 
-    //     CompetentCourseRequest dto = new CompetentCourseRequest
-    //     {
-    //         ListOfCourseCompetences = new List<Skill>{
-    //             new Skill( "Agility"),
-    //             new Skill( "Balance")
-    //         }
-    //     };
+    }
 
-    //     int idC = dto.CourseId;
+    [Fact]
+    public void Doesnt_Add_Competences_To_Nonexisting_Course()
+    {
+        AllData memory = new AllData();
+        CoursesController controller = new CoursesController(memory);
 
-    //     var result = controller.AddCompetences(idC, dto);
+        CompetentCourseRequest dto = new CompetentCourseRequest
+        {
+            ListOfCourseCompetences = new List<Skill>{
+                new Skill( "Agility"),
+                new Skill( "Balance")
+            }
+        };
 
-    //     Assert.IsType<NotFoundResult>(result.Result);
+        var result = controller.AddCompetences(0, dto);
 
-    // }
+        Assert.IsType<NotFoundResult>(result);
+    }
 
-    // [Fact(Skip = "notready")]
-    // public void Confirms_Course_If_It_Has_Timeslot_Longer_Than_An_Hour()
-    // {
-    //     AllData memory = new AllData();
-    //     CoursesController controller = new CoursesController(memory);
+    [Fact]
+    public void Confirms_Course_If_It_Has_Timeslot_Longer_Than_An_Hour()
+    {
+        AllData memory = new AllData();
+        CoursesController controller = new CoursesController(memory);
 
-    //     ScheduledCourseRequest dto = new ScheduledCourseRequest
-    //     {
-    //         CourseTimeslots = new List<Timeslot>{
-    //             new Timeslot( 9, 17, new DateOnly(2025, 6, 27)),
-    //             new Timeslot( 9, 17, new DateOnly(2025, 7,18))
-    //         }
-    //     };
+        ScheduledCourseRequest dto = new ScheduledCourseRequest
+        {
+            CourseTimeslots = new List<MyTimeslot>{
+                new (  "2025, 6, 27", 9, 17),
+                new (  "2025, 7,18", 9, 17)
+            }
+        };
 
-    //     Course course = new Course("HorseBackRiding", new DateOnly(2025, 6, 25), new DateOnly(2025, 7, 28));
-    //     int idC = course.CourseId;
-    //     memory.allCourses.Add(course);
+        Course course = new Course("HorseBackRiding", new DateOnly(2025, 6, 25), new DateOnly(2025, 7, 28));
+        int idC = course.CourseId;
+        memory.allCourses.Add(course);
 
-    //     controller.AddTimeslots(idC, dto);
-    //     var result = controller.ConfirmCourse(idC);
+        controller.AddTimeslots(idC, dto);
+        var result = controller.ConfirmCourse(idC);
 
-    //     OkObjectResult dtotje = Assert.IsType<OkObjectResult>(result.Result);
-    //     var inhoud = Assert.IsType<CourseRequest>(dtotje.Value);
-    //     Assert.Contains("HorseBackRiding", inhoud.NameCourse);
+        Assert.IsType<OkResult>(result);
 
-    // }
 
-    // [Fact(Skip = "notready")]
-    // public void Doesnt_Confirm_Course_If_It_Has_No_Timeslots()
-    // {
-    //     AllData memory = new AllData();
-    //     CoursesController controller = new CoursesController(memory);
+    }
 
-    //     ScheduledCourseRequest dto = new ScheduledCourseRequest
-    //     {
-    //         CourseTimeslots = new List<Timeslot> { }
-    //     };
+    [Fact]
+    public void Doesnt_Confirm_Course_If_It_Has_No_Timeslots()
+    {
+        AllData memory = new AllData();
+        CoursesController controller = new CoursesController(memory);
 
-    //     Course course = new Course("HorseBackRiding", new DateOnly(2025, 6, 25), new DateOnly(2025, 7, 28));
-    //     int idC = course.CourseId;
-    //     memory.allCourses.Add(course);
+        ScheduledCourseRequest dto = new ScheduledCourseRequest
+        {
+            CourseTimeslots = new List<MyTimeslot> { }
+        };
 
-    //     controller.AddTimeslots(idC, dto);
+        Course course = new Course("HorseBackRiding", new DateOnly(2025, 6, 25), new DateOnly(2025, 7, 28));
+        int idC = course.CourseId;
+        memory.allCourses.Add(course);
 
-    //     NotReadyException notWorking = Assert.Throws<NotReadyException>(() => controller.ConfirmCourse(idC));
-    //     Assert.Contains("Course isn't ready yet", notWorking.Message);
+        controller.AddTimeslots(idC, dto);
 
-    // }
+        NotReadyException notWorking = Assert.Throws<NotReadyException>(() => controller.ConfirmCourse(idC));
+        Assert.Contains("Course doesn't have timeslots", notWorking.Message);
+
+    }
+
 
 }

@@ -23,8 +23,9 @@
 [x] is ongeldig zolang er geen lesmomenten zijn toegevoegd.
     - Course.AddingCoach() gebruikt
         - Availabilty.DoesCourseHaveTimeslots()
-        - Availability.CheckingCoachByStatus()
+        - Availability.CheckingCoachByStatus() gebruikt
             -Availabilty.DoesCourseHaveTimeslots()
+            -Course.COnflictsWith() + Course.Overlaps()
 
 [x] kan pas een coach toegewezen krijgen nadat de opleiding als geldig en definitief is bevestigd.
      - course.AddingCoach()

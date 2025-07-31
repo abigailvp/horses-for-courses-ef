@@ -6,126 +6,91 @@ using HorsesForCourses.WebApi.Factory;
 using HorsesForCourses.WebApi.Repo;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.HttpResults;
+using NuGet.Frameworks;
 
 namespace HorsesForCoursesTests;
 
 public class CoachesControllerTests
 {
-    // [Fact(Skip = "notready")]
-    // public void Coach_Controller_Gets_All_Coaches()
-    // {
-    //     AllData _myMemory = new AllData();
-    //     CoachesController controller = new(_myMemory);
-    //     var response = controller.GetCoaches();
+    [Fact]
+    public void Coach_Controller_Gets_All_Coaches()
+    {
+        AllData _myMemory = new AllData();
+        CoachesController controller = new(_myMemory);
+        var response = controller.GetCoaches();
 
-    //     Assert.Equal(response, _myMemory.allCoaches);
-    // }
+        var okresult = Assert.IsType<OkObjectResult>(response.Result);
+        var list = Assert.IsType<ListOfCoachesResponse>(okresult.Value);
+        Assert.Empty(list.ListOfCoaches);
+    }
 
-    // [Fact(Skip = "notready")]
-    // public void Coach_Controller_Creates_Empty_Coach()
-    // {
-    //     AllData _myMemory = new AllData();
-    //     CoachesController controller = new(_myMemory);
+    [Fact]
+    public void Coach_Controller_Creates_Empty_Coach()
+    {
+        AllData _myMemory = new AllData();
+        CoachesController controller = new(_myMemory);
 
-    //     var dto = new CoachRequest
-    //     {
-    //         NameCoach = "Lola",
-    //         Email = "l@example.com",
-    //     };
-    //     var result = controller.CreateEmptyCoach(dto);
+        var dto = new CoachRequest
+        {
+            NameCoach = "Lola",
+            Email = "l@example.com",
+        };
+        var result = controller.CreateEmptyCoach(dto);
 
-    //     var okResult = Assert.IsType<OkObjectResult>(result.Result); //checkt en returnt type
-    //     var coach = Assert.IsType<CoachRequest>(okResult.Value);
-    //     Assert.Equivalent(dto, coach);
+        var okResult = Assert.IsType<OkObjectResult>(result.Result); //checkt en returnt type
+        var coachid = Assert.IsType<int>(okResult.Value);
+        Assert.Equal(0, coachid);
 
-    // }
+    }
 
-    // [Fact(Skip = "notready")]
-    // public void Coach_Throws_Exception_When_Coach_Parameters_Are_Missing()
-    // {
-    //     AllData _myMemory = new AllData();
-    //     CoachesController controller = new(_myMemory);
+    [Fact]
+    public void Coach_Throws_Exception_When_Coach_Parameters_Are_Missing()
+    {
+        AllData _myMemory = new AllData();
+        CoachesController controller = new(_myMemory);
 
-    //     var dto = new CoachRequest
-    //     {
-    //         NameCoach = "",
-    //         Email = "l@example.com",
-    //     };
+        var dto = new CoachRequest
+        {
+            NameCoach = "",
+            Email = "l@example.com",
+        };
 
-    //     Assert.Throws<DomainException>(() => controller.CreateEmptyCoach(dto));
-    // }
+        var notWorking = Assert.Throws<DomainException>(() => controller.CreateEmptyCoach(dto));
+        Assert.Equal("Name can't be empty", notWorking.Message);
+    }
 
-    // [Fact(Skip = "notready")]
-    // public void Coach_Controller_Gets_Coach_By_Id()
-    // {
-    //     AllData _myMemory = new AllData();
+    [Fact]
+    public void Coach_Controller_Gets_Coach_By_Id()
+    {
+        AllData _myMemory = new AllData();
 
-    //     var coach = new Coach("Lola", "l@example.com");
-    //     int coachId = coach.CoachId;
+        var coach = new Coach("Lola", "l@example.com");
+        int coachId = coach.CoachId;
 
-    //     _myMemory.allCoaches.Add(coach);
-    //     CoachesController controller = new(_myMemory);
+        _myMemory.allCoaches.Add(coach);
+        CoachesController controller = new(_myMemory);
 
-    //     var response = controller.GetCoachById(coachId);
+        var response = controller.GetCoachById(coachId);
 
-    //     Assert.IsType<OkObjectResult>(response.Result);
-    // }
+        var detailedresult = Assert.IsType<OkObjectResult>(response.Result);
+        var result = Assert.IsType<DetailedCoachResponse>(detailedresult.Value);
+        Assert.Equal("Lola", result.Name);
+        Assert.Empty(result.ListOfAssignedCourses);
+        Assert.Empty(result.ListOfSkills);
+    }
 
-    // [Fact(Skip = "notready")]
-    // public void Coach_Controller_Doesnt_Get_NonExisting_Coach()
-    // {
-    //     AllData _myMemory = new AllData();
-    //     CoachesController controller = new(_myMemory);
+    [Fact]
+    public void Coach_Controller_Doesnt_Get_NonExisting_Coach()
+    {
+        AllData _myMemory = new AllData();
+        CoachesController controller = new(_myMemory);
 
-    //     int coachId = 3;
-    //     var response = controller.GetCoachById(coachId);
+        int coachId = 3;
+        var response = controller.GetCoachById(coachId);
 
-    //     Assert.IsType<NotFoundResult>(response.Result);
-    // }
+        Assert.IsType<NotFoundResult>(response.Result);
+    }
 
-    // [Fact]
-    // public void Coach_Adds_Timeslots()
-    // {
-    //     AllData _myMemory = new AllData();
-    //     CoachesController controller = new(_myMemory);
 
-    //     var coach = new Coach("Lola", "l@example.com");
-    //     _myMemory.allCoaches.Add(coach);
-
-    //     Guid idWow = new Guid();
-    //     List<Timeslot> list = new List<Timeslot>
-    //             {
-    //                 new Timeslot(9,11, new DateOnly(2025,7,23))
-    //             };
-    //     ScheduledCoachRequest dto = new ScheduledCoachRequest
-    //     {
-    //         CoachId = idWow,
-    //         CoachTimeslots = list
-    //     };
-
-    //     var response = controller.AddTimeslots(idWow, dto);
-    //     Assert.IsType<OkObjectResult>(response.Result);
-    // }
 }
 
-
-
-
-//  var dto = new CoachRequest
-//  {
-//      CoachId = Guid.NewGuid(),
-//      NameCoach = "Lola",
-//      Email = "l@example.com",
-//      ListOfCompetences = new List<Competence>
-//             {
-//                 new ("Communication", 3 )
-//             },
-
-//      AvailableTimeslots = new Dictionary<DateOnly, List<Timeslot>>
-//      {
-//          [new DateOnly(2025, 7, 24)] = new List<Timeslot>
-//                 {
-//                     new Timeslot(9,11, new DateOnly(2025,7,23))
-//                 }
-//      }
-//  };
