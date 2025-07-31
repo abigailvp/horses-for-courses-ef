@@ -1,4 +1,5 @@
 using System.Reflection.Metadata.Ecma335;
+using System.Runtime.CompilerServices;
 using HorsesForCourses.Core;
 using HorsesForCourses.Core.DomainEntities;
 using HorsesForCourses.Core.HorsesOnTheLoose;
@@ -107,7 +108,7 @@ public class CourseTest
         Assert.Equal(slots, tinyCourse.CourseTimeslots);
     }
 
-    [Fact(Skip = "notready")]
+    [Fact]
     public void Course_Confirmed_When_Timeslot_Added()
     {
         var tinyCourse = new Course("Cats", new DateOnly(2025, 6, 29), new DateOnly(2025, 7, 28));
@@ -115,13 +116,184 @@ public class CourseTest
         tinyCourse.AddTimeSlotToCourse(slot);
         tinyCourse.ValidateCourseBasedOnTimeslots(tinyCourse);
 
+        Assert.True(tinyCourse.hasSchedule);
 
     }
 
+    [Fact]
     public void Course_Not_Confirmed_When_No_Timeslot_Added()
     {
         var tinyCourse = new Course("Cats", new DateOnly(2025, 6, 29), new DateOnly(2025, 7, 28));
 
         Assert.Throws<NotReadyException>(() => tinyCourse.ValidateCourseBasedOnTimeslots(tinyCourse));
+        Assert.False(tinyCourse.hasSchedule);
+    }
+
+    [Fact]
+    public void Coach_Added_When_Course_HasSchedule_And_Coach_No_Other_Course()
+    {
+        var tinyCourse = new Course("Cats", new DateOnly(2025, 6, 29), new DateOnly(2025, 7, 28));
+        List<Timeslot> slots = new() {
+        new(9, 11, new DateOnly(2025, 7, 25)),
+        new(9, 11, new DateOnly(2025, 7, 24)),
+        new(9, 11, new DateOnly(2025, 7, 23))};
+        List<Skill> skills = new(){new Skill("meowing"),
+            new Skill("sweeping")};
+
+        tinyCourse.AddTimeSlotList(slots);
+        tinyCourse.AddCompetenceList(skills);
+
+        var tinyCoach = new Coach("Matt", "mat@mail.com");
+        tinyCoach.AddCompetenceList(skills);
+
+        tinyCourse.AddingCoach(tinyCourse, tinyCoach);
+
+        Assert.True(tinyCourse.hasCoach);
+        Assert.Equal(tinyCoach, tinyCourse.CoachForCourse);
+        Assert.Equal(1, tinyCoach.numberOfAssignedCourses);
+        Assert.Contains(tinyCourse, tinyCoach.ListOfCoursesAssignedTo);
+    }
+
+    [Fact]
+    public void Coach_Not_Added_When_Course_Has_No_Schedule()
+    {
+        var tinyCourse = new Course("Cats", new DateOnly(2025, 6, 29), new DateOnly(2025, 7, 28));
+        List<Skill> skills = new(){new Skill("meowing"),
+            new Skill("sweeping")};
+
+        var tinyCoach = new Coach("Matt", "mat@mail.com");
+
+        tinyCourse.AddCompetenceList(skills);
+        tinyCoach.AddCompetenceList(skills);
+
+        var notAdding = Assert.Throws<NotReadyException>(() => tinyCourse.AddingCoach(tinyCourse, tinyCoach));
+        Assert.Equal("Course needs to have lessons first", notAdding.Message);
+
+        Assert.False(tinyCourse.hasCoach);
+        // Assert.Equal(null, tinyCourse.CoachForCourse);
+        Assert.Equal(0, tinyCoach.numberOfAssignedCourses);
+        Assert.DoesNotContain(tinyCourse, tinyCoach.ListOfCoursesAssignedTo);
+    }
+
+    [Fact]
+    public void Coach_Not_Added_When_Coach_Has_No_Matching_Skills()
+    {
+        var tinyCourse = new Course("Cats", new DateOnly(2025, 6, 29), new DateOnly(2025, 7, 28));
+        var tinyCoach = new Coach("Matt", "mat@mail.com");
+
+        List<Timeslot> slots = new() {
+        new(9, 11, new DateOnly(2025, 7, 25)),
+        new(9, 11, new DateOnly(2025, 7, 24)),
+        new(9, 11, new DateOnly(2025, 7, 23))};
+        List<Skill> skills = new(){new Skill("meowing"),
+            new Skill("sweeping")};
+
+        tinyCourse.AddTimeSlotList(slots);
+        tinyCourse.AddCompetenceList(skills);
+        tinyCoach.AddCompetenceList(new List<Skill> { new Skill("meowing") });
+
+        var notAdding = Assert.Throws<NotReadyException>(() => tinyCourse.AddingCoach(tinyCourse, tinyCoach));
+        Assert.Equal("Coach isn't suited for course", notAdding.Message);
+
+        Assert.False(tinyCourse.hasCoach);
+        Assert.Equal(0, tinyCoach.numberOfAssignedCourses);
+        Assert.DoesNotContain(tinyCourse, tinyCoach.ListOfCoursesAssignedTo);
+    }
+
+    [Fact]
+    public void Coach_Not_Added_When_Coach_Has_No_Skills()
+    {
+        var tinyCourse = new Course("Cats", new DateOnly(2025, 6, 29), new DateOnly(2025, 7, 28));
+        var tinyCoach = new Coach("Matt", "mat@mail.com");
+
+        List<Timeslot> slots = new() {
+        new(9, 11, new DateOnly(2025, 7, 25)),
+        new(9, 11, new DateOnly(2025, 7, 24)),
+        new(9, 11, new DateOnly(2025, 7, 23))};
+        List<Skill> skills = new(){new Skill("meowing"),
+            new Skill("sweeping")};
+
+        tinyCourse.AddTimeSlotList(slots);
+        tinyCourse.AddCompetenceList(skills);
+
+        var notAdding = Assert.Throws<NotReadyException>(() => tinyCourse.AddingCoach(tinyCourse, tinyCoach));
+        Assert.Equal("Coach needs to have skills first", notAdding.Message);
+
+        Assert.False(tinyCourse.hasCoach);
+        Assert.Equal(0, tinyCoach.numberOfAssignedCourses);
+        Assert.DoesNotContain(tinyCourse, tinyCoach.ListOfCoursesAssignedTo);
+    }
+
+    [Fact]
+    public void Coach_Not_Added_When_Coach_Has_Overlapping_Course()
+    {
+        var tinyCourse = new Course("Cats", new DateOnly(2025, 6, 29), new DateOnly(2025, 7, 28));
+        List<Timeslot> slots = new() {
+        new(9, 11, new DateOnly(2025, 7, 25)),
+        new(9, 11, new DateOnly(2025, 7, 24)),
+        new(9, 11, new DateOnly(2025, 7, 23))};
+        List<Skill> skills = new(){new Skill("meowing"),
+            new Skill("sweeping")};
+
+        tinyCourse.AddTimeSlotList(slots);
+        tinyCourse.AddCompetenceList(skills);
+
+        var tinyCoach = new Coach("Matt", "mat@mail.com");
+        tinyCoach.AddCompetenceList(skills);
+
+        tinyCourse.AddingCoach(tinyCourse, tinyCoach);
+
+        var similarCourse = new Course("Dogs", new DateOnly(2025, 6, 29), new DateOnly(2025, 7, 28));
+        List<Timeslot> similarSlots = new() {
+        new(9, 11, new DateOnly(2025, 7, 25)),
+        new(9, 11, new DateOnly(2025, 7, 24)),
+        new(9, 11, new DateOnly(2025, 7, 23))};
+        similarCourse.AddTimeSlotList(similarSlots);
+
+
+        var notReady = Assert.Throws<NotReadyException>(() => similarCourse.AddingCoach(similarCourse, tinyCoach));
+        Assert.Equal("Coach is not available", notReady.Message);
+        Assert.True(tinyCourse.hasCoach);
+        Assert.False(similarCourse.hasCoach);
+        Assert.Equal(tinyCoach, tinyCourse.CoachForCourse);
+        Assert.Equal(1, tinyCoach.numberOfAssignedCourses);
+        Assert.DoesNotContain(similarCourse, tinyCoach.ListOfCoursesAssignedTo);
+        Assert.Contains(tinyCourse, tinyCoach.ListOfCoursesAssignedTo);
+    }
+    [Fact]
+    public void Coach_Added_When_Schedule_And_Coach_Has_No_Overlapping_Course()
+    {
+        var tinyCourse = new Course("Cats", new DateOnly(2025, 6, 29), new DateOnly(2025, 7, 28));
+        List<Timeslot> slots = new() {
+        new(9, 11, new DateOnly(2025, 7, 25)),
+        new(9, 11, new DateOnly(2025, 7, 24)),
+        new(9, 11, new DateOnly(2025, 7, 23))};
+        List<Skill> skills = new(){new Skill("meowing"),
+            new Skill("sweeping")};
+
+        tinyCourse.AddTimeSlotList(slots);
+        tinyCourse.AddCompetenceList(skills);
+
+        var tinyCoach = new Coach("Matt", "mat@mail.com");
+        tinyCoach.AddCompetenceList(skills);
+
+        tinyCourse.AddingCoach(tinyCourse, tinyCoach);
+
+        var similarCourse = new Course("Dogs", new DateOnly(2025, 6, 29), new DateOnly(2025, 7, 28));
+        List<Timeslot> similarSlots = new() {
+        new(9, 11, new DateOnly(2025, 7, 16)),
+        new(9, 11, new DateOnly(2025, 7, 15)),
+        new(9, 11, new DateOnly(2025, 7, 14))};
+        similarCourse.AddTimeSlotList(similarSlots);
+        similarCourse.AddingCoach(similarCourse, tinyCoach);
+
+
+        Assert.True(tinyCourse.hasCoach);
+        Assert.True(similarCourse.hasCoach);
+        Assert.Equal(tinyCoach, tinyCourse.CoachForCourse);
+        Assert.Equal(tinyCoach, similarCourse.CoachForCourse);
+        Assert.Equal(2, tinyCoach.numberOfAssignedCourses);
+        Assert.Contains(similarCourse, tinyCoach.ListOfCoursesAssignedTo);
+        Assert.Contains(tinyCourse, tinyCoach.ListOfCoursesAssignedTo);
     }
 }

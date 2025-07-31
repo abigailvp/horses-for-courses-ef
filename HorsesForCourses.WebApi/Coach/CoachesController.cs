@@ -37,17 +37,6 @@ namespace HorsesForCourses.WebApi.Controllers
             return Ok(); //geen update in repo want je hebt toegang tot coach met id
         }
 
-        // [HttpPost]
-        // [Route("{Id}/timeslots")]
-        // public ActionResult<ScheduledCoachRequest> AddTimeslots(int Id, [FromBody] ScheduledCoachRequest dto)
-        // {
-        //     var coach = _myMemory.allCoaches.FirstOrDefault(c => c.CoachId == Id);
-        //     if (coach == null)
-        //         return NotFound();
-        //     coach.AddTimeSlotList(dto.CoachTimeslots);
-        //     return Ok(CoachMapper.ConvertToScheduledCoach(coach));
-        // }
-
         [HttpGet]
         public ActionResult<ListOfCoachesResponse> GetCoaches()
         {

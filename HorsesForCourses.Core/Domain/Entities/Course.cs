@@ -1,5 +1,3 @@
-using System.Diagnostics.SymbolStore;
-using System.Security.Cryptography.X509Certificates;
 using HorsesForCourses.Core.HorsesOnTheLoose;
 using HorsesForCourses.Core.WholeValuesAndStuff;
 
@@ -53,8 +51,7 @@ public class Course
 
     public void AddTimeSlotToCourse(Timeslot moment) //start1 < end2 AND start2 < end1
     {
-        IEnumerable<Timeslot> slots = CourseTimeslots.Where(c => c.DateTimeslot == moment.DateTimeslot);
-        hasSchedule = slots.Any(c => c.BeginTimeslot < moment.EndTimeslot && c.EndTimeslot > moment.BeginTimeslot);
+        hasSchedule = Overlaps(moment);
         if (!hasSchedule)
             CourseTimeslots.Add(moment);
     }
@@ -103,17 +100,19 @@ public class Course
     public void ValidateCourseBasedOnTimeslots(Course course)
     {
         if (Availability.DoesCourseHaveTimeslots(course) == StatusCourse.WaitingForTimeslots)
-            throw new NotReadyException("Course isn't ready yet");
+            throw new NotReadyException("Course doesn't have timeslots");
+        hasSchedule = true;
     }
 
-    public void CheckingCoach(Course course, Coach coach)
+    public void AddingCoach(Course course, Coach coach)
     {
-        if (Availability.CheckingCoachByStatus(course, coach) == StatusCourse.WaitingForAvailableCoach ||
+        if (Availability.CheckingCoachByStatus(course, coach) == StatusCourse.WaitingForTimeslots ||
         Availability.CheckingCoachByStatus(course, coach) == StatusCourse.WaitingForCompetentCoach)
             throw new NotReadyException("Coach isn't suited for course");
+
         CoachForCourse = coach;
         coach.ListOfCoursesAssignedTo.Add(course);
-        coach.numberOfAssignedCourses = +1;
+        coach.numberOfAssignedCourses += 1;
         hasCoach = true;
     }
 

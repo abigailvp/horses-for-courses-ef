@@ -40,7 +40,7 @@ namespace HorsesForCourses.WebApi.Controllers
 
         [HttpPost]
         [Route("{Id}/timeslots")]
-        public IActionResult AddTimeslots(int Id, [FromBody] ScheduledCourseRequest dto)
+        public IActionResult AddTimeslots(int Id, [FromBody] ScheduledCourseRequest dto) //invoer van lijstdag moet format "YYYY/MM/DD" hebben
         {
             var course = _myMemory.allCourses.FirstOrDefault(c => c.CourseId == Id);
             if (course == null)
@@ -70,7 +70,7 @@ namespace HorsesForCourses.WebApi.Controllers
             var coach = _myMemory.allCoaches.FirstOrDefault(c => c.CoachId == dto.coachId);
             if (coach == null)
                 return NotFound();
-            course.CheckingCoach(course, coach);
+            course.AddingCoach(course, coach);
             return Ok();
         }
 
