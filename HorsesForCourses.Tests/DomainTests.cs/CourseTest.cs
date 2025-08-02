@@ -164,7 +164,7 @@ public class CourseTest
         tinyCoach.AddCompetenceList(skills);
 
         var notAdding = Assert.Throws<NotReadyException>(() => tinyCourse.AddingCoach(tinyCourse, tinyCoach));
-        Assert.Equal("Course needs to have lessons first", notAdding.Message);
+        Assert.Equal("Course doesn't have timeslots", notAdding.Message);
 
         Assert.False(tinyCourse.hasCoach);
         // Assert.Equal(null, tinyCourse.CoachForCourse);
@@ -190,7 +190,7 @@ public class CourseTest
         tinyCoach.AddCompetenceList(new List<Skill> { new Skill("meowing") });
 
         var notAdding = Assert.Throws<NotReadyException>(() => tinyCourse.AddingCoach(tinyCourse, tinyCoach));
-        Assert.Equal("Coach isn't suited for course", notAdding.Message);
+        Assert.Equal("Coach doesn't have necessary skills", notAdding.Message);
 
         Assert.False(tinyCourse.hasCoach);
         Assert.Equal(0, tinyCoach.numberOfAssignedCourses);

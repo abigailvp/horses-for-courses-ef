@@ -10,7 +10,7 @@ public class Timeslot
     public int BeginTimeslot { get; set; }
     public int EndTimeslot { get; set; }
 
-    public int DurationTimeslot => EndTimeslot - BeginTimeslot; //methode want is nog niet ingevuld
+    public int DurationTimeslot => EndTimeslot - BeginTimeslot;
 
 
     public Timeslot(int beginTimeslot, int endTimeslot, DateOnly dateTimeslot)

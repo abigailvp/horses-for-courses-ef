@@ -15,6 +15,7 @@ public class Course
     public List<Timeslot> CourseTimeslots = new();
     public List<Skill> ListOfCourseSkills = new();
 
+    public StatusCourse Status { get; set; }
     public bool hasSchedule { get; set; }
     public bool hasCoach { get; set; }
 
@@ -29,6 +30,7 @@ public class Course
         EndDateCourse = endcourse;
         CourseId = new int();
 
+        Status = StatusCourse.Created;
         hasSchedule = false;
         hasCoach = false;
     }
@@ -86,9 +88,9 @@ public class Course
 
     public bool ConflictsWith(Coach coach)
     {
-        var timeslotsCourseOfCoach = coach.ListOfCoursesAssignedTo.SelectMany(c => c.CourseTimeslots);
+        var timeslotsCoach = coach.ListOfCoursesAssignedTo.SelectMany(c => c.CourseTimeslots);
 
-        foreach (Timeslot slot in timeslotsCourseOfCoach)
+        foreach (Timeslot slot in timeslotsCoach)
         {
             if (Overlaps(slot))
                 return true;
@@ -99,21 +101,21 @@ public class Course
 
     public void ValidateCourseBasedOnTimeslots(Course course)
     {
-        if (Availability.DoesCourseHaveTimeslots(course) == StatusCourse.WaitingForTimeslots)
-            throw new NotReadyException("Course doesn't have timeslots");
+        Status = Availability.DoesCourseHaveTimeslots(course);
         hasSchedule = true;
     }
 
     public void AddingCoach(Course course, Coach coach)
     {
-        if (Availability.CheckingCoachByStatus(course, coach) == StatusCourse.WaitingForTimeslots ||
-        Availability.CheckingCoachByStatus(course, coach) == StatusCourse.WaitingForCompetentCoach)
-            throw new NotReadyException("Coach isn't suited for course");
+        ValidateCourseBasedOnTimeslots(course);
+        Status = Availability.CheckingCoachByStatus(course, coach);
 
-        CoachForCourse = coach;
-        coach.ListOfCoursesAssignedTo.Add(course);
-        coach.numberOfAssignedCourses += 1;
-        hasCoach = true;
+        if (Status == StatusCourse.Assigned)
+        {
+            CoachForCourse = coach;
+            coach.ListOfCoursesAssignedTo.Add(course);
+            coach.numberOfAssignedCourses += 1;
+            hasCoach = true;
+        }
     }
-
 }

@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using HorsesForCourses.Core.DomainEntities;
-using HorsesForCourses.Core.WholeValuesAndStuff;
-using HorsesForCourses.Core;
 using HorsesForCourses.WebApi.Repo;
 using HorsesForCourses.WebApi.Factory;
 

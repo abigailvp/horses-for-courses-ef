@@ -16,7 +16,7 @@ public static class CourseMapper
     List<Timeslot> realList = new();
     foreach (MyTimeslot slot in list)
     {
-      Timeslot realSlot = new(slot.beginhour, slot.endhour, DateOnly.Parse(slot.Day));
+      Timeslot realSlot = new(slot.beginhour, slot.endhour, DateOnly.Parse(slot.Day)); //tryparse is veiliger als cliënt verkeerd ingeeft
       realList.Add(realSlot);
     }
     return realList;
