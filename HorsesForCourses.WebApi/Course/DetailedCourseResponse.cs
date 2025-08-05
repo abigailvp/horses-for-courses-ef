@@ -13,8 +13,8 @@ public class DetailedCourseResponse
     public string endDate { get; set; }
     public List<Skill> skills { get; set; }
     public List<MyTimeslot> ListOfTimeslots { get; set; }
-    public CoachForCourseResponse coach { get; set; }
+    public CoachForCourseResponse? coach { get; set; }
 
 }
 
-public record CoachForCourseResponse(int id, string name);
+public record CoachForCourseResponse(int? id, string? name);

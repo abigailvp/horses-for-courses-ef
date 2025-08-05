@@ -1,4 +1,3 @@
-using HorsesForCourses.WebApi.Repo;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using HorsesForCourses.Core.HorsesOnTheLoose;
@@ -9,7 +8,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 // Add services to the container.
-builder.Services.AddSingleton<AllData>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

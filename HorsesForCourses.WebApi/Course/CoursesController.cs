@@ -93,15 +93,13 @@ namespace HorsesForCourses.WebApi.Controllers
         public async Task<ActionResult<DetailedCourseResponse>> GetCourseById(int Id)
         {
             var course = await Context.Courses
-            .Include(c => c.NameCourse)
-            .Include(c => c.StartDateCourse)
-            .Include(c => c.EndDateCourse)
             .Include(c => c.ListOfCourseSkills)
             .Include(c => c.CourseTimeslots)
             .Include(c => c.CoachForCourse)
             .FirstOrDefaultAsync(c => c.CourseId == Id);
             if (course == null)
                 return NotFound();
+            await Context.SaveChangesAsync();
             return Ok(CourseMapper.ConvertToDetailedCourse(course));
         }
 

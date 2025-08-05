@@ -10,7 +10,7 @@ public class Coach //aggregate root
     public string NameCoach { get; set; }
     public string Email { get; set; }
 
-    public List<Skill> ListOfCompetences { get; set; } //EF stelt in
+    public List<Skill> ListOfCompetences { get; set; } = []; //EF stelt in
     public List<Course> ListOfCoursesAssignedTo = new();
     public int numberOfAssignedCourses { get; set; }
     public List<Timeslot> AvailableTimeslots = new();

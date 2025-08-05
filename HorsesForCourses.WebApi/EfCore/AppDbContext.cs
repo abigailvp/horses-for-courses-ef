@@ -38,6 +38,7 @@ public class AppDbContext : DbContext
                 })
             .Property(coach => coach.NameCoach).IsRequired();
 
+
         //valueobjects van course
         modelBuilder.Entity<Course>()
             .OwnsMany(c => c.ListOfCourseSkills, rs =>

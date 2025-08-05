@@ -11,8 +11,8 @@ public class Course
     public DateOnly EndDateCourse { get; set; }
     public int DurationCourse { get; }
 
-    public Coach CoachForCourse { get; set; }
-    public int CoachId { get; set; } //ef stelt deze in
+    public Coach? CoachForCourse { get; set; }
+    public int? CoachId { get; set; } //ef stelt deze in of is null (?)
     public List<Timeslot> CourseTimeslots = new();
     public List<Skill> ListOfCourseSkills = new();
 

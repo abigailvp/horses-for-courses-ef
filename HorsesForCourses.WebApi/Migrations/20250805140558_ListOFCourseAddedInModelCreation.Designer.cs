@@ -3,6 +3,7 @@ using System;
 using HorsesForCourses.WebApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HorsesForCourses.WebApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250805140558_ListOFCourseAddedInModelCreation")]
+    partial class ListOFCourseAddedInModelCreation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.8");
@@ -45,7 +48,7 @@ namespace HorsesForCourses.WebApi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("CoachId")
+                    b.Property<int>("CoachId")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateOnly>("EndDateCourse")
@@ -110,7 +113,9 @@ namespace HorsesForCourses.WebApi.Migrations
                 {
                     b.HasOne("HorsesForCourses.Core.DomainEntities.Coach", "CoachForCourse")
                         .WithMany("ListOfCoursesAssignedTo")
-                        .HasForeignKey("CoachId");
+                        .HasForeignKey("CoachId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.OwnsMany("HorsesForCourses.Core.WholeValuesAndStuff.Skill", "ListOfCourseSkills", b1 =>
                         {

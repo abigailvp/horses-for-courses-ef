@@ -56,7 +56,7 @@ public static class CourseMapper
     endDate = course.EndDateCourse.ToString(),
     skills = course.ListOfCourseSkills,
     ListOfTimeslots = ConvertToScheduledCourse(course).CourseTimeslots,
-    coach = new CoachForCourseResponse(course.CoachForCourse.CoachId, course.CoachForCourse.NameCoach)
+    coach = new CoachForCourseResponse(course.CoachId, course.CoachForCourse.NameCoach)
   };
 
 }
