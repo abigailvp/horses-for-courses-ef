@@ -36,6 +36,7 @@ namespace HorsesForCourses.WebApi.Controllers
             if (coach == null)
                 return NotFound();
             coach.AddCompetenceList(dto.ListOfSkills);
+            await Context.SaveChangesAsync();
             return Ok(); //geen update in repo want je hebt toegang tot coach met id
         }
 
@@ -52,10 +53,8 @@ namespace HorsesForCourses.WebApi.Controllers
         public async Task<ActionResult<DetailedCoachResponse>> GetCoachById(int id)
         {
             var coach = await Context.Coaches
-            // .Include(c => c.ListOfCompetences)
-            // .Include(c => c.ListOfCoursesAssignedTo)
-            // .Include(c => c.NameCoach)
-            // .Include(c => c.Email)
+            .Include(c => c.ListOfCompetences)
+            .Include(c => c.ListOfCoursesAssignedTo)
             .FirstOrDefaultAsync(c => c.CoachId == id);
             if (coach == null)
                 return NotFound();

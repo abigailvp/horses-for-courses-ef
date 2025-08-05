@@ -23,6 +23,7 @@ namespace HorsesForCourses.WebApi.Controllers
 
             await Context.Database.EnsureCreatedAsync();
             Context.Courses.Add(course);
+            await Context.SaveChangesAsync();
             return Ok(course.CourseId);
         }
 
@@ -34,6 +35,7 @@ namespace HorsesForCourses.WebApi.Controllers
             if (course == null)
                 return NotFound();
             course.AddCompetenceList(dto.ListOfCourseCompetences);
+            await Context.SaveChangesAsync();
             return Ok();
         }
 
@@ -45,6 +47,7 @@ namespace HorsesForCourses.WebApi.Controllers
             if (course == null)
                 return NotFound();
             course.AddTimeSlotList(CourseMapper.ConvertToDomainList(dto.CourseTimeslots));
+            await Context.SaveChangesAsync();
             return Ok();
         }
 
@@ -56,6 +59,7 @@ namespace HorsesForCourses.WebApi.Controllers
             if (course == null)
                 return NotFound();
             course.ValidateCourseBasedOnTimeslots(course);
+            await Context.SaveChangesAsync();
             return Ok();
         }
 
@@ -70,6 +74,7 @@ namespace HorsesForCourses.WebApi.Controllers
             if (coach == null)
                 return NotFound();
             course.AddingCoach(course, coach);
+            await Context.SaveChangesAsync();
             return Ok();
         }
 
@@ -77,6 +82,7 @@ namespace HorsesForCourses.WebApi.Controllers
         public async Task<ActionResult<AllCoursesResponse>> GetCourses()
         {
             var allCourses = await Context.Courses.ToListAsync();
+            await Context.SaveChangesAsync();
             return CourseMapper.ConvertToListCourses(allCourses);
         }
 

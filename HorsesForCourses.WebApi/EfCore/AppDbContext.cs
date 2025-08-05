@@ -38,9 +38,6 @@ public class AppDbContext : DbContext
                 })
             .Property(coach => coach.NameCoach).IsRequired();
 
-
-
-
     }
 
 }
