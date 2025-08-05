@@ -26,7 +26,7 @@ public class AppDbContext : DbContext
             .WithOne(c => c.CoachForCourse) //uit course halen
             .HasForeignKey(c => c.CoachId); //toegevoegd aan course, ef stelt deze zelf in in domein
 
-        // properties van coach
+        // valueobjects van coach
         modelBuilder.Entity<Coach>()
             .OwnsMany(c => c.ListOfCompetences, a => //a zijn de skills
                 {
@@ -37,6 +37,27 @@ public class AppDbContext : DbContext
                     a.ToTable("CoachSkills"); //tabel van maken
                 })
             .Property(coach => coach.NameCoach).IsRequired();
+
+        //valueobjects van course
+        modelBuilder.Entity<Course>()
+            .OwnsMany(c => c.ListOfCourseSkills, rs =>
+            {
+                rs.WithOwner().HasForeignKey("CourseId");
+                rs.Property<int>("Id");
+                rs.HasKey("Id");
+                rs.Property(rs => rs.Name).HasColumnName("Name");
+                rs.ToTable("CourseSkills");
+            })
+            .OwnsMany(c => c.CourseTimeslots, t =>
+            {
+                t.WithOwner().HasForeignKey("CourseId");
+                t.Property<int>("Id");
+                t.HasKey("Id");
+                t.Property(t => t.DateTimeslot).HasColumnName("Day");
+                t.Property(t => t.BeginTimeslot).HasColumnName("Begin");
+                t.Property(t => t.EndTimeslot).HasColumnName("End");
+                t.ToTable("CourseTimeslots");
+            });
 
     }
 
