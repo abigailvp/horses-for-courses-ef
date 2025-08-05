@@ -2,8 +2,11 @@ using HorsesForCourses.WebApi.Repo;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using HorsesForCourses.Core.HorsesOnTheLoose;
+using HorsesForCourses.WebApi;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 // Add services to the container.
 builder.Services.AddSingleton<AllData>();
@@ -17,6 +20,23 @@ builder.Services.AddSwaggerGen(options =>
         Title = "HorsesForCourses API",
         Version = "v1",
         Description = "API voor het beheren van cursussen en coaches"
+    });
+});
+
+//EF core
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite("Data Source=app.db"));
+
+
+
+//CORS = nodig om 2 servers te verbinden (js en api)
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("http://127.0.0.1:5500") // of je frontend host/poort
+              .AllowAnyHeader()
+              .AllowAnyMethod();
     });
 });
 

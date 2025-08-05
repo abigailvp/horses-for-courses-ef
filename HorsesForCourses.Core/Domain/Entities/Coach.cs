@@ -1,20 +1,21 @@
 using HorsesForCourses.Core.WholeValuesAndStuff;
 using HorsesForCourses.Core.HorsesOnTheLoose;
+using System.Dynamic;
 
 namespace HorsesForCourses.Core.DomainEntities;
 
 public class Coach //aggregate root
 {
-    public int CoachId { get; set; }
+    public int CoachId { get; set; } //EF maakt aan
     public string NameCoach { get; set; }
     public string Email { get; set; }
 
-    public List<Skill> ListOfCompetences = new();
+    public List<Skill> ListOfCompetences { get; set; } //EF stelt in
     public List<Course> ListOfCoursesAssignedTo = new();
     public int numberOfAssignedCourses { get; set; }
     public List<Timeslot> AvailableTimeslots = new();
 
-
+    public Coach() { } //EF heeft deze nodig voor migrations uit te voeren
     public Coach(string name, string email)
     {
         if (!email.Contains("@"))
@@ -25,7 +26,6 @@ public class Coach //aggregate root
             throw new DomainException("Name can't be empty");
         NameCoach = name;
         Email = email;
-        CoachId = new int(); //pas aanmaken als je een coach aanmaakt
 
         numberOfAssignedCourses = 0;
     }

@@ -12,12 +12,15 @@ public class Course
     public int DurationCourse { get; }
 
     public Coach CoachForCourse { get; set; }
+    public int CoachId { get; set; } //ef stelt deze in
     public List<Timeslot> CourseTimeslots = new();
     public List<Skill> ListOfCourseSkills = new();
 
     public StatusCourse Status { get; set; }
     public bool hasSchedule { get; set; }
     public bool hasCoach { get; set; }
+
+    public Course() { } //EF heeft deze nodig voor migrations uit te voeren
 
     public Course(string nameCourse, DateOnly startcourse, DateOnly endcourse)
     {
@@ -83,7 +86,8 @@ public class Course
     {
         return CourseTimeslots.Any(c => c.DateTimeslot == slot.DateTimeslot &&
                                 c.BeginTimeslot < slot.EndTimeslot &&
-                                c.EndTimeslot > slot.BeginTimeslot); //als dit ook waar is, is er sws overlap
+                                c.EndTimeslot > slot.BeginTimeslot &&
+                                c.DurationTimeslot <= slot.DurationTimeslot); //als dit ook waar is, is er sws overlap
     }
 
     public bool ConflictsWith(Coach coach)

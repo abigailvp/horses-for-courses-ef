@@ -1,36 +1,38 @@
 using HorsesForCourses.Core.DomainEntities;
-using HorsesForCourses.Core.WholeValuesAndStuff;
 using HorsesForCourses.WebApi.Factory;
-using HorsesForCourses.WebApi.Repo;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HorsesForCourses.WebApi.Controllers
 {
     [ApiController]
-    [Route("/[controller]")] //Coach wordt automatisch ingevuld hier
+    [Route("/[controller]")] //Coaches wordt automatisch ingevuld hier
     public class CoachesController : ControllerBase
     {
-        private readonly AllData _myMemory; //veilige methode om storage te gebruiken
-        public CoachesController(AllData myMemory)
+        private readonly AppDbContext Context;
+        public CoachesController(AppDbContext ctx)
         {
-            _myMemory = myMemory;
+            Context = ctx;
         }
 
         [HttpPost]
-        public ActionResult<int> CreateEmptyCoach([FromBody] CoachRequest dto) //de info uit de dto wordt automatisch opgevraagd
+        public async Task<ActionResult<int>> CreateEmptyCoach([FromBody] CoachRequest dto) //de info uit de dto wordt automatisch opgevraagd
         {
             var coach = new Coach(dto.NameCoach, dto.Email);
 
-            _myMemory.allCoaches.Add(coach);
+            await Context.Database.EnsureCreatedAsync();
+            Context.Coaches.Add(coach);
+            await Context.SaveChangesAsync();
             return Ok(coach.CoachId);
         }
 
 
         [HttpPost]
         [Route("{id}/skills")]
-        public IActionResult AddCompetencesList(int id, [FromBody] CompetentCoachRequest dto)
+        public async Task<IActionResult> AddCompetencesList(int id, [FromBody] CompetentCoachRequest dto)
         {
-            var coach = _myMemory.allCoaches.FirstOrDefault(c => c.CoachId == id); //getting coach with same id
+            var coach = await Context.Coaches
+            .FirstOrDefaultAsync(c => c.CoachId == id); //getting coach with same id
             if (coach == null)
                 return NotFound();
             coach.AddCompetenceList(dto.ListOfSkills);
@@ -38,21 +40,38 @@ namespace HorsesForCourses.WebApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<ListOfCoachesResponse> GetCoaches()
+        public async Task<ActionResult<ListOfCoachesResponse>> GetCoaches()
         {
-            var lijstje = _myMemory.allCoaches;
+            var lijstje = await Context.Coaches.ToListAsync();
             return Ok(CoachMapper.ConvertToListOfCoaches(lijstje));
         }
 
 
         [HttpGet]
         [Route("{id}")]
-        public ActionResult<DetailedCoachResponse> GetCoachById(int id)
+        public async Task<ActionResult<DetailedCoachResponse>> GetCoachById(int id)
         {
-            var coach = _myMemory.allCoaches.Where(c => c.CoachId == id).FirstOrDefault();
+            var coach = await Context.Coaches
+            // .Include(c => c.ListOfCompetences)
+            // .Include(c => c.ListOfCoursesAssignedTo)
+            // .Include(c => c.NameCoach)
+            // .Include(c => c.Email)
+            .FirstOrDefaultAsync(c => c.CoachId == id);
             if (coach == null)
                 return NotFound();
             return Ok(CoachMapper.ConvertToDetailedCoach(coach));
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IActionResult> DeleteACoach(int id)
+        {
+            var coach = await Context.Coaches.FirstOrDefaultAsync(c => c.CoachId == id);
+            if (coach == null)
+                return NotFound();
+            Context.Coaches.Remove(coach);
+            await Context.SaveChangesAsync();
+            return Ok();
         }
 
 

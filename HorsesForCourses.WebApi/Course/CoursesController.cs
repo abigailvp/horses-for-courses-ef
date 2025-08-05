@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using HorsesForCourses.Core.DomainEntities;
-using HorsesForCourses.WebApi.Repo;
 using HorsesForCourses.WebApi.Factory;
+using Microsoft.EntityFrameworkCore;
 
 namespace HorsesForCourses.WebApi.Controllers
 {
@@ -9,27 +9,28 @@ namespace HorsesForCourses.WebApi.Controllers
     [Route("/[controller]")]
     public class CoursesController : ControllerBase
     {
-        private readonly AllData _myMemory; //veilige methode om storage te gebruiken
-        public CoursesController(AllData myMemory)
+        private readonly AppDbContext Context; //veilige methode om storage te gebruiken
+        public CoursesController(AppDbContext ctx)
         {
-            _myMemory = myMemory;
+            Context = ctx;
         }
 
         [HttpPost] // met naam en periode
-        public ActionResult<int> CreateEmptyCourse([FromBody] CourseRequest dto)
+        public async Task<ActionResult<int>> CreateEmptyCourse([FromBody] CourseRequest dto)
         {
             var course = new Course(dto.NameCourse, DateOnly.Parse(dto.StartDateCourse), DateOnly.Parse(dto.EndDateCourse));
             //omzetten naar DateOnly
 
-            _myMemory.allCourses.Add(course);
+            await Context.Database.EnsureCreatedAsync();
+            Context.Courses.Add(course);
             return Ok(course.CourseId);
         }
 
         [HttpPost]
         [Route("{Id}/skills")] //de id gaat van in de url naar de methode
-        public IActionResult AddCompetences(int Id, [FromBody] CompetentCourseRequest dto)
+        public async Task<IActionResult> AddCompetences(int Id, [FromBody] CompetentCourseRequest dto)
         {
-            var course = _myMemory.allCourses.FirstOrDefault(c => c.CourseId == Id);
+            var course = await Context.Courses.FirstOrDefaultAsync(c => c.CourseId == Id);
             if (course == null)
                 return NotFound();
             course.AddCompetenceList(dto.ListOfCourseCompetences);
@@ -38,9 +39,9 @@ namespace HorsesForCourses.WebApi.Controllers
 
         [HttpPost]
         [Route("{Id}/timeslots")]
-        public IActionResult AddTimeslots(int Id, [FromBody] ScheduledCourseRequest dto) //invoer van lijstdag moet format "YYYY/MM/DD" hebben
+        public async Task<IActionResult> AddTimeslots(int Id, [FromBody] ScheduledCourseRequest dto) //invoer van lijstdag moet format "YYYY/MM/DD" hebben
         {
-            var course = _myMemory.allCourses.FirstOrDefault(c => c.CourseId == Id);
+            var course = await Context.Courses.FirstOrDefaultAsync(c => c.CourseId == Id);
             if (course == null)
                 return NotFound();
             course.AddTimeSlotList(CourseMapper.ConvertToDomainList(dto.CourseTimeslots));
@@ -49,9 +50,9 @@ namespace HorsesForCourses.WebApi.Controllers
 
         [HttpPost]
         [Route("{Id}/confirm")]
-        public IActionResult ConfirmCourse(int Id)
+        public async Task<IActionResult> ConfirmCourse(int Id)
         {
-            var course = _myMemory.allCourses.FirstOrDefault(c => c.CourseId == Id);
+            var course = await Context.Courses.FirstOrDefaultAsync(c => c.CourseId == Id);
             if (course == null)
                 return NotFound();
             course.ValidateCourseBasedOnTimeslots(course);
@@ -60,12 +61,12 @@ namespace HorsesForCourses.WebApi.Controllers
 
         [HttpPost]
         [Route("{Id}/assign-coach")]
-        public IActionResult AssignCoach(int Id, [FromBody] AssignedCourseRequest dto)
+        public async Task<IActionResult> AssignCoach(int Id, [FromBody] AssignedCourseRequest dto)
         {
-            var course = _myMemory.allCourses.FirstOrDefault(c => c.CourseId == Id);
+            var course = await Context.Courses.FirstOrDefaultAsync(c => c.CourseId == Id);
             if (course == null)
                 return NotFound();
-            var coach = _myMemory.allCoaches.FirstOrDefault(c => c.CoachId == dto.coachId);
+            var coach = await Context.Coaches.FirstOrDefaultAsync(c => c.CoachId == dto.coachId);
             if (coach == null)
                 return NotFound();
             course.AddingCoach(course, coach);
@@ -73,9 +74,9 @@ namespace HorsesForCourses.WebApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<AllCoursesResponse> GetCourses()
+        public async Task<ActionResult<AllCoursesResponse>> GetCourses()
         {
-            var allCourses = _myMemory.allCourses;
+            var allCourses = await Context.Courses.ToListAsync();
             return CourseMapper.ConvertToListCourses(allCourses);
         }
 
@@ -83,15 +84,20 @@ namespace HorsesForCourses.WebApi.Controllers
 
         [HttpGet]
         [Route("{Id}")]
-        public ActionResult<DetailedCourseResponse> GetCourseById(int Id)
+        public async Task<ActionResult<DetailedCourseResponse>> GetCourseById(int Id)
         {
-            var course = _myMemory.allCourses.Where(c => c.CourseId == Id).FirstOrDefault();
+            var course = await Context.Courses
+            .Include(c => c.NameCourse)
+            .Include(c => c.StartDateCourse)
+            .Include(c => c.EndDateCourse)
+            .Include(c => c.ListOfCourseSkills)
+            .Include(c => c.CourseTimeslots)
+            .Include(c => c.CoachForCourse)
+            .FirstOrDefaultAsync(c => c.CourseId == Id);
             if (course == null)
                 return NotFound();
             return Ok(CourseMapper.ConvertToDetailedCourse(course));
         }
-
-
 
 
     }
