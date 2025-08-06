@@ -8,10 +8,12 @@ namespace HorsesForCourses.Tests.EF;
 public class CoachPersistancyTests
 {
     [Fact]
-    public async Task ShouldPersistData()
+    public async Task ShouldPersistDataofCoach() //save data
     {
         var connection = new SqliteConnection("DataSource=:memory:");
         await connection.OpenAsync();
+        // zo doen zodat je alleen bij het openen van connectie, data opslaat
+
         var options = new DbContextOptionsBuilder<AppDbContext>()
             .UseSqlite(connection)
             .Options;
@@ -38,5 +40,23 @@ public class CoachPersistancyTests
             Assert.Single(coach.ListOfCompetences);
             Assert.Equal("dev", coach.ListOfCompetences.Single().Name);
         }
+
+        await connection.CloseAsync(); //terug sluiten connectie> data weg
+    }
+
+    [Fact]
+    public async Task ShouldPersistDataofCourse() //save data
+    {
+        var connection = new SqliteConnection("DataSource=:memory");
+        connection.OpenAsync();
+
+        var options = new DbContextOptionsBuilder<AppDbContext>()
+        .UseSqlite(connection)
+        .Options;
+
+        using (new AppDbContext(options))
+        { }
+
+
     }
 }
