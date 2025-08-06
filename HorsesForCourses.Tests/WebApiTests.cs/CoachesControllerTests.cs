@@ -4,9 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using HorsesForCourses.WebApi;
-using System.Threading.Tasks;
 using HorsesForCourses.Core.HorsesOnTheLoose;
-using HorsesForCourses.Core.DomainEntities;
 using HorsesForCourses.Core.WholeValuesAndStuff;
 
 

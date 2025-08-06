@@ -44,11 +44,15 @@ public class Coach //aggregate root
 
     public void AddCompetenceList(List<Skill> complist)
     {
-        ListOfCompetences.Clear();
         foreach (Skill comp in complist)
         {
             ListOfCompetences.Add(comp);
         }
+    }
+
+    public void EmptyCompetenceList()
+    {
+        ListOfCompetences.Clear();
     }
 
 

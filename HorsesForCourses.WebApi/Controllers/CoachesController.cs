@@ -9,10 +9,10 @@ namespace HorsesForCourses.WebApi.Controllers
     [Route("/[controller]")] //Coaches wordt automatisch ingevuld hier
     public class CoachesController : ControllerBase
     {
-        private readonly AppDbContext Context;
-        public CoachesController(AppDbContext ctx)
+        private readonly UnitOfWork Worker;
+        public CoachesController(UnitOfWork worker)
         {
-            Context = ctx;
+            Worker = worker;
         }
 
         [HttpPost]
@@ -20,9 +20,9 @@ namespace HorsesForCourses.WebApi.Controllers
         {
             var coach = new Coach(dto.NameCoach, dto.Email);
 
-            await Context.Database.EnsureCreatedAsync();
-            Context.Coaches.Add(coach);
-            await Context.SaveChangesAsync();
+            await Worker.StartAsync();
+            Worker.AddCoach(coach);
+            await Worker.CompleteAsync();
             return Ok(coach.CoachId);
         }
 
@@ -31,19 +31,19 @@ namespace HorsesForCourses.WebApi.Controllers
         [Route("{id}/skills")]
         public async Task<IActionResult> AddCompetencesList(int id, [FromBody] CompetentCoachRequest dto)
         {
-            var coach = await Context.Coaches
-            .FirstOrDefaultAsync(c => c.CoachId == id); //getting coach with same id
+            await Worker.StartAsync();
+            var coach = await Worker.GetCoachById(id); //getting coach with same id
             if (coach == null)
                 return NotFound();
             coach.AddCompetenceList(dto.ListOfSkills);
-            await Context.SaveChangesAsync();
+            await Worker.CompleteAsync();
             return Ok(); //geen update in repo want je hebt toegang tot coach met id
         }
 
         [HttpGet]
         public async Task<ActionResult<ListOfCoachesResponse>> GetCoaches()
         {
-            var lijstje = await Context.Coaches.ToListAsync();
+            var lijstje = await Worker.ListCoaches();
             return Ok(CoachMapper.ConvertToListOfCoaches(lijstje));
         }
 
@@ -52,10 +52,7 @@ namespace HorsesForCourses.WebApi.Controllers
         [Route("{id}")]
         public async Task<ActionResult<DetailedCoachResponse>> GetCoachById(int id)
         {
-            var coach = await Context.Coaches
-            .Include(c => c.ListOfCompetences)
-            .Include(c => c.ListOfCoursesAssignedTo)
-            .FirstOrDefaultAsync(c => c.CoachId == id);
+            var coach = await Worker.GetSpecificCoachById(id);
             if (coach == null)
                 return NotFound();
             return Ok(CoachMapper.ConvertToDetailedCoach(coach));
@@ -65,11 +62,23 @@ namespace HorsesForCourses.WebApi.Controllers
         [Route("{id}")]
         public async Task<IActionResult> DeleteACoach(int id)
         {
-            var coach = await Context.Coaches.FirstOrDefaultAsync(c => c.CoachId == id);
+            var coach = await Worker.GetCoachById(id);
             if (coach == null)
                 return NotFound();
-            Context.Coaches.Remove(coach);
-            await Context.SaveChangesAsync();
+            Worker.RemoveCoach(coach);
+            await Worker.CompleteAsync();
+            return Ok();
+        }
+
+        [HttpDelete]
+        [Route("{id}/skills")]
+        public async Task<IActionResult> DeleteSkillsFromACoach(int id)
+        {
+            var coach = Worker.GetCoachById(id);
+            if (coach == null)
+                return NotFound();
+            coach.Result.EmptyCompetenceList();
+            await Worker.CompleteAsync();
             return Ok();
         }
 

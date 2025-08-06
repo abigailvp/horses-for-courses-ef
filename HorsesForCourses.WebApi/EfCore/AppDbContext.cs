@@ -54,7 +54,8 @@ public class AppDbContext : DbContext
                 t.WithOwner().HasForeignKey("CourseId");
                 t.Property<int>("Id");
                 t.HasKey("Id");
-                t.Property(t => t.DateTimeslot).HasColumnName("Day");
+                t.Property(t => t.DateTimeslot).HasColumnName("Date");
+                t.Property(t => t.Day).HasColumnName("Day");
                 t.Property(t => t.BeginTimeslot).HasColumnName("Begin");
                 t.Property(t => t.EndTimeslot).HasColumnName("End");
                 t.ToTable("CourseTimeslots");
