@@ -20,8 +20,6 @@ namespace HorsesForCourses.WebApi.Controllers
         {
             var course = new Course(dto.NameCourse, DateOnly.Parse(dto.StartDateCourse), DateOnly.Parse(dto.EndDateCourse));
             //omzetten naar DateOnly
-
-            await Context.Database.MigrateAsync();
             Context.Courses.Add(course);
             await Context.SaveChangesAsync();
             return Ok(course.CourseId);
@@ -82,8 +80,10 @@ namespace HorsesForCourses.WebApi.Controllers
         public async Task<ActionResult<AllCoursesResponse>> GetCourses()
         {
             var allCourses = await Context.Courses.ToListAsync();
+            if (allCourses == null)
+                return NotFound();
             await Context.SaveChangesAsync();
-            return CourseMapper.ConvertToListCourses(allCourses);
+            return Ok(CourseMapper.ConvertToListCourses(allCourses));
         }
 
 

@@ -22,9 +22,13 @@ public class Availability
         if (coach.ListOfCompetences.Count() == 0)
             throw new NotReadyException("Coach needs to have skills first");
 
-        bool coachNotAvailable = course.ConflictsWith(coach);
-        if (coachNotAvailable)
-            throw new NotReadyException("Coach is not available");
+        if (coach.ListOfCoursesAssignedTo.Count() > 0)
+        {
+            bool coachNotAvailable = course.ConflictsWith(coach);
+            if (coachNotAvailable)
+                throw new NotReadyException("Coach is not available");
+        }
+
 
         var list = coach.ListOfCompetences;
         foreach (Skill required in course.ListOfCourseSkills)
@@ -33,6 +37,8 @@ public class Availability
             if (!matching) //als er 1 is die niet dezelfde naam heeft
                 throw new NotReadyException("Coach doesn't have necessary skills");
         }
+
+
         return StatusCourse.Assigned;
     }
 

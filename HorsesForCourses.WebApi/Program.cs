@@ -22,23 +22,12 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 //EF core
-var padUitBin = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"..\..\.."));
+var padUitBin = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"..\..\..")); //AppContext.BaseDirectory geeft map waar program wordt uitgevoerd
 var dbPath = Path.Combine(padUitBin, "app.db"); //dynamisch pad zodat het niet in bin komt
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite($"Data Source={dbPath}"));
 
 
-
-//CORS = nodig om 2 servers te verbinden (js en api)
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(policy =>
-    {
-        policy.WithOrigins("http://127.0.0.1:5500") // of je frontend host/poort
-              .AllowAnyHeader()
-              .AllowAnyMethod();
-    });
-});
 
 var app = builder.Build();
 Console.WriteLine($"Database path: {dbPath}");

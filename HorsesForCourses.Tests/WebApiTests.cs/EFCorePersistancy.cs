@@ -47,16 +47,34 @@ public class CoachPersistancyTests
     [Fact]
     public async Task ShouldPersistDataofCourse() //save data
     {
-        var connection = new SqliteConnection("DataSource=:memory");
-        connection.OpenAsync();
+        var connection = new SqliteConnection("DataSource=:memory:");
+        await connection.OpenAsync(); //bij async altijd await
 
         var options = new DbContextOptionsBuilder<AppDbContext>()
         .UseSqlite(connection)
         .Options;
 
-        using (new AppDbContext(options))
-        { }
+        using (var context = new AppDbContext(options))
+        {
+            await context.Database.EnsureCreatedAsync();
+        }
 
+        using (var context = new AppDbContext(options))
+        {
+            var importantCourse = new Course("Cats", new DateOnly(2025, 8, 4), new DateOnly(2025, 8, 6));
+            context.Courses.Add(importantCourse);
+            await context.SaveChangesAsync();
+        }
 
+        using (var context = new AppDbContext(options))
+        {
+            var result = await context.Courses.FindAsync(1);
+            var hasResults = context.Courses.Any();
+            Assert.Equal("Cats", result!.NameCourse); //! want kan niks gevonden hebben
+            Assert.Equal(new DateOnly(2025, 8, 4), result!.StartDateCourse);
+            Assert.True(hasResults);
+        }
+
+        await connection.CloseAsync();
     }
 }
