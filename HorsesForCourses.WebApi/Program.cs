@@ -22,8 +22,10 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 //EF core
+var padUitBin = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"..\..\.."));
+var dbPath = Path.Combine(padUitBin, "app.db"); //dynamisch pad zodat het niet in bin komt
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite("Data Source=app.db"));
+    options.UseSqlite($"Data Source={dbPath}"));
 
 
 
@@ -39,6 +41,16 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+Console.WriteLine($"Database path: {dbPath}");
+
+// migrations
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
+
+app.UseCors();
 
 app.Use(async (context, next) =>
 {
@@ -85,5 +97,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
 
 

@@ -21,7 +21,7 @@ namespace HorsesForCourses.WebApi.Controllers
             var course = new Course(dto.NameCourse, DateOnly.Parse(dto.StartDateCourse), DateOnly.Parse(dto.EndDateCourse));
             //omzetten naar DateOnly
 
-            await Context.Database.EnsureCreatedAsync();
+            await Context.Database.MigrateAsync();
             Context.Courses.Add(course);
             await Context.SaveChangesAsync();
             return Ok(course.CourseId);
