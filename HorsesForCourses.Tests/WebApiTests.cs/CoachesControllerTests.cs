@@ -1,11 +1,11 @@
+using HorsesForCourses.Core.HorsesOnTheLoose;
+using HorsesForCourses.Core.WholeValuesAndStuff;
+using HorsesForCourses.WebApi;
 using HorsesForCourses.WebApi.Controllers;
 using HorsesForCourses.WebApi.Factory;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using HorsesForCourses.WebApi;
-using HorsesForCourses.Core.HorsesOnTheLoose;
-using HorsesForCourses.Core.WholeValuesAndStuff;
 
 
 namespace HorsesForCoursesTests;
@@ -29,7 +29,9 @@ public class CoachesControllerTests
 
         using (var context = new AppDbContext(options))
         {
-            CoachesController controller = new(context);
+            var repo = new Repo(context);
+            var trans = new UnitOfWork(context, repo);
+            CoachesController controller = new(trans);
             var response = await controller.GetCoaches();
             var okresult = Assert.IsType<OkObjectResult>(response.Result);
             var list = Assert.IsType<ListOfCoachesResponse>(okresult.Value);
@@ -58,7 +60,9 @@ public class CoachesControllerTests
 
         using (var ctx = new AppDbContext(options))
         {
-            CoachesController controller = new(ctx);
+            var repo = new Repo(ctx);
+            var trans = new UnitOfWork(ctx, repo);
+            CoachesController controller = new(trans);
 
             var dto = new CoachRequest
             {
@@ -77,7 +81,9 @@ public class CoachesControllerTests
 
         using (var ctx = new AppDbContext(options))
         {
-            CoachesController controller = new(ctx);
+            var repo = new Repo(ctx);
+            var trans = new UnitOfWork(ctx, repo);
+            CoachesController controller = new(trans);
 
             var result = await controller.GetCoachById(1);
 
@@ -109,7 +115,9 @@ public class CoachesControllerTests
 
         using (var ctx = new AppDbContext(options))
         {
-            CoachesController controller = new(ctx);
+            var repo = new Repo(ctx);
+            var trans = new UnitOfWork(ctx, repo);
+            CoachesController controller = new(trans);
             var dto = new CoachRequest
             {
                 NameCoach = "Lola",
@@ -128,7 +136,10 @@ public class CoachesControllerTests
 
         using (var ctx = new AppDbContext(options))
         {
-            CoachesController controller = new(ctx);
+            var repo = new Repo(ctx);
+            var trans = new UnitOfWork(ctx, repo);
+
+            CoachesController controller = new(trans);
 
             var result = await controller.GetCoachById(1);
 
@@ -161,7 +172,9 @@ public class CoachesControllerTests
 
         using (var ctx = new AppDbContext(options))
         {
-            CoachesController controller = new(ctx);
+            var repo = new Repo(ctx);
+            var trans = new UnitOfWork(ctx, repo);
+            CoachesController controller = new(trans);
 
             var dto = new CoachRequest
             {
@@ -195,7 +208,10 @@ public class CoachesControllerTests
 
         using (var ctx = new AppDbContext(options))
         {
-            CoachesController controller = new(ctx);
+            var repo = new Repo(ctx);
+            var trans = new UnitOfWork(ctx, repo);
+
+            CoachesController controller = new(trans);
 
             var response = await controller.GetCoachById(3);
 
@@ -225,7 +241,9 @@ public class CoachesControllerTests
 
         using (var context = new AppDbContext(options))
         {
-            CoachesController controller = new(context);
+            var repo = new Repo(context);
+            var trans = new UnitOfWork(context, repo);
+            CoachesController controller = new(trans);
 
             var notaddedcoach = new CoachRequest { NameCoach = "Lola", Email = "l@example.com" };
             var notaddedothercoach = new CoachRequest { NameCoach = "Lisa", Email = "l@mail.com" };
@@ -237,7 +255,9 @@ public class CoachesControllerTests
 
         using (var context = new AppDbContext(options))
         {
-            CoachesController controller = new(context);
+            var repo = new Repo(context);
+            var trans = new UnitOfWork(context, repo);
+            CoachesController controller = new(trans);
             var allCoaches = await controller.GetCoaches();
 
             var allCoachesResult = Assert.IsType<OkObjectResult>(allCoaches.Result);

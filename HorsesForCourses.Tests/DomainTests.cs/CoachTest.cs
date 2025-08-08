@@ -53,6 +53,7 @@ public class CoachTest
         };
 
         smartCoach.AddCompetenceList(skills);
+        smartCoach.RemoveCompetence("violin");
 
         List<Skill> list = smartCoach.ListOfCompetences;
 

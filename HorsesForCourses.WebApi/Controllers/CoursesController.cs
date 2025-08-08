@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using HorsesForCourses.Core.DomainEntities;
 using HorsesForCourses.WebApi.Factory;
-using Microsoft.EntityFrameworkCore;
 
 namespace HorsesForCourses.WebApi.Controllers
 {
@@ -9,10 +8,10 @@ namespace HorsesForCourses.WebApi.Controllers
     [Route("/[controller]")]
     public class CoursesController : ControllerBase
     {
-        private readonly AppDbContext Context; //veilige methode om storage te gebruiken
-        public CoursesController(AppDbContext ctx)
+        private readonly IUnitOfWork transaction;
+        public CoursesController(IUnitOfWork trans)
         {
-            Context = ctx;
+            transaction = trans;
         }
 
         [HttpPost] // met naam en periode
@@ -20,8 +19,8 @@ namespace HorsesForCourses.WebApi.Controllers
         {
             var course = new Course(dto.NameCourse, DateOnly.Parse(dto.StartDateCourse), DateOnly.Parse(dto.EndDateCourse));
             //omzetten naar DateOnly
-            Context.Courses.Add(course);
-            await Context.SaveChangesAsync();
+            await transaction.Objects.AddCourse(course);
+            await transaction.Objects.CompleteAsync();
             return Ok(course.CourseId);
         }
 
@@ -29,11 +28,11 @@ namespace HorsesForCourses.WebApi.Controllers
         [Route("{Id}/skills")] //de id gaat van in de url naar de methode
         public async Task<IActionResult> AddCompetences(int Id, [FromBody] CompetentCourseRequest dto)
         {
-            var course = await Context.Courses.FirstOrDefaultAsync(c => c.CourseId == Id);
+            var course = await transaction.Objects.GetCourseById(Id);
             if (course == null)
                 return NotFound();
             course.AddCompetenceList(dto.ListOfCourseCompetences);
-            await Context.SaveChangesAsync();
+            await transaction.Objects.CompleteAsync();
             return Ok();
         }
 
@@ -41,11 +40,11 @@ namespace HorsesForCourses.WebApi.Controllers
         [Route("{Id}/timeslots")]
         public async Task<IActionResult> AddTimeslots(int Id, [FromBody] ScheduledCourseRequest dto) //invoer van lijstdag moet format "YYYY/MM/DD" hebben
         {
-            var course = await Context.Courses.FirstOrDefaultAsync(c => c.CourseId == Id);
+            var course = await transaction.Objects.GetCourseById(Id);
             if (course == null)
                 return NotFound();
             course.AddTimeSlotList(CourseMapper.ConvertToDomainList(dto.CourseTimeslots));
-            await Context.SaveChangesAsync();
+            await transaction.Objects.CompleteAsync();
             return Ok();
         }
 
@@ -53,11 +52,11 @@ namespace HorsesForCourses.WebApi.Controllers
         [Route("{Id}/confirm")]
         public async Task<IActionResult> ConfirmCourse(int Id)
         {
-            var course = await Context.Courses.FirstOrDefaultAsync(c => c.CourseId == Id);
+            var course = await transaction.Objects.GetCourseById(Id);
             if (course == null)
                 return NotFound();
             course.ValidateCourseBasedOnTimeslots(course);
-            await Context.SaveChangesAsync();
+            await transaction.Objects.CompleteAsync();
             return Ok();
         }
 
@@ -65,24 +64,24 @@ namespace HorsesForCourses.WebApi.Controllers
         [Route("{Id}/assign-coach")]
         public async Task<IActionResult> AssignCoach(int Id, [FromBody] AssignedCourseRequest dto)
         {
-            var course = await Context.Courses.FirstOrDefaultAsync(c => c.CourseId == Id);
+            var course = await transaction.Objects.GetCourseById(Id);
             if (course == null)
                 return NotFound();
-            var coach = await Context.Coaches.FirstOrDefaultAsync(c => c.CoachId == dto.coachId);
+            var coach = await transaction.Objects.GetCoachById(Id);
             if (coach == null)
                 return NotFound();
             course.AddingCoach(course, coach);
-            await Context.SaveChangesAsync();
+            await transaction.Objects.CompleteAsync();
             return Ok();
         }
 
         [HttpGet]
         public async Task<ActionResult<AllCoursesResponse>> GetCourses()
         {
-            var allCourses = await Context.Courses.ToListAsync();
+            var allCourses = await transaction.Objects.ListCourses();
             if (allCourses == null)
                 return NotFound();
-            await Context.SaveChangesAsync();
+            await transaction.Objects.CompleteAsync();
             return Ok(CourseMapper.ConvertToListCourses(allCourses));
         }
 
@@ -92,14 +91,10 @@ namespace HorsesForCourses.WebApi.Controllers
         [Route("{Id}")]
         public async Task<ActionResult<DetailedCourseResponse>> GetCourseById(int Id)
         {
-            var course = await Context.Courses
-            .Include(c => c.ListOfCourseSkills)
-            .Include(c => c.CourseTimeslots)
-            .Include(c => c.CoachForCourse)
-            .FirstOrDefaultAsync(c => c.CourseId == Id);
+            var course = await transaction.Objects.GetSpecificCourseById(Id);
             if (course == null)
                 return NotFound();
-            await Context.SaveChangesAsync();
+            await transaction.Objects.CompleteAsync();
             return Ok(CourseMapper.ConvertToDetailedCourse(course));
         }
 

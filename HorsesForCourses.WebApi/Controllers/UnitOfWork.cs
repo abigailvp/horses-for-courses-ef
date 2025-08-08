@@ -24,6 +24,6 @@ public class UnitOfWork : IUnitOfWork
         await _context.SaveChangesAsync();
     }
 
-    public void Dispose() => _context.Dispose();
+    public void Dispose() => _context.Dispose(); //gc ruimt lege objecten al op
 
 }

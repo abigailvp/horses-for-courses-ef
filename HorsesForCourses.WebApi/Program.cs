@@ -7,8 +7,7 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 
-// Add services to the container.
-builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -26,6 +25,15 @@ var padUitBin = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"..\..\
 var dbPath = Path.Combine(padUitBin, "app.db"); //dynamisch pad zodat het niet in bin komt
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite($"Data Source={dbPath}"));
+
+//repo
+builder.Services.AddScoped<IRepo, Repo>();
+
+//uow
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+//controllers
+builder.Services.AddControllers();
 
 
 

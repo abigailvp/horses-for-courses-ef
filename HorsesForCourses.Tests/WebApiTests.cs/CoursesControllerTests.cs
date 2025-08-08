@@ -29,7 +29,9 @@ public class CoursesControllerTests
 
         using (var context = new AppDbContext(options))
         {
-            CoursesController controller = new CoursesController(context);
+            var repo = new Repo(context);
+            var trans = new UnitOfWork(context, repo);
+            CoursesController controller = new CoursesController(trans);
 
             var coursedto = new CourseRequest { NameCourse = "HorseBackRiding", StartDateCourse = "2025/ 6/ 29", EndDateCourse = "2025/7/28" };
             var dto = new CompetentCourseRequest
@@ -71,7 +73,9 @@ public class CoursesControllerTests
         }
         using (var ctx = new AppDbContext(options))
         {
-            CoursesController controller = new(ctx);
+            var repo = new Repo(ctx);
+            var trans = new UnitOfWork(ctx, repo);
+            CoursesController controller = new(trans);
             CompetentCourseRequest dto = new CompetentCourseRequest
             {
                 ListOfCourseCompetences = new List<Skill> { new Skill("Agility"), new Skill("Balance") }
@@ -101,13 +105,15 @@ public class CoursesControllerTests
 
         using (var ctx = new AppDbContext(options))
         {
-            CoursesController controller = new(ctx);
+            var repo = new Repo(ctx);
+            var trans = new UnitOfWork(ctx, repo);
+            CoursesController controller = new(trans);
             ScheduledCourseRequest dtolist = new ScheduledCourseRequest
             {
                 CourseTimeslots = new List<MyTimeslot>{
-                    new (  "2025, 6, 27", 9, 17),
-                    new (  "2025, 7,18", 9, 17)
-                }
+                        new (  "2025, 6, 27", 9, 17),
+                        new (  "2025, 7,18", 9, 17)
+                    }
             };
             var coursedto = new CourseRequest { NameCourse = "HorseBackRiding", StartDateCourse = "2025/ 6/ 29", EndDateCourse = "2025/7/28" };
             await controller.CreateEmptyCourse(coursedto);
@@ -136,7 +142,9 @@ public class CoursesControllerTests
 
         using (var ctx = new AppDbContext(options))
         {
-            CoursesController controller = new CoursesController(ctx);
+            var repo = new Repo(ctx);
+            var trans = new UnitOfWork(ctx, repo);
+            CoursesController controller = new CoursesController(trans);
 
             ScheduledCourseRequest dto = new ScheduledCourseRequest
             {
@@ -170,14 +178,16 @@ public class CoursesControllerTests
 
         using (var ctx = new AppDbContext(options))
         {
-            CoursesController controller = new(ctx);
+            var repo = new Repo(ctx);
+            var trans = new UnitOfWork(ctx, repo);
+            CoursesController controller = new(trans);
 
             Coach coach = new("Abi", "abi@mail.com");
             var Timeslots = new List<Timeslot>
-            {
-                new ( 9, 17, new DateOnly(2025, 6, 27) ),
-                new ( 9, 17, new DateOnly(2025, 7, 18) )
-            };
+                {
+                    new ( 9, 17, new DateOnly(2025, 6, 27) ),
+                    new ( 9, 17, new DateOnly(2025, 7, 18) )
+                };
             var Competences = new List<Skill> { new Skill("Agility"), new Skill("Balance") };
             Course course = new("HorseBackRiding", new DateOnly(2025, 6, 29), new DateOnly(2025, 7, 28));
             coach.AddCompetenceList(Competences);
@@ -215,7 +225,10 @@ public class CoursesControllerTests
 
         using (var ctx = new AppDbContext(options))
         {
-            CoachesController controller = new(ctx);
+            var repo = new Repo(ctx);
+            var trans = new UnitOfWork(ctx, repo);
+
+            CoachesController controller = new(trans);
             var otherskills = new CompetentCoachRequest { ListOfSkills = new List<Skill> { new Skill("sleeping") } };
             await controller.CreateEmptyCoach(new CoachRequest { NameCoach = "abi", Email = "abi@mail.com" });
             await controller.AddCompetencesList(1, otherskills);
@@ -223,7 +236,10 @@ public class CoursesControllerTests
 
         using (var ctx = new AppDbContext(options))
         {
-            CoursesController controller = new(ctx);
+            var repo = new Repo(ctx);
+            var trans = new UnitOfWork(ctx, repo);
+            CoursesController controller = new(trans);
+
             var coursedto = new CourseRequest { NameCourse = "HorseBackRiding", StartDateCourse = "2025/ 6/ 29", EndDateCourse = "2025/7/28" };
             var dto = new CompetentCourseRequest
             { ListOfCourseCompetences = new List<Skill> { new("Agility"), new("Balance") } };
@@ -259,7 +275,10 @@ public class CoursesControllerTests
         }
         using (var ctx = new AppDbContext(options))
         {
-            CoachesController controller = new(ctx);
+            var repo = new Repo(ctx);
+            var trans = new UnitOfWork(ctx, repo);
+
+            CoachesController controller = new(trans);
             var dtolist = new CompetentCoachRequest
             { ListOfSkills = new List<Skill> { new Skill("Agility"), new Skill("Balance") } };
             await controller.CreateEmptyCoach(new CoachRequest { NameCoach = "abi", Email = "abi@mail.com" });
@@ -268,7 +287,10 @@ public class CoursesControllerTests
 
         using (var ctx = new AppDbContext(options))
         {
-            CoursesController controller = new(ctx);
+            var repo = new Repo(ctx);
+            var trans = new UnitOfWork(ctx, repo);
+            CoursesController controller = new(trans);
+
             var coursedto = new CourseRequest { NameCourse = "HorseBackRiding", StartDateCourse = "2025/ 6/ 29", EndDateCourse = "2025/7/28" };
             var dto = new CompetentCourseRequest
             { ListOfCourseCompetences = new List<Skill> { new Skill("Agility"), new Skill("Balance") } };
@@ -308,10 +330,10 @@ public class CoursesControllerTests
         {
             Coach coach = new("Abi", "abi@mail.com");
             var Timeslots = new List<Timeslot>
-            {
-                new ( 9, 17, new DateOnly(2025, 6, 27) ),
-                new ( 9, 17, new DateOnly(2025, 7, 18) )
-            };
+                {
+                    new ( 9, 17, new DateOnly(2025, 6, 27) ),
+                    new ( 9, 17, new DateOnly(2025, 7, 18) )
+                };
             var Competences = new List<Skill> { new Skill("Agility"), new Skill("Balance") };
             Course course = new("HorseBackRiding", new DateOnly(2025, 6, 29), new DateOnly(2025, 7, 28));
             coach.AddCompetenceList(Competences);
@@ -324,7 +346,9 @@ public class CoursesControllerTests
         }
         using (var ctx = new AppDbContext(options))
         {
-            CoursesController controller = new(ctx);
+            var repo = new Repo(ctx);
+            var trans = new UnitOfWork(ctx, repo);
+            CoursesController controller = new(trans);
             var result = await controller.GetCourses();
 
             var coursesresult = Assert.IsType<OkObjectResult>(result.Result);
@@ -341,16 +365,5 @@ public class CoursesControllerTests
         await connection.CloseAsync();
     }
 
-
-    //doesnt assign when coach not skills
-    //doesnt assing when coach not available
-
-    // using (var ctx = new AppDbContext(options))
-    //         {
-    //             CoursesController controller = new(ctx);
-    // var result = await controller.GetCourses();
-
-    // Assert.
-    //         }
 
 }
