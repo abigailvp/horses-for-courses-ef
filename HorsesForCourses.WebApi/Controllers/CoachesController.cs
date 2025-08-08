@@ -19,9 +19,8 @@ namespace HorsesForCourses.WebApi.Controllers
         {
             var coach = new Coach(dto.NameCoach, dto.Email);
 
-            await oneTransaction.Objects.StartAsync();
             oneTransaction.Objects.AddCoach(coach);
-            await oneTransaction.Objects.CompleteAsync();
+            await oneTransaction.CompleteAsync();
             return Ok(coach.CoachId);
         }
 
@@ -30,12 +29,11 @@ namespace HorsesForCourses.WebApi.Controllers
         [Route("{id}/skills")]
         public async Task<IActionResult> AddCompetencesList(int id, [FromBody] CompetentCoachRequest dto)
         {
-            await oneTransaction.Objects.StartAsync();
             var coach = await oneTransaction.Objects.GetCoachById(id); //getting coach with same id
             if (coach == null)
                 return NotFound();
             coach.AddCompetenceList(dto.ListOfSkills);
-            await oneTransaction.Objects.CompleteAsync();
+            await oneTransaction.CompleteAsync();
             return Ok(); //geen update in repo want je hebt toegang tot coach met id
         }
 
@@ -65,7 +63,7 @@ namespace HorsesForCourses.WebApi.Controllers
             if (coach == null)
                 return NotFound();
             oneTransaction.Objects.RemoveCoach(coach);
-            await oneTransaction.Objects.CompleteAsync();
+            await oneTransaction.CompleteAsync();
             return Ok();
         }
 
@@ -77,7 +75,7 @@ namespace HorsesForCourses.WebApi.Controllers
             if (coach == null)
                 return NotFound();
             coach.Result.EmptyCompetenceList();
-            await oneTransaction.Objects.CompleteAsync();
+            await oneTransaction.CompleteAsync();
             return Ok();
         }
 

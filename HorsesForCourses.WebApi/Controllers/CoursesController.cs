@@ -20,7 +20,7 @@ namespace HorsesForCourses.WebApi.Controllers
             var course = new Course(dto.NameCourse, DateOnly.Parse(dto.StartDateCourse), DateOnly.Parse(dto.EndDateCourse));
             //omzetten naar DateOnly
             await transaction.Objects.AddCourse(course);
-            await transaction.Objects.CompleteAsync();
+            await transaction.CompleteAsync();
             return Ok(course.CourseId);
         }
 
@@ -32,7 +32,7 @@ namespace HorsesForCourses.WebApi.Controllers
             if (course == null)
                 return NotFound();
             course.AddCompetenceList(dto.ListOfCourseCompetences);
-            await transaction.Objects.CompleteAsync();
+            await transaction.CompleteAsync();
             return Ok();
         }
 
@@ -44,7 +44,7 @@ namespace HorsesForCourses.WebApi.Controllers
             if (course == null)
                 return NotFound();
             course.AddTimeSlotList(CourseMapper.ConvertToDomainList(dto.CourseTimeslots));
-            await transaction.Objects.CompleteAsync();
+            await transaction.CompleteAsync();
             return Ok();
         }
 
@@ -56,7 +56,7 @@ namespace HorsesForCourses.WebApi.Controllers
             if (course == null)
                 return NotFound();
             course.ValidateCourseBasedOnTimeslots(course);
-            await transaction.Objects.CompleteAsync();
+            await transaction.CompleteAsync();
             return Ok();
         }
 
@@ -71,7 +71,7 @@ namespace HorsesForCourses.WebApi.Controllers
             if (coach == null)
                 return NotFound();
             course.AddingCoach(course, coach);
-            await transaction.Objects.CompleteAsync();
+            await transaction.CompleteAsync();
             return Ok();
         }
 
@@ -81,7 +81,7 @@ namespace HorsesForCourses.WebApi.Controllers
             var allCourses = await transaction.Objects.ListCourses();
             if (allCourses == null)
                 return NotFound();
-            await transaction.Objects.CompleteAsync();
+            await transaction.CompleteAsync();
             return Ok(CourseMapper.ConvertToListCourses(allCourses));
         }
 
@@ -94,7 +94,7 @@ namespace HorsesForCourses.WebApi.Controllers
             var course = await transaction.Objects.GetSpecificCourseById(Id);
             if (course == null)
                 return NotFound();
-            await transaction.Objects.CompleteAsync();
+            await transaction.CompleteAsync();
             return Ok(CourseMapper.ConvertToDetailedCourse(course));
         }
 

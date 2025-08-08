@@ -3,7 +3,7 @@ using HorsesForCourses.WebApi;
 public interface IUnitOfWork : IDisposable
 {
     IRepo Objects { get; } //wordt ingevuld in uow
-    Task SaveChangesAsync();
+    Task CompleteAsync();
 }
 
 
@@ -19,7 +19,8 @@ public class UnitOfWork : IUnitOfWork
         Objects = coachesOrCourses;
     }
 
-    public async Task SaveChangesAsync()
+
+    public async Task CompleteAsync()
     {
         await _context.SaveChangesAsync();
     }

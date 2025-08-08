@@ -3,6 +3,8 @@ using Microsoft.OpenApi.Models;
 using HorsesForCourses.Core.HorsesOnTheLoose;
 using HorsesForCourses.WebApi;
 using Microsoft.EntityFrameworkCore;
+using Polly;
+using Polly.Retry;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,10 +37,16 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 //controllers
 builder.Services.AddControllers();
 
-
+//algemene polly
+builder.Services.AddResiliencePipeline("db-pipeline", builder =>
+{
+    builder
+        .AddRetry(new RetryStrategyOptions())
+        .AddTimeout(TimeSpan.FromSeconds(5));
+});
 
 var app = builder.Build();
-Console.WriteLine($"Database path: {dbPath}");
+// Console.WriteLine($"Database path: {dbPath}");
 
 // migrations
 using (var scope = app.Services.CreateScope())
