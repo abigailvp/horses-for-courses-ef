@@ -1,7 +1,6 @@
 using HorsesForCourses.Core.DomainEntities;
 using HorsesForCourses.WebApi.Factory;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace HorsesForCourses.WebApi.Controllers
 {
@@ -9,10 +8,10 @@ namespace HorsesForCourses.WebApi.Controllers
     [Route("/[controller]")] //Coaches wordt automatisch ingevuld hier
     public class CoachesController : ControllerBase
     {
-        private readonly UnitOfWork Worker;
-        public CoachesController(UnitOfWork worker)
+        private readonly IUnitOfWork oneTransaction;
+        public CoachesController(IUnitOfWork onetransaction)
         {
-            Worker = worker;
+            oneTransaction = onetransaction;
         }
 
         [HttpPost]
@@ -20,9 +19,9 @@ namespace HorsesForCourses.WebApi.Controllers
         {
             var coach = new Coach(dto.NameCoach, dto.Email);
 
-            await Worker.StartAsync();
-            Worker.AddCoach(coach);
-            await Worker.CompleteAsync();
+            await oneTransaction.Objects.StartAsync();
+            oneTransaction.Objects.AddCoach(coach);
+            await oneTransaction.Objects.CompleteAsync();
             return Ok(coach.CoachId);
         }
 
@@ -31,19 +30,19 @@ namespace HorsesForCourses.WebApi.Controllers
         [Route("{id}/skills")]
         public async Task<IActionResult> AddCompetencesList(int id, [FromBody] CompetentCoachRequest dto)
         {
-            await Worker.StartAsync();
-            var coach = await Worker.GetCoachById(id); //getting coach with same id
+            await oneTransaction.Objects.StartAsync();
+            var coach = await oneTransaction.Objects.GetCoachById(id); //getting coach with same id
             if (coach == null)
                 return NotFound();
             coach.AddCompetenceList(dto.ListOfSkills);
-            await Worker.CompleteAsync();
+            await oneTransaction.Objects.CompleteAsync();
             return Ok(); //geen update in repo want je hebt toegang tot coach met id
         }
 
         [HttpGet]
         public async Task<ActionResult<ListOfCoachesResponse>> GetCoaches()
         {
-            var lijstje = await Worker.ListCoaches();
+            var lijstje = await oneTransaction.Objects.ListCoaches();
             return Ok(CoachMapper.ConvertToListOfCoaches(lijstje));
         }
 
@@ -52,7 +51,7 @@ namespace HorsesForCourses.WebApi.Controllers
         [Route("{id}")]
         public async Task<ActionResult<DetailedCoachResponse>> GetCoachById(int id)
         {
-            var coach = await Worker.GetSpecificCoachById(id);
+            var coach = await oneTransaction.Objects.GetSpecificCoachById(id);
             if (coach == null)
                 return NotFound();
             return Ok(CoachMapper.ConvertToDetailedCoach(coach));
@@ -62,11 +61,11 @@ namespace HorsesForCourses.WebApi.Controllers
         [Route("{id}")]
         public async Task<IActionResult> DeleteACoach(int id)
         {
-            var coach = await Worker.GetCoachById(id);
+            var coach = await oneTransaction.Objects.GetCoachById(id);
             if (coach == null)
                 return NotFound();
-            Worker.RemoveCoach(coach);
-            await Worker.CompleteAsync();
+            oneTransaction.Objects.RemoveCoach(coach);
+            await oneTransaction.Objects.CompleteAsync();
             return Ok();
         }
 
@@ -74,11 +73,11 @@ namespace HorsesForCourses.WebApi.Controllers
         [Route("{id}/skills")]
         public async Task<IActionResult> DeleteSkillsFromACoach(int id)
         {
-            var coach = Worker.GetCoachById(id);
+            var coach = oneTransaction.Objects.GetCoachById(id);
             if (coach == null)
                 return NotFound();
             coach.Result.EmptyCompetenceList();
-            await Worker.CompleteAsync();
+            await oneTransaction.Objects.CompleteAsync();
             return Ok();
         }
 
