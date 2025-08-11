@@ -82,7 +82,7 @@ namespace HorsesForCourses.WebApi.Controllers
             if (allCourses == null)
                 return NotFound();
             await transaction.CompleteAsync();
-            return Ok(CourseMapper.ConvertToListCourses(allCourses));
+            return Ok(CourseResponses.ConvertToListCourses(allCourses));
         }
 
 
@@ -95,7 +95,7 @@ namespace HorsesForCourses.WebApi.Controllers
             if (course == null)
                 return NotFound();
             await transaction.CompleteAsync();
-            return Ok(CourseMapper.ConvertToDetailedCourse(course));
+            return Ok(CourseResponses.ConvertToDetailedCourse(course));
         }
 
 

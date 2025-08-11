@@ -41,7 +41,7 @@ namespace HorsesForCourses.WebApi.Controllers
         public async Task<ActionResult<ListOfCoachesResponse>> GetCoaches()
         {
             var lijstje = await oneTransaction.Objects.ListCoaches();
-            return Ok(CoachMapper.ConvertToListOfCoaches(lijstje));
+            return Ok(CoachResponses.ConvertToListOfCoaches(lijstje));
         }
 
 
@@ -52,7 +52,7 @@ namespace HorsesForCourses.WebApi.Controllers
             var coach = await oneTransaction.Objects.GetSpecificCoachById(id);
             if (coach == null)
                 return NotFound();
-            return Ok(CoachMapper.ConvertToDetailedCoach(coach));
+            return Ok(CoachResponses.ConvertToDetailedCoach(coach));
         }
 
         [HttpDelete]
