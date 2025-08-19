@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using HorsesForCourses.Core.DomainEntities;
 using HorsesForCourses.Core.WholeValuesAndStuff;
 using HorsesForCourses.Paging;
@@ -16,8 +17,8 @@ public interface ICoachesRepo
     Task<DetailedCoach?> GetSpecificCoachById(int id);
     Task<List<Coach>> ListCoaches();
 
-    IQueryable<Coach> OrderCoachesQuery();
-    Task<PagedResult<Coach>> GetCoachPages(int numberOfPage, int amountOfCoaches);
+    IQueryable<CoachResponse> OrderAndProjectCoaches(int page, int size);
+    Task<PagedResult<CoachResponse>> GetCoachPages(int numberOfPage, int amountOfCoaches);
 
 }
 
@@ -38,26 +39,54 @@ public class CoachesRepo : ICoachesRepo
     => await _context.Coaches.AddAsync(coach);
 
 
-    public IQueryable<Coach> OrderCoachesQuery()
+    public IQueryable<CoachResponse> OrderAndProjectCoaches(int page, int size)
     {
         var queryablecoaches = _context.Coaches
                 .Where(p => p.NameCoach != null)
-                .OrderBy(p => p.CoachId);
+                .OrderBy(p => p.CoachId)
+                .Select(a => new CoachResponse(
+                        a.CoachId,
+                        a.NameCoach,
+                        a.Email,
+                            a.ListOfCoursesAssignedTo.Count()
+                ));
+
         return queryablecoaches;
     }
 
-    public async Task<PagedResult<Coach>> GetCoachPages(int numberOfPage, int amountOfCoaches)
+    public async Task<PagedResult<CoachResponse>> GetCoachPages(int numberOfPage, int amountOfCoaches)
     {
         var request = new PageRequest(numberOfPage, amountOfCoaches);
-        var query = OrderCoachesQuery();
-        return await PagingExecution.ToPagedResultAsync<Coach>(query, request);
+        var query = OrderAndProjectCoaches(numberOfPage, amountOfCoaches);
+        return await PagingExecution.ToPagedResultAsync<CoachResponse>(query, request);
     }
+
+
+
+
 
     public async Task<Coach> GetCoachById(int id)
     {
         return await _context.Coaches.FindAsync(id);
         //of FirstOrDefaultAsync(c => c.CoachId == id)       
     }
+
+    public record CoachResponse(int id, string name, string email, int numberOfAssignedCourses);
+    public async Task<CoachResponse?> GetCoachByIdFluently(int id)//nog niet geïmplementeerde projectie
+    {
+        return await _context.Coaches
+                            .AsNoTracking()
+                            .Where(c => c.CoachId == id)
+                            .Select(a => new CoachResponse(
+                                    a.CoachId,
+                                    a.NameCoach,
+                                    a.Email,
+                                     a.ListOfCoursesAssignedTo.Count()
+                            ))
+                            .FirstOrDefaultAsync();
+    }
+
+
 
 
     public record DetailedCoach(int Id, string Name, string Email, IReadOnlyList<Skill> listOfSkills, IReadOnlyList<AssignedCourse> listOfCourses);
