@@ -21,7 +21,7 @@ namespace HorsesForCourses.WebApi.Controllers
         {
             var course = new Course(dto.NameCourse, dto.StartDateCourse, dto.EndDateCourse);
 
-            await transaction.Objects.AddCourse(course);
+            await transaction.Courses.AddCourse(course);
             await transaction.CompleteAsync();
             return Ok(course.CourseId);
         }
@@ -30,7 +30,7 @@ namespace HorsesForCourses.WebApi.Controllers
         [Route("{Id}/skills")] //de id gaat van in de url naar de methode
         public async Task<IActionResult> AddCompetences(int Id, [FromBody] CompetentCourseRequest dto)
         {
-            var course = await transaction.Objects.GetCourseById(Id);
+            var course = await transaction.Courses.GetCourseById(Id);
             if (course == null)
                 return NotFound();
             course.AddCompetenceList(dto.ListOfCourseCompetences);
@@ -42,7 +42,7 @@ namespace HorsesForCourses.WebApi.Controllers
         [Route("{Id}/timeslots")]
         public async Task<IActionResult> AddTimeslots(int Id, [FromBody] ScheduledCourseRequest dto) //invoer van lijstdag moet format "YYYY/MM/DD" hebben
         {
-            var course = await transaction.Objects.GetCourseById(Id);
+            var course = await transaction.Courses.GetCourseById(Id);
             if (course == null)
                 return NotFound();
             course.AddTimeSlotList(CourseMapper.ConvertToDomainList(dto.CourseTimeslots));
@@ -54,7 +54,7 @@ namespace HorsesForCourses.WebApi.Controllers
         [Route("{Id}/confirm")]
         public async Task<IActionResult> ConfirmCourse(int Id)
         {
-            var course = await transaction.Objects.GetCourseById(Id);
+            var course = await transaction.Courses.GetCourseById(Id);
             if (course == null)
                 return NotFound();
             course.ValidateCourseBasedOnTimeslots(course);
@@ -66,10 +66,10 @@ namespace HorsesForCourses.WebApi.Controllers
         [Route("{Id}/assign-coach")]
         public async Task<IActionResult> AssignCoach(int Id, [FromBody] AssignedCourseRequest dto)
         {
-            var course = await transaction.Objects.GetCourseById(Id);
+            var course = await transaction.Courses.GetCourseById(Id);
             if (course == null)
                 return NotFound();
-            var coach = await transaction.Objects.GetCoachById(dto.coachId);
+            var coach = await transaction.Coaches.GetCoachById(dto.coachId);
             if (coach == null)
                 return NotFound();
             course.AddingCoach(course, coach);
@@ -80,7 +80,7 @@ namespace HorsesForCourses.WebApi.Controllers
         [HttpGet]
         public async Task<ActionResult<AllCoursesResponse>> GetAllCourses()
         {
-            var allCourses = await transaction.Objects.ListCourses();
+            var allCourses = await transaction.Courses.ListCourses();
             if (allCourses == null)
                 return NotFound();
             await transaction.CompleteAsync();
@@ -91,10 +91,7 @@ namespace HorsesForCourses.WebApi.Controllers
         [Route("page{numberOfPage}/{amountOfCourses}")]
         public async Task<ActionResult<PagedResult<Course>>> GetCoursesByPage(int numberOfPage, int amountOfCourses)
         {
-            var request = new PageRequest(numberOfPage, amountOfCourses);
-            var query = transaction.Objects.OrderCoursesQuery();
-            var lijstje = await PagingExecution.ToPagedResultAsync<Course>(query, request);
-
+            var lijstje = await transaction.Courses.GetCoursePages(numberOfPage, amountOfCourses);
             if (lijstje == null)
                 return NotFound();
             return Ok(lijstje);
@@ -106,7 +103,7 @@ namespace HorsesForCourses.WebApi.Controllers
         [Route("{Id}")]
         public async Task<ActionResult<DetailedCourseResponse>> GetCourseById(int Id)
         {
-            var course = await transaction.Objects.GetSpecificCourseById(Id);
+            var course = await transaction.Courses.GetSpecificCourseById(Id);
             if (course == null)
                 return NotFound();
             await transaction.CompleteAsync();
@@ -117,10 +114,10 @@ namespace HorsesForCourses.WebApi.Controllers
         [Route("{id}")]
         public async Task<IActionResult> DeleteACourse(int id)
         {
-            var course = await transaction.Objects.GetCourseById(id);
+            var course = await transaction.Courses.GetCourseById(id);
             if (course == null)
                 return NotFound();
-            transaction.Objects.RemoveCourse(course);
+            transaction.Courses.RemoveCourse(course);
             await transaction.CompleteAsync();
             return Ok();
         }

@@ -4,7 +4,8 @@ namespace HorsesForCourses.Repo;
 
 public interface IUnitOfWork : IDisposable
 {
-    IRepo Objects { get; } //wordt ingevuld in uow
+    ICoachesRepo Coaches { get; } //wordt ingevuld in uow
+    ICoursesRepo Courses { get; }
     Task CompleteAsync();
 }
 
@@ -12,13 +13,15 @@ public interface IUnitOfWork : IDisposable
 public class UnitOfWork : IUnitOfWork
 {
     private readonly AppDbContext _context;
-    public IRepo Objects { get; }
+    public ICoachesRepo Coaches { get; }
+    public ICoursesRepo Courses { get; }
 
 
-    public UnitOfWork(AppDbContext context, IRepo coachesOrCourses)
+    public UnitOfWork(AppDbContext context, ICoachesRepo coaches, ICoursesRepo courses)
     {
         _context = context;
-        Objects = coachesOrCourses;
+        Coaches = coaches;
+        Courses = courses;
     }
 
 

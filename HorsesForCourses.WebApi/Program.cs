@@ -30,7 +30,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite($"Data Source={dbPath}"));
 
 //repo
-builder.Services.AddScoped<IRepo, Repo>();
+builder.Services.AddScoped<ICoursesRepo, CoursesRepo>();
+builder.Services.AddScoped<ICoachesRepo, CoachesRepo>();
 
 //uow
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

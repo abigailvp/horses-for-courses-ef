@@ -21,7 +21,7 @@ namespace HorsesForCourses.WebApi.Controllers
         {
             var coach = new Coach(dto.NameCoach, dto.Email);
 
-            oneTransaction.Objects.AddCoach(coach);
+            oneTransaction.Coaches.AddCoach(coach);
             await oneTransaction.CompleteAsync();
             return Ok(coach.CoachId);
         }
@@ -31,7 +31,7 @@ namespace HorsesForCourses.WebApi.Controllers
         [Route("{id}/skills")]
         public async Task<IActionResult> AddCompetencesList(int id, [FromBody] CompetentCoachRequest dto)
         {
-            var coach = await oneTransaction.Objects.GetCoachById(id); //getting coach with same id
+            var coach = await oneTransaction.Coaches.GetCoachById(id); //getting coach with same id
             if (coach == null)
                 return NotFound();
             coach.AddCompetenceList(dto.ListOfSkills);
@@ -42,12 +42,9 @@ namespace HorsesForCourses.WebApi.Controllers
         [HttpGet]
         public async Task<ActionResult<PagedResult<Coach>>> GetCoachesByPage(int numberOfPage, int amountOfCoaches)
         {
-            var request = new PageRequest(numberOfPage, amountOfCoaches);
-            var query = oneTransaction.Objects.OrderCoachesQuery();
-            var lijstje = await PagingExecution.ToPagedResultAsync<Coach>(query, request);
+            var lijstje = await oneTransaction.Coaches.GetCoachPages(numberOfPage, amountOfCoaches);
             if (lijstje == null)
                 return NotFound();
-
             return Ok(lijstje);
         }
 
@@ -56,7 +53,7 @@ namespace HorsesForCourses.WebApi.Controllers
         [Route("{id}")]
         public async Task<ActionResult<DetailedCoachResponse>> GetCoachById(int id)
         {
-            var coach = await oneTransaction.Objects.GetSpecificCoachById(id);
+            var coach = await oneTransaction.Coaches.GetSpecificCoachById(id);
             if (coach == null)
                 return NotFound();
             return Ok(CoachResponses.ConvertToDetailedCoach(coach));
@@ -66,10 +63,10 @@ namespace HorsesForCourses.WebApi.Controllers
         [Route("{id}")]
         public async Task<IActionResult> DeleteACoach(int id)
         {
-            var coach = await oneTransaction.Objects.GetCoachById(id);
+            var coach = await oneTransaction.Coaches.GetCoachById(id);
             if (coach == null)
                 return NotFound();
-            oneTransaction.Objects.RemoveCoach(coach);
+            oneTransaction.Coaches.RemoveCoach(coach);
             await oneTransaction.CompleteAsync();
             return Ok();
         }
@@ -78,7 +75,7 @@ namespace HorsesForCourses.WebApi.Controllers
         [Route("{id}/skills")]
         public async Task<IActionResult> DeleteSkillsFromACoach(int id)
         {
-            var coach = oneTransaction.Objects.GetCoachById(id);
+            var coach = oneTransaction.Coaches.GetCoachById(id);
             if (coach == null)
                 return NotFound();
             coach.Result.EmptyCompetenceList();
