@@ -3,6 +3,7 @@ using HorsesForCourses.WebApi.Factory;
 using Microsoft.AspNetCore.Mvc;
 using HorsesForCourses.Repo;
 using HorsesForCourses.Paging;
+using static HorsesForCourses.Repo.CoachesRepo;
 
 namespace HorsesForCourses.WebApi.Controllers
 {
@@ -51,12 +52,12 @@ namespace HorsesForCourses.WebApi.Controllers
 
         [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<DetailedCoachResponse>> GetCoachById(int id)
+        public async Task<ActionResult<DetailedCoach?>> GetCoachById(int id)
         {
             var coach = await oneTransaction.Coaches.GetSpecificCoachById(id);
             if (coach == null)
                 return NotFound();
-            return Ok(CoachResponses.ConvertToDetailedCoach(coach));
+            return Ok(coach);
         }
 
         [HttpDelete]

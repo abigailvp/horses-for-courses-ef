@@ -1,8 +1,10 @@
 using HorsesForCourses.Core.DomainEntities;
+using HorsesForCourses.Core.WholeValuesAndStuff;
 using HorsesForCourses.Paging;
 using HorsesForCourses.WebApi;
 using Microsoft.EntityFrameworkCore;
 using Polly.Registry;
+using static HorsesForCourses.Repo.CoachesRepo;
 
 namespace HorsesForCourses.Repo;
 
@@ -11,7 +13,7 @@ public interface ICoachesRepo
     Task AddCoach(Coach coach);
     void RemoveCoach(Coach coach);
     Task<Coach> GetCoachById(int id);
-    Task<Coach> GetSpecificCoachById(int id);
+    Task<DetailedCoach?> GetSpecificCoachById(int id);
     Task<List<Coach>> ListCoaches();
 
     IQueryable<Coach> OrderCoachesQuery();
@@ -24,12 +26,12 @@ public class CoachesRepo : ICoachesRepo
     private readonly AppDbContext _context;
     private readonly ResiliencePipelineProvider<string> _pipeline;
 
+
     public CoachesRepo(AppDbContext context, ResiliencePipelineProvider<string> pipe)
     {
         _context = context;
         _pipeline = pipe;
     }
-
 
 
     public async Task AddCoach(Coach coach)
@@ -58,13 +60,24 @@ public class CoachesRepo : ICoachesRepo
     }
 
 
-
-    public async Task<Coach> GetSpecificCoachById(int id)
+    public record DetailedCoach(int Id, string Name, string Email, IReadOnlyList<Skill> listOfSkills, IReadOnlyList<AssignedCourse> listOfCourses);
+    public record AssignedCourse(int Id, string Name);
+    public async Task<DetailedCoach?> GetSpecificCoachById(int id)
     {
-        return await _context.Coaches.Include(c => c.ListOfCompetences)
-            .Include(c => c.ListOfCoursesAssignedTo)
-            .FirstOrDefaultAsync(c => c.CoachId == id);
-
+        return await _context.Coaches
+            .AsNoTracking()
+            .Where(c => c.CoachId == id)
+            .Select(c => new DetailedCoach(
+                c.CoachId,
+                c.NameCoach,
+                c.Email,
+                c.ListOfCompetences,
+                c.ListOfCoursesAssignedTo
+                    .Select(a => new AssignedCourse(
+                        a.CourseId,
+                        a.NameCourse))
+                    .ToList()))
+            .SingleOrDefaultAsync();
     }
 
     public async Task<List<Coach>> ListCoaches()

@@ -31,7 +31,7 @@ public static class QueryablePagingExtensions
 public static class PagingExecution
 {
     public static async Task<PagedResult<T>> ToPagedResultAsync<T>(
-        this IQueryable<T> query,
+        this IQueryable<T> query, //door this kan je methode ook op query aanroepen!!
         PageRequest request,
         CancellationToken ct = default)
     {

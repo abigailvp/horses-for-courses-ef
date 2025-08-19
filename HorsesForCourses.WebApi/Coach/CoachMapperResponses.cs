@@ -16,15 +16,15 @@ public static class CoachResponses
         return new ListOfCoachesResponse { ListOfCoaches = lijstje };
     }
 
-    public static DetailedCoachResponse ConvertToDetailedCoach(Coach coach)
-    {
-        List<AssignedCourse> assignedCourses = new();
-        foreach (Course course in coach.ListOfCoursesAssignedTo)
-        {
-            AssignedCourse aCourse = new(course.CourseId, course.NameCourse);
-            assignedCourses.Add(aCourse);
-        }
-        return new DetailedCoachResponse { Id = coach.CoachId, Name = coach.NameCoach, Email = coach.Email, ListOfSkills = coach.ListOfCompetences, ListOfAssignedCourses = assignedCourses };
-    }
+    // public static DetailedCoachResponse ConvertToDetailedCoach(Coach coach)
+    // {
+    //     List<AssignedCourse> assignedCourses = new();
+    //     foreach (Course course in coach.ListOfCoursesAssignedTo)
+    //     {
+    //         AssignedCourse aCourse = new(course.CourseId, course.NameCourse);
+    //         assignedCourses.Add(aCourse);
+    //     }
+    //     return new DetailedCoachResponse { Id = coach.CoachId, Name = coach.NameCoach, Email = coach.Email, ListOfSkills = coach.ListOfCompetences, ListOfAssignedCourses = assignedCourses };
+    // }
 }
 
