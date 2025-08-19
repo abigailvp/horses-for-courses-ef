@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using HorsesForCourses.Core.DomainEntities;
 using HorsesForCourses.WebApi.Factory;
+using HorsesForCourses.Repo;
 
 namespace HorsesForCourses.WebApi.Controllers
 {

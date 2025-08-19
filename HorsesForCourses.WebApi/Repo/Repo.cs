@@ -1,9 +1,10 @@
 using HorsesForCourses.Core.DomainEntities;
 using HorsesForCourses.WebApi;
 using Microsoft.EntityFrameworkCore;
-using Polly;
 using Polly.Registry;
-using Polly.Retry;
+using System.Linq;
+
+namespace HorsesForCourses.Repo;
 
 public interface IRepo
 {
@@ -39,6 +40,22 @@ public class Repo : IRepo
 
     public async Task AddCourse(Course course)
     => await _context.Courses.AddAsync(course);
+
+    public IQueryable<Coach> OrderCoachesResults()
+    {
+        var queryablecoaches = _context.Coaches
+                .Where(p => p.NameCoach != null)
+                .OrderBy(p => p.CoachId);
+        return queryablecoaches;
+    }
+
+    public IQueryable<Course> OrderCoursesResults()
+    {
+        var queryablecourses = _context.Courses
+                .Where(c => c.NameCourse != null)
+                .OrderBy(c => c.CourseId);
+        return queryablecourses;
+    }
 
 
     public async Task<Coach> GetCoachById(int id)

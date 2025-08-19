@@ -1,5 +1,7 @@
 using HorsesForCourses.WebApi;
 
+namespace HorsesForCourses.Repo;
+
 public interface IUnitOfWork : IDisposable
 {
     IRepo Objects { get; } //wordt ingevuld in uow
