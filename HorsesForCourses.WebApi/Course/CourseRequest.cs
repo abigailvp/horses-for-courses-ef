@@ -9,10 +9,10 @@ public class CourseRequest
     public string NameCourse { get; set; }
 
     [Required]
-    public string StartDateCourse { get; set; }
+    public DateOnly StartDateCourse { get; set; }
 
     [Required]
-    public string EndDateCourse { get; set; }
+    public DateOnly EndDateCourse { get; set; }
 
 
 

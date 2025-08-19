@@ -6,7 +6,7 @@ namespace HorsesForCourses.WebApi;
 public static class CourseMapper
 {
   public static CourseRequest ConvertToCourseDto(Course course)
-=> new CourseRequest { NameCourse = course.NameCourse, StartDateCourse = course.StartDateCourse.ToString(), EndDateCourse = course.EndDateCourse.ToString() };
+=> new CourseRequest { NameCourse = course.NameCourse, StartDateCourse = course.StartDateCourse, EndDateCourse = course.EndDateCourse };
 
   public static CompetentCourseRequest ConvertToCompetentCourse(Course course)
   => new CompetentCourseRequest { ListOfCourseCompetences = course.ListOfCourseSkills };

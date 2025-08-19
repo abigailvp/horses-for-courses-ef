@@ -19,8 +19,8 @@ namespace HorsesForCourses.WebApi.Controllers
         [HttpPost] // met naam en periode
         public async Task<ActionResult<int>> CreateEmptyCourse([FromBody] CourseRequest dto)
         {
-            var course = new Course(dto.NameCourse, DateOnly.Parse(dto.StartDateCourse), DateOnly.Parse(dto.EndDateCourse));
-            //omzetten naar DateOnly
+            var course = new Course(dto.NameCourse, dto.StartDateCourse, dto.EndDateCourse);
+
             await transaction.Objects.AddCourse(course);
             await transaction.CompleteAsync();
             return Ok(course.CourseId);
@@ -69,7 +69,7 @@ namespace HorsesForCourses.WebApi.Controllers
             var course = await transaction.Objects.GetCourseById(Id);
             if (course == null)
                 return NotFound();
-            var coach = await transaction.Objects.GetCoachById(Id);
+            var coach = await transaction.Objects.GetCoachById(dto.coachId);
             if (coach == null)
                 return NotFound();
             course.AddingCoach(course, coach);
