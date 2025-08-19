@@ -40,11 +40,13 @@ namespace HorsesForCourses.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<PagedResult<Coach>>> GetCoaches(int numberOfPage, int numberOfCoaches)
+        public async Task<ActionResult<PagedResult<Coach>>> GetCoachesByPage(int numberOfPage, int amountOfCoaches)
         {
-            var request = new PageRequest(numberOfPage, numberOfCoaches);
+            var request = new PageRequest(numberOfPage, amountOfCoaches);
             var query = oneTransaction.Objects.OrderCoachesQuery();
             var lijstje = await PagingExecution.ToPagedResultAsync<Coach>(query, request);
+            if (lijstje == null)
+                return NotFound();
 
             return Ok(lijstje);
         }

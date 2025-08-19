@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using HorsesForCourses.Core.DomainEntities;
 using HorsesForCourses.WebApi.Factory;
 using HorsesForCourses.Repo;
+using HorsesForCourses.Paging;
 
 namespace HorsesForCourses.WebApi.Controllers
 {
@@ -77,13 +78,26 @@ namespace HorsesForCourses.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<AllCoursesResponse>> GetCourses()
+        public async Task<ActionResult<AllCoursesResponse>> GetAllCourses()
         {
             var allCourses = await transaction.Objects.ListCourses();
             if (allCourses == null)
                 return NotFound();
             await transaction.CompleteAsync();
             return Ok(CourseResponses.ConvertToListCourses(allCourses));
+        }
+
+        [HttpGet]
+        [Route("page{numberOfPage}/{amountOfCourses}")]
+        public async Task<ActionResult<PagedResult<Course>>> GetCoursesByPage(int numberOfPage, int amountOfCourses)
+        {
+            var request = new PageRequest(numberOfPage, amountOfCourses);
+            var query = transaction.Objects.OrderCoursesQuery();
+            var lijstje = await PagingExecution.ToPagedResultAsync<Course>(query, request);
+
+            if (lijstje == null)
+                return NotFound();
+            return Ok(lijstje);
         }
 
 
