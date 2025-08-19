@@ -5,6 +5,7 @@ using HorsesForCourses.WebApi;
 using Microsoft.EntityFrameworkCore;
 using Polly;
 using Polly.Retry;
+using HorsesForCourses.Repo;
 
 var builder = WebApplication.CreateBuilder(args);
 

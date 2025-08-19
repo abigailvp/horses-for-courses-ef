@@ -19,6 +19,9 @@ public interface IRepo
     Task<Course> GetSpecificCourseById(int id);
     Task<List<Course>> ListCourses();
 
+    IQueryable<Coach> OrderCoachesQuery();
+    IQueryable<Course> OrderCoursesQuery();
+
 
 }
 
@@ -41,7 +44,7 @@ public class Repo : IRepo
     public async Task AddCourse(Course course)
     => await _context.Courses.AddAsync(course);
 
-    public IQueryable<Coach> OrderCoachesResults()
+    public IQueryable<Coach> OrderCoachesQuery()
     {
         var queryablecoaches = _context.Coaches
                 .Where(p => p.NameCoach != null)
@@ -49,7 +52,7 @@ public class Repo : IRepo
         return queryablecoaches;
     }
 
-    public IQueryable<Course> OrderCoursesResults()
+    public IQueryable<Course> OrderCoursesQuery()
     {
         var queryablecourses = _context.Courses
                 .Where(c => c.NameCourse != null)

@@ -1,4 +1,6 @@
-namespace HorsesForCourses.Repo;
+using Microsoft.EntityFrameworkCore;
+
+namespace HorsesForCourses.Paging;
 
 public sealed record PageRequest(int PageNumber = 1, int PageSize = 25)
 {
@@ -21,10 +23,25 @@ public static class QueryablePagingExtensions
 {
     public static IQueryable<T> ApplyPaging<T>(this IQueryable<T> query, PageRequest request)
     {
-        if (!query.Expression.ToString().Contains("OrderBy"))
-            throw new InvalidOperationException("Apply an OrderBy before paging to ensure stable results.");
-
         int skip = (request.Page - 1) * request.Size;
         return query.Skip(skip).Take(request.Size);
     }
 }
+
+public static class PagingExecution
+{
+    public static async Task<PagedResult<T>> ToPagedResultAsync<T>(
+        this IQueryable<T> query,
+        PageRequest request,
+        CancellationToken ct = default)
+    {
+        var total = await query.CountAsync(ct);
+        var pageItems = await query
+            .ApplyPaging(request)
+            // .AsNoTracking() // meestal gewenst voor read‑only
+            .ToListAsync(ct); //cancellationToken wordt gebruikt om langlopende asynchrone bewerkingen te kunnen annuleren
+
+        return new PagedResult<T>(pageItems, total, request.Page, request.Size);
+    }
+}
+

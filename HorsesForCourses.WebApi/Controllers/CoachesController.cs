@@ -2,6 +2,7 @@ using HorsesForCourses.Core.DomainEntities;
 using HorsesForCourses.WebApi.Factory;
 using Microsoft.AspNetCore.Mvc;
 using HorsesForCourses.Repo;
+using HorsesForCourses.Paging;
 
 namespace HorsesForCourses.WebApi.Controllers
 {
@@ -39,10 +40,13 @@ namespace HorsesForCourses.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ListOfCoachesResponse>> GetCoaches()
+        public async Task<ActionResult<PagedResult<Coach>>> GetCoaches(int numberOfPage, int numberOfCoaches)
         {
-            var lijstje = await oneTransaction.Objects.ListCoaches();
-            return Ok(CoachResponses.ConvertToListOfCoaches(lijstje));
+            var request = new PageRequest(numberOfPage, numberOfCoaches);
+            var query = oneTransaction.Objects.OrderCoachesQuery();
+            var lijstje = await PagingExecution.ToPagedResultAsync<Coach>(query, request);
+
+            return Ok(lijstje);
         }
 
 
