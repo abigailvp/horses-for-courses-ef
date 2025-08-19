@@ -113,6 +113,18 @@ namespace HorsesForCourses.WebApi.Controllers
             return Ok(CourseResponses.ConvertToDetailedCourse(course));
         }
 
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IActionResult> DeleteACourse(int id)
+        {
+            var course = await transaction.Objects.GetCourseById(id);
+            if (course == null)
+                return NotFound();
+            transaction.Objects.RemoveCourse(course);
+            await transaction.CompleteAsync();
+            return Ok();
+        }
+
 
     }
 }

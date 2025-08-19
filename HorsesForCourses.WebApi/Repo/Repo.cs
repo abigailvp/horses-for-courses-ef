@@ -15,6 +15,7 @@ public interface IRepo
     Task<List<Coach>> ListCoaches();
 
     Task AddCourse(Course course);
+    void RemoveCourse(Course course);
     Task<Course> GetCourseById(int id);
     Task<Course> GetSpecificCourseById(int id);
     Task<List<Course>> ListCourses();
@@ -108,10 +109,9 @@ public class Repo : IRepo
         });
 
     }
-    public void RemoveCoach(Coach coach)
-    {
-        _context.Coaches.Remove(coach);
-    }
+    public void RemoveCoach(Coach coach) => _context.Coaches.Remove(coach);
+
+    public void RemoveCourse(Course course) => _context.Courses.Remove(course);
 
 
 }
