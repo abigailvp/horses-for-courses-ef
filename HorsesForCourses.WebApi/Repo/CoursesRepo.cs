@@ -4,6 +4,7 @@ using HorsesForCourses.WebApi;
 using Microsoft.EntityFrameworkCore;
 using Polly.Registry;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace HorsesForCourses.Repo;
 
@@ -18,6 +19,8 @@ public interface ICoursesRepo
 
     IQueryable<Course> OrderCoursesQuery();
     Task<PagedResult<Course>> GetCoursePages(int pageNumber, int amountOfCourses);
+
+    void DeleteCourseWithoutDates(int id);
 
 
 }
@@ -77,6 +80,12 @@ public class CoursesRepo : ICoursesRepo
     }
 
     public void RemoveCourse(Course course) => _context.Courses.Remove(course);
+
+    public async void DeleteCourseWithoutDates(int id)
+    {
+        await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM Courses WHERE CourseId = {id}");
+
+    }
 
 
 }
