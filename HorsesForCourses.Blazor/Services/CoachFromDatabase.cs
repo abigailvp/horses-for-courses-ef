@@ -8,11 +8,13 @@ public sealed class CoachFromDatabase //deze klasse stuurt http verzoeken naar b
 
     public CoachFromDatabase(HttpClient http) => _http = http;
 
-    public Task<IReadOnlyList<Coach>> GetCoaches()
-
-        => _http.GetFromJsonAsync<IReadOnlyList<Coach>>("Coaches")!;
-
-
+    public async Task<IReadOnlyList<Coach>> GetCoaches()
+    {
+        var list = await _http.GetFromJsonAsync<IReadOnlyList<Coach>>("Coaches")!;
+        if (list == null)
+            return [];
+        return list;
+    }
     public async Task AddCoach(CreateCoachRequest req)
     {
         var response = await _http.PostAsJsonAsync("Coaches", req);

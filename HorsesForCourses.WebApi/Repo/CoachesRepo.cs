@@ -14,7 +14,7 @@ public interface ICoachesRepo
     Task<int> RemoveCoach(int id);
     Task<Coach?> GetCoachById(int id);
     Task<DetailedCoach?> GetSpecificCoachById(int id);
-    Task<List<Coach>> ListCoaches();
+    Task<List<CoachResponse>> ListCoaches();
 
     IQueryable<CoachResponse> OrderAndProjectCoaches(int page, int size);
     Task<PagedResult<CoachResponse>> GetCoachPages(int numberOfPage, int amountOfCoaches);
@@ -104,13 +104,19 @@ public class CoachesRepo : ICoachesRepo
             .SingleOrDefaultAsync();
     }
 
-    public async Task<List<Coach>> ListCoaches()
+    public async Task<List<CoachResponse>> ListCoaches()
     {
         var pipeline = _pipeline.GetPipeline("db-pipeline");
 
         return await pipeline.ExecuteAsync(async token =>
         {
-            return await _context.Coaches.ToListAsync();
+            return await _context.Coaches.Where(p => p.NameCoach != null)
+                .OrderBy(p => p.CoachId)
+                .Select(a => new CoachResponse(
+                        a.CoachId,
+                        a.NameCoach,
+                        a.Email))
+                .ToListAsync();
         });
     }
 

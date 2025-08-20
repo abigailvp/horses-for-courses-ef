@@ -8,6 +8,7 @@
 <PageTitle>Coaches</PageTitle>
 
 <h1>Coaches</h1>
+<h2>Add Coach</h2>
 
 @* @if (loading)
 {
@@ -48,8 +49,14 @@ else
     }
     else
     {*@
+
+<h2>List of Coaches</h2>
 <table>
-    <th>Coaches</th>
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Email</th>
+    </tr>
     @foreach (Coach coach in coaches)
     {
         <tr>
@@ -62,7 +69,7 @@ else
 @* } }  *@
 
 @code {
-    private List<Coach> coaches = new();
+    private IReadOnlyList<Coach> coaches = new List<Coach>();
     @* private bool loading = true;
     private bool submitting = false;
     private string? error; *@
@@ -80,15 +87,16 @@ else
 
     private async Task LoadCoaches()
     {
-        var coaches = await Api.GetCoaches();
+        coaches = await Api.GetCoaches();
     }
 
     @* private async Task Reload() => await LoadCoaches(); *@
 
     private async Task AddPlainCoach()
     {
-        var req = new CreateCoachRequest { Name = formModel.Name, Email = formModel.Email };
+        var req = new CreateCoachRequest { NameCoach = formModel.Name, Email = formModel.Email };
         await Api.AddCoach(req);
+        await LoadCoaches();
     }
 
     @* private async Task DeleteCoach(Guid id)

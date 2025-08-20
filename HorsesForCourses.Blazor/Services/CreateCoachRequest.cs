@@ -5,11 +5,11 @@ namespace HorsesForCourses.Blazor.Services;
 
 public sealed class CreateCoachRequest
 {
+    [Required]
     [MaxLength(100)]
-    [Required]
-    public string Name { get; set; }
+    public string NameCoach { get; set; } = string.Empty;
 
-    [EmailAddress]
     [Required]
+    [EmailAddress]
     public string Email { get; set; }
 }
