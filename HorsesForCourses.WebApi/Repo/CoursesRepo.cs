@@ -4,8 +4,6 @@ using HorsesForCourses.Paging;
 using HorsesForCourses.WebApi;
 using Microsoft.EntityFrameworkCore;
 using Polly.Registry;
-using System.Linq;
-using System.Threading.Tasks;
 using static HorsesForCourses.Repo.CoursesRepo;
 
 namespace HorsesForCourses.Repo;
@@ -14,7 +12,7 @@ public interface ICoursesRepo
 {
     Task AddCourse(Course course);
     void RemoveCourse(Course course);
-    Task<Course> GetCourseById(int id);
+    Task<Course?> GetCourseById(int id);
     Task<DetailedCourse?> GetSpecificCourseById(int id);
     Task<IReadOnlyList<CourseResponse>> ListCompactCourses();
 
@@ -59,7 +57,7 @@ public class CoursesRepo : ICoursesRepo
         return await PagingExecution.ToPagedResultAsync<CourseResponse>(query, request);
     }
 
-    public async Task<Course> GetCourseById(int id)
+    public async Task<Course?> GetCourseById(int id)
     => await _context.Courses.FindAsync(id);
 
 

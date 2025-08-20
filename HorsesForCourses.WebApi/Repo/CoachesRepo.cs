@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using HorsesForCourses.Core.DomainEntities;
 using HorsesForCourses.Core.WholeValuesAndStuff;
 using HorsesForCourses.Paging;
@@ -13,7 +12,7 @@ public interface ICoachesRepo
 {
     Task AddCoach(Coach coach);
     void RemoveCoach(Coach coach);
-    Task<Coach> GetCoachById(int id);
+    Task<Coach?> GetCoachById(int id);
     Task<DetailedCoach?> GetSpecificCoachById(int id);
     Task<List<Coach>> ListCoaches();
 
@@ -60,7 +59,7 @@ public class CoachesRepo : ICoachesRepo
     }
 
 
-    public async Task<Coach> GetCoachById(int id)
+    public async Task<Coach?> GetCoachById(int id)
     {
         return await _context.Coaches.FindAsync(id);
         //of FirstOrDefaultAsync(c => c.CoachId == id)       
@@ -115,7 +114,6 @@ public class CoachesRepo : ICoachesRepo
     }
 
     public void RemoveCoach(Coach coach) => _context.Coaches.Remove(coach);
-
 
 
 }

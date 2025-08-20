@@ -1,10 +1,9 @@
 using HorsesForCourses.Core.DomainEntities;
+using HorsesForCourses.Paging;
+using HorsesForCourses.Repo;
 using HorsesForCourses.WebApi.Factory;
 using Microsoft.AspNetCore.Mvc;
-using HorsesForCourses.Repo;
-using HorsesForCourses.Paging;
 using static HorsesForCourses.Repo.CoachesRepo;
-using CoachResponse = HorsesForCourses.Repo.CoachesRepo.CoachResponse;
 
 namespace HorsesForCourses.WebApi.Controllers
 {
@@ -23,7 +22,7 @@ namespace HorsesForCourses.WebApi.Controllers
         {
             var coach = new Coach(dto.NameCoach, dto.Email);
 
-            oneTransaction.Coaches.AddCoach(coach);
+            await oneTransaction.Coaches.AddCoach(coach);
             await oneTransaction.CompleteAsync();
             return Ok(coach.CoachId);
         }
@@ -75,17 +74,14 @@ namespace HorsesForCourses.WebApi.Controllers
 
         [HttpDelete]
         [Route("{id}/skills")]
-        public async Task<IActionResult> DeleteSkillsFromACoach(int id)
+        public async Task<IActionResult> DeleteSkillsFromACoach(int id) //enkel coachobject aanpassen want skills staan als ownsmany ingesteld
         {
-            var coach = oneTransaction.Coaches.GetCoachById(id);
+            var coach = oneTransaction.Coaches.GetCoachById(id).Result;
             if (coach == null)
                 return NotFound();
-            coach.Result.EmptyCompetenceList();
+            coach.EmptyCompetenceList();
             await oneTransaction.CompleteAsync();
             return Ok();
         }
-
-
     }
-
 }
