@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using HorsesForCourses.Repo;
 using HorsesForCourses.Paging;
 using static HorsesForCourses.Repo.CoachesRepo;
+using CoachResponse = HorsesForCourses.Repo.CoachesRepo.CoachResponse;
 
 namespace HorsesForCourses.WebApi.Controllers
 {
@@ -41,7 +42,7 @@ namespace HorsesForCourses.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<PagedResult<Coach>>> GetCoachesByPage(int numberOfPage, int amountOfCoaches)
+        public async Task<ActionResult<PagedResult<CoachResponse>>> GetCoachesByPage(int numberOfPage, int amountOfCoaches)
         {
             var lijstje = await oneTransaction.Coaches.GetCoachPages(numberOfPage, amountOfCoaches);
             if (lijstje == null)
@@ -54,10 +55,10 @@ namespace HorsesForCourses.WebApi.Controllers
         [Route("{id}")]
         public async Task<ActionResult<DetailedCoach?>> GetCoachById(int id)
         {
-            var coach = await oneTransaction.Coaches.GetSpecificCoachById(id);
-            if (coach == null)
+            var coachdetails = await oneTransaction.Coaches.GetSpecificCoachById(id);
+            if (coachdetails == null)
                 return NotFound();
-            return Ok(coach);
+            return Ok(coachdetails);
         }
 
         [HttpDelete]

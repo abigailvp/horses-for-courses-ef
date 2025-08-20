@@ -38,7 +38,7 @@ public class CoachesRepo : ICoachesRepo
     public async Task AddCoach(Coach coach)
     => await _context.Coaches.AddAsync(coach);
 
-
+    public record CoachResponse(int id, string name);
     public IQueryable<CoachResponse> OrderAndProjectCoaches(int page, int size)
     {
         var queryablecoaches = _context.Coaches
@@ -46,9 +46,7 @@ public class CoachesRepo : ICoachesRepo
                 .OrderBy(p => p.CoachId)
                 .Select(a => new CoachResponse(
                         a.CoachId,
-                        a.NameCoach,
-                        a.Email,
-                            a.ListOfCoursesAssignedTo.Count()
+                        a.NameCoach
                 ));
 
         return queryablecoaches;
@@ -62,28 +60,26 @@ public class CoachesRepo : ICoachesRepo
     }
 
 
-
-
-
     public async Task<Coach> GetCoachById(int id)
     {
         return await _context.Coaches.FindAsync(id);
         //of FirstOrDefaultAsync(c => c.CoachId == id)       
     }
 
-    public record CoachResponse(int id, string name, string email, int numberOfAssignedCourses);
-    public async Task<CoachResponse?> GetCoachByIdFluently(int id)//nog niet geïmplementeerde projectie
+    public record SpecificCoach(int id, string name, string email, int numberOfAssignedCourses);
+    public IQueryable<SpecificCoach> GetCoachReponseById(int id)//nog niet geïmplementeerde projectie
     {
-        return await _context.Coaches
+        return _context.Coaches
                             .AsNoTracking()
                             .Where(c => c.CoachId == id)
-                            .Select(a => new CoachResponse(
+                            .OrderBy(p => p.CoachId)
+                            .Select(a => new SpecificCoach(
                                     a.CoachId,
                                     a.NameCoach,
                                     a.Email,
-                                     a.ListOfCoursesAssignedTo.Count()
-                            ))
-                            .FirstOrDefaultAsync();
+                                    a.ListOfCoursesAssignedTo.Count()
+                            ));
+
     }
 
 
@@ -91,11 +87,12 @@ public class CoachesRepo : ICoachesRepo
 
     public record DetailedCoach(int Id, string Name, string Email, IReadOnlyList<Skill> listOfSkills, IReadOnlyList<AssignedCourse> listOfCourses);
     public record AssignedCourse(int Id, string Name);
-    public async Task<DetailedCoach?> GetSpecificCoachById(int id)
+    public async Task<DetailedCoach?> GetSpecificCoachById(int id) //nog aanpassen
     {
         return await _context.Coaches
             .AsNoTracking()
             .Where(c => c.CoachId == id)
+            .OrderBy(c => c.CoachId)
             .Select(c => new DetailedCoach(
                 c.CoachId,
                 c.NameCoach,
