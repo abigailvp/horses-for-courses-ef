@@ -37,7 +37,7 @@ public class CoachesRepo : ICoachesRepo
     public async Task AddCoach(Coach coach)
     => await _context.Coaches.AddAsync(coach);
 
-    public record CoachResponse(int id, string name);
+    public record CoachResponse(int id, string name, string email);
     public IQueryable<CoachResponse> OrderAndProjectCoaches(int page, int size)
     {
         var queryablecoaches = _context.Coaches
@@ -45,7 +45,8 @@ public class CoachesRepo : ICoachesRepo
                 .OrderBy(p => p.CoachId)
                 .Select(a => new CoachResponse(
                         a.CoachId,
-                        a.NameCoach
+                        a.NameCoach,
+                        a.Email
                 ));
 
         return queryablecoaches;
@@ -84,7 +85,7 @@ public class CoachesRepo : ICoachesRepo
 
     public record DetailedCoach(int Id, string Name, string Email, IReadOnlyList<Skill> listOfSkills, IReadOnlyList<AssignedCourse> listOfCourses);
     public record AssignedCourse(int Id, string Name);
-    public async Task<DetailedCoach?> GetSpecificCoachById(int id) //nog aanpassen
+    public async Task<DetailedCoach?> GetSpecificCoachById(int id)
     {
         return await _context.Coaches
             .AsNoTracking()

@@ -33,12 +33,12 @@ public static class PagingExecution
     public static async Task<PagedResult<T>> ToPagedResultAsync<T>(
         this IQueryable<T> query, //door this kan je methode ook op query aanroepen!!
         PageRequest request,
-        CancellationToken ct = default)
+        CancellationToken ct = default) where T : class
     {
         var total = await query.CountAsync(ct);
         var pageItems = await query
             .ApplyPaging(request)
-            // .AsNoTracking() // meestal gewenst voor read‑only
+            .AsNoTracking() // meestal gewenst voor read‑only
             .ToListAsync(ct); //cancellationToken wordt gebruikt om langlopende asynchrone bewerkingen te kunnen annuleren
 
         return new PagedResult<T>(pageItems, total, request.Page, request.Size);

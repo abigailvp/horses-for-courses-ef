@@ -1,0 +1,102 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.Components.Forms
+@using HorsesForCourses.Blazor.Services
+@using System.ComponentModel.DataAnnotations
+@inject HorsesForCourses.Blazor.Services.CoachFromDatabase Api
+@inject IJSRuntime JS
+
+<PageTitle>Coaches</PageTitle>
+
+<h1>Coaches</h1>
+
+@* @if (loading)
+{
+    <p><em>Loading…</em></p>
+}
+else if (!string.IsNullOrWhiteSpace(error))
+{
+    <div class="alert alert-danger">@error <button @onclick="Reload">Retry</button></div>
+}
+else
+{ *@
+@* het Edit formulier *@
+<EditForm Model="@formModel" OnValidSubmit="AddPlainCoach">
+    <div class="form-group">
+        <label for="Naam">Naam</label>
+        <InputText @bind-Value="formModel.Name" id="Naam" />
+    </div>
+
+    <div class="form-group">
+        <label for="Email">Email</label>
+        <InputText @bind-Value="formModel.Email" id="Email" />
+    </div>
+
+    <div class="form-group">
+        <button type="submit">Verstuur</button>
+    </div>
+
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <ValidationMessage For="() => formModel.Name" />
+</EditForm>
+
+@* <hr />
+
+    @if (coaches.Count == 0)
+    {
+        <p><em>No coaches yet.</em></p>
+    }
+    else
+    {*@
+<table>
+    <th>Coaches</th>
+    @foreach (Coach coach in coaches)
+    {
+        <tr>
+            <td>@coach.Id</td>
+            <td>@coach.Name</td>
+            <td>@coach.Email</td>
+        </tr>
+    }
+</table>
+@* } }  *@
+
+@code {
+    private List<Coach> coaches = new();
+    @* private bool loading = true;
+    private bool submitting = false;
+    private string? error; *@
+    FormModel formModel = new();
+    public class FormModel
+    {
+        public int Id { get; set; }
+        [Required]
+        public string Name { get; set; }
+        [Required]
+        public string Email { get; set; }
+    }
+
+    protected override async Task OnInitializedAsync() => await LoadCoaches();
+
+    private async Task LoadCoaches()
+    {
+        var coaches = await Api.GetCoaches();
+    }
+
+    @* private async Task Reload() => await LoadCoaches(); *@
+
+    private async Task AddPlainCoach()
+    {
+        var req = new CreateCoachRequest { Name = formModel.Name, Email = formModel.Email };
+        await Api.AddCoach(req);
+    }
+
+    @* private async Task DeleteCoach(Guid id)
+    {
+        var ok = await JS.InvokeAsync<bool>("confirm", "Delete this note?");
+        if (!ok) return;
+
+        // Gebruik hier `Api.` om ... you guessed it
+        throw new NotImplementedException();
+    } *@
+}

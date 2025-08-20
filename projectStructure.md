@@ -3,16 +3,13 @@
 - domeinmodellen
 
 
-
 2. Blazor= frontend
 - interface
-    - (hiervoor ging dit via swagger)
-
-
 
 3. WebApi= backend
 - EFCore= communicatie tss api en ef core
     - SQLite voor dataopslag
+    - interface via swagger
 
 - API
     - in contact met domein via unitOfWork > repo's

@@ -47,8 +47,21 @@ builder.Services.AddResiliencePipeline("db-pipeline", builder =>
         .AddTimeout(TimeSpan.FromSeconds(5));
 });
 
+//verbinding met blazor
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "frontend",
+                      policy =>
+                      {
+                          policy.WithOrigins("http://localhost:5135", "http://localhost:5279")
+                                .AllowAnyHeader()
+                                .AllowAnyMethod();
+                      });
+});
+
 var app = builder.Build();
 // Console.WriteLine($"Database path: {dbPath}");
+
 
 // migrations
 using (var scope = app.Services.CreateScope())
@@ -57,7 +70,7 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
 }
 
-app.UseCors();
+app.UseCors("frontend");
 
 app.Use(async (context, next) =>
 {
