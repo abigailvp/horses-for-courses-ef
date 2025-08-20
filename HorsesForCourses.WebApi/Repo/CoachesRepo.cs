@@ -83,8 +83,6 @@ public class CoachesRepo : ICoachesRepo
     }
 
 
-
-
     public record DetailedCoach(int Id, string Name, string Email, IReadOnlyList<Skill> listOfSkills, IReadOnlyList<AssignedCourse> listOfCourses);
     public record AssignedCourse(int Id, string Name);
     public async Task<DetailedCoach?> GetSpecificCoachById(int id) //nog aanpassen

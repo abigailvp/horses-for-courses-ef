@@ -3,6 +3,7 @@ using HorsesForCourses.Core.DomainEntities;
 using HorsesForCourses.WebApi.Factory;
 using HorsesForCourses.Repo;
 using HorsesForCourses.Paging;
+using static HorsesForCourses.Repo.CoursesRepo;
 
 namespace HorsesForCourses.WebApi.Controllers
 {
@@ -78,18 +79,18 @@ namespace HorsesForCourses.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<AllCoursesResponse>> GetAllCourses()
+        public async Task<ActionResult<IReadOnlyList<CourseResponse>>> GetAllCourses()
         {
-            var allCourses = await transaction.Courses.ListCourses();
+            var allCourses = await transaction.Courses.ListCompactCourses();
             if (allCourses == null)
                 return NotFound();
             await transaction.CompleteAsync();
-            return Ok(CourseResponses.ConvertToListCourses(allCourses));
+            return Ok(allCourses);
         }
 
         [HttpGet]
         [Route("page{numberOfPage}/{amountOfCourses}")]
-        public async Task<ActionResult<PagedResult<Course>>> GetCoursesByPage(int numberOfPage, int amountOfCourses)
+        public async Task<ActionResult<PagedResult<CourseResponse>>> GetCoursesByPage(int numberOfPage, int amountOfCourses)
         {
             var lijstje = await transaction.Courses.GetCoursePages(numberOfPage, amountOfCourses);
             if (lijstje == null)
@@ -101,13 +102,13 @@ namespace HorsesForCourses.WebApi.Controllers
 
         [HttpGet]
         [Route("{Id}")]
-        public async Task<ActionResult<DetailedCourseResponse>> GetCourseById(int Id)
+        public async Task<ActionResult<DetailedCourse?>> GetCourseById(int Id)
         {
             var course = await transaction.Courses.GetSpecificCourseById(Id);
             if (course == null)
                 return NotFound();
             await transaction.CompleteAsync();
-            return Ok(CourseResponses.ConvertToDetailedCourse(course));
+            return Ok(course);
         }
 
         [HttpDelete]

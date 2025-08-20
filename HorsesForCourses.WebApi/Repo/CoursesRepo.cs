@@ -1,10 +1,12 @@
 using HorsesForCourses.Core.DomainEntities;
+using HorsesForCourses.Core.WholeValuesAndStuff;
 using HorsesForCourses.Paging;
 using HorsesForCourses.WebApi;
 using Microsoft.EntityFrameworkCore;
 using Polly.Registry;
 using System.Linq;
 using System.Threading.Tasks;
+using static HorsesForCourses.Repo.CoursesRepo;
 
 namespace HorsesForCourses.Repo;
 
@@ -13,12 +15,12 @@ public interface ICoursesRepo
     Task AddCourse(Course course);
     void RemoveCourse(Course course);
     Task<Course> GetCourseById(int id);
-    Task<Course> GetSpecificCourseById(int id);
-    Task<List<Course>> ListCourses();
+    Task<DetailedCourse?> GetSpecificCourseById(int id);
+    Task<IReadOnlyList<CourseResponse>> ListCompactCourses();
 
 
-    IQueryable<Course> OrderCoursesQuery();
-    Task<PagedResult<Course>> GetCoursePages(int pageNumber, int amountOfCourses);
+    IQueryable<CourseResponse> OrderCoursesQuery();
+    Task<PagedResult<CourseResponse>> GetCoursePages(int pageNumber, int amountOfCourses);
 
     void DeleteCourseWithoutDates(int id);
 
@@ -41,43 +43,72 @@ public class CoursesRepo : ICoursesRepo
     => await _context.Courses.AddAsync(course);
 
 
-    public IQueryable<Course> OrderCoursesQuery()
+    public IQueryable<CourseResponse> OrderCoursesQuery()
     {
         var queryablecourses = _context.Courses
                 .Where(c => c.NameCourse != null)
-                .OrderBy(c => c.CourseId);
+                .OrderBy(c => c.CourseId)
+                .Select(c => new CourseResponse(c.CourseId, c.NameCourse, c.StartDateCourse, c.EndDateCourse));
         return queryablecourses;
     }
 
-    public async Task<PagedResult<Course>> GetCoursePages(int pageNumber, int amountOfCourses)
+    public async Task<PagedResult<CourseResponse>> GetCoursePages(int pageNumber, int amountOfCourses)
     {
         var request = new PageRequest(pageNumber, amountOfCourses);
         var query = OrderCoursesQuery();
-        return await PagingExecution.ToPagedResultAsync<Course>(query, request);
+        return await PagingExecution.ToPagedResultAsync<CourseResponse>(query, request);
     }
 
     public async Task<Course> GetCourseById(int id)
     => await _context.Courses.FindAsync(id);
 
 
-    public async Task<Course> GetSpecificCourseById(int id)
-    {
-        return await _context.Courses.Include(c => c.ListOfCourseSkills)
-            .Include(c => c.CourseTimeslots)
-            .Include(c => c.CoachForCourse)
-            .FirstOrDefaultAsync(c => c.CourseId == id); ;
+    public record DetailedCourse(int Id, string Name, DateOnly startDate, DateOnly endDate, IReadOnlyList<Skill> skills,
+    IReadOnlyList<shortTimeslot> ListOfTimeslots, CoachForCourseResponse? assignedCoach);
+    public record shortTimeslot(string Day, int beginhour, int endhour);
+    public record CoachForCourseResponse(int? id, string? name);
 
+    public async Task<DetailedCourse?> GetSpecificCourseById(int id)
+    {
+        return await _context.Courses.AsNoTracking()
+                                    .Where(d => d.CourseId != 0)
+                                    .OrderBy(d => d.CourseId).ThenBy(d => d.NameCourse)
+                                    .Select(d => new DetailedCourse(
+                                        d.CourseId,
+                                        d.NameCourse,
+                                        d.StartDateCourse,
+                                        d.EndDateCourse,
+                                        d.ListOfCourseSkills,
+                                        d.CourseTimeslots
+                                            .OrderBy(t => t.BeginTimeslot)
+                                            .Select(t => new shortTimeslot(
+                                                t.Day,
+                                                t.BeginTimeslot,
+                                                t.EndTimeslot))
+                                            .ToList(),
+                                        d.CoachForCourse == null ? null : new CoachForCourseResponse(
+                                            d.CoachForCourse.CoachId,
+                                            d.CoachForCourse.NameCoach)))
+                                    .FirstOrDefaultAsync();
     }
 
-    public async Task<List<Course>> ListCourses()
+    public record CourseResponse(int CourseId, string NameCourse, DateOnly StartDateCourse, DateOnly EndDateCourse);
+
+    public async Task<IReadOnlyList<CourseResponse>> ListCompactCourses()
     {
         var pipeline = _pipeline.GetPipeline("db-pipeline");
         return await pipeline.ExecuteAsync(async token =>
         {
-            return await _context.Courses.ToListAsync();
-        });
+            return await _context.Courses
+        .AsNoTracking()
+        .Where(p => !string.IsNullOrEmpty(p.NameCourse))
+        .OrderBy(p => p.NameCourse).ThenBy(p => p.CourseId)
+        .Select(p => new CourseResponse(p.CourseId, p.NameCourse, p.StartDateCourse, p.EndDateCourse))
+        .ToListAsync();
 
+        });
     }
+
 
     public void RemoveCourse(Course course) => _context.Courses.Remove(course);
 
