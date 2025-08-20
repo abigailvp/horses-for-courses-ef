@@ -115,11 +115,9 @@ namespace HorsesForCourses.WebApi.Controllers
         [Route("{id}")]
         public async Task<IActionResult> DeleteACourse(int id)
         {
-            var course = await transaction.Courses.GetCourseById(id);
-            if (course == null)
+            int numberOfDeletedRecords = await transaction.Courses.RemoveCourse(id);
+            if (numberOfDeletedRecords == 0)
                 return NotFound();
-            transaction.Courses.RemoveCourse(course);
-            await transaction.CompleteAsync();
             return Ok();
 
         }
@@ -128,7 +126,7 @@ namespace HorsesForCourses.WebApi.Controllers
         [Route("noDates/{id}")]
         public async Task<IActionResult> DeleteACourseWithoutDates(int id)
         {
-            transaction.Courses.DeleteCourseWithoutDates(id);
+            await transaction.Courses.DeleteCourseWithoutDates(id);
             await transaction.CompleteAsync();
             return Ok();
         }

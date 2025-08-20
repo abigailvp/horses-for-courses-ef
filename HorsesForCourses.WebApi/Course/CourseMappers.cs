@@ -5,11 +5,7 @@ namespace HorsesForCourses.WebApi;
 
 public static class CourseMapper
 {
-  public static CourseRequest ConvertToCourseDto(Course course)
-=> new CourseRequest { NameCourse = course.NameCourse, StartDateCourse = course.StartDateCourse, EndDateCourse = course.EndDateCourse };
 
-  public static CompetentCourseRequest ConvertToCompetentCourse(Course course)
-  => new CompetentCourseRequest { ListOfCourseCompetences = course.ListOfCourseSkills };
 
   public static List<Timeslot> ConvertToDomainList(List<MyTimeslot> list)
   {
@@ -22,19 +18,6 @@ public static class CourseMapper
     return realList;
   }
 
-  public static ScheduledCourseRequest ConvertToScheduledCourse(Course course)
-  {
-    List<MyTimeslot> lijst = new();
-    foreach (Timeslot slot in course.CourseTimeslots)
-    {
-      MyTimeslot shortSlot = new(slot.DateTimeslot.DayOfWeek.ToString(), slot.BeginTimeslot, slot.EndTimeslot);
-      lijst.Add(shortSlot);
-    }
-    return new ScheduledCourseRequest { CourseTimeslots = lijst };
-  }
-
-  public static AssignedCourseRequest ConvertToAssignedCourse(Coach coach)
- => new AssignedCourseRequest { coachId = coach.CoachId };
 
 
 }

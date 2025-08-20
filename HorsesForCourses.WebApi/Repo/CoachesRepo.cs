@@ -11,7 +11,7 @@ namespace HorsesForCourses.Repo;
 public interface ICoachesRepo
 {
     Task AddCoach(Coach coach);
-    void RemoveCoach(Coach coach);
+    Task<int> RemoveCoach(int id);
     Task<Coach?> GetCoachById(int id);
     Task<DetailedCoach?> GetSpecificCoachById(int id);
     Task<List<Coach>> ListCoaches();
@@ -113,7 +113,6 @@ public class CoachesRepo : ICoachesRepo
         });
     }
 
-    public void RemoveCoach(Coach coach) => _context.Coaches.Remove(coach);
-
+    public async Task<int> RemoveCoach(int id) => await _context.Coaches.Where(c => c.CoachId == id).ExecuteDeleteAsync();
 
 }

@@ -11,7 +11,7 @@ namespace HorsesForCourses.Repo;
 public interface ICoursesRepo
 {
     Task AddCourse(Course course);
-    void RemoveCourse(Course course);
+    Task<int> RemoveCourse(int id);
     Task<Course?> GetCourseById(int id);
     Task<DetailedCourse?> GetSpecificCourseById(int id);
     Task<IReadOnlyList<CourseResponse>> ListCompactCourses();
@@ -20,7 +20,7 @@ public interface ICoursesRepo
     IQueryable<CourseResponse> OrderCoursesQuery();
     Task<PagedResult<CourseResponse>> GetCoursePages(int pageNumber, int amountOfCourses);
 
-    void DeleteCourseWithoutDates(int id);
+    Task DeleteCourseWithoutDates(int id);
 
 
 }
@@ -108,9 +108,9 @@ public class CoursesRepo : ICoursesRepo
     }
 
 
-    public void RemoveCourse(Course course) => _context.Courses.Remove(course);
+    public async Task<int> RemoveCourse(int id) => await _context.Courses.Where(c => c.CourseId == id).ExecuteDeleteAsync();
 
-    public async void DeleteCourseWithoutDates(int id)
+    public async Task DeleteCourseWithoutDates(int id)
     {
         await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM Courses WHERE CourseId = {id}");
 

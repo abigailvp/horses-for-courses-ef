@@ -64,11 +64,9 @@ namespace HorsesForCourses.WebApi.Controllers
         [Route("{id}")]
         public async Task<IActionResult> DeleteACoach(int id)
         {
-            var coach = await oneTransaction.Coaches.GetCoachById(id);
-            if (coach == null)
+            var numberOfDeletedRecords = await oneTransaction.Coaches.RemoveCoach(id);
+            if (numberOfDeletedRecords == 0)
                 return NotFound();
-            oneTransaction.Coaches.RemoveCoach(coach);
-            await oneTransaction.CompleteAsync();
             return Ok();
         }
 
