@@ -6,53 +6,38 @@
 @inject IJSRuntime JS
 
 <PageTitle>Coaches and courses</PageTitle>
-
+<body>
 <h1>Coaches</h1>
 <h2>Add Coach</h2>
 
-@* @if (loading)
-{
-    <p><em>Loading…</em></p>
-}
-else if (!string.IsNullOrWhiteSpace(error))
-{
-    <div class="alert alert-danger">@error <button @onclick="Reload">Retry</button></div>
-}
-else
-{ *@
+<div class="list">
 @* het Edit formulier *@
 <EditForm Model="@formModel" OnValidSubmit="AddPlainCoach">
     <div class="form-group">
-        <label for="Naam">Naam</label>
-        <InputText @bind-Value="formModel.Name" id="Naam" />
+        <label for="Naam">Name</label>
+        <InputText @bind-Value="formModel.Name" class="input" id="Naam" placeholder="Anke"/>
     </div>
 
     <div class="form-group">
         <label for="Email">Email</label>
-        <InputText @bind-Value="formModel.Email" id="Email" />
+        <InputText @bind-Value="formModel.Email" class="input" id="Email" placeholder="ankevermeulen@hotmail.com" />
     </div>
 
     <div class="form-group">
-        <button type="submit">Verstuur</button>
+        <button class ="button"type="submit">Send</button>
     </div>
 
     <DataAnnotationsValidator />
     <ValidationSummary />
     <ValidationMessage For="() => formModel.Name" />
 </EditForm>
+</div>
 
-@* <hr />
-
-    @if (coaches.Count == 0)
-    {
-        <p><em>No coaches yet.</em></p>
-    }
-    else
-    {*@
 
 <h2>List of Coaches</h2>
+<div class="list">
 <table>
-    <tr>
+    <tr class="header">
         <th>Id</th>
         <th>Name</th>
         <th>Email</th>
@@ -66,15 +51,14 @@ else
         </tr>
     }
 </table>
-
-
-@* } }  *@
+</div>
 
 
 
 <h2>Assigned coaches</h2>
+<div class="biglist">
 <table>
-    <tr>
+    <tr class="header">
         <th>Id</th>
         <th>Name</th>
         <th>Email</th>
@@ -111,22 +95,25 @@ else
                         <span>No courses assigned</span>
                     }
                     else{
-                <ul>
+                
                     @for (int i = 0; i < coach.ListOfCoursesAssignedTo.Count(); i++)
                     {
                         <p>id : @coach.ListOfCoursesAssignedTo[i].Id
                         name : @coach.ListOfCoursesAssignedTo[i].Name</p>
-                    }</ul>}
+                    }}
                 
             </td>
         </tr>
     }
 </table>
+</div>
+
 
 <h1>Courses</h1>
 <h2>Assigned Courses</h2>
+<div class="biglist">
 <table>
-    <tr>
+    <tr class="header">
         <th>Id</th>
         <th>Name</th>
         <th>Start date</th>
@@ -190,7 +177,8 @@ else
         </tr>
     }
 </table>
-
+</div>
+</body>
 
 
 @code {
@@ -199,9 +187,7 @@ else
     private IReadOnlyList<AssignedCoach> AssignedCoaches = new List<AssignedCoach>();
 
     private IReadOnlyList<AssignedCourse> AssignedCourses = new List<AssignedCourse>();
-    @* private bool loading = true;
-    private bool submitting = false;
-    private string? error; *@
+
     FormModel formModel = new();
     public class FormModel
     {
@@ -234,7 +220,6 @@ else
         AssignedCourses = await Api.GetAssignedCourses();
     }
 
-    @* private async Task Reload() => await LoadCoaches(); *@
 
     private async Task AddPlainCoach()
     {
@@ -243,12 +228,4 @@ else
         await LoadCoaches();
     }
 
-    @* private async Task DeleteCoach(Guid id)
-    {
-        var ok = await JS.InvokeAsync<bool>("confirm", "Delete this note?");
-        if (!ok) return;
-
-        // Gebruik hier `Api.` om ... you guessed it
-        throw new NotImplementedException();
-    } *@
 }
