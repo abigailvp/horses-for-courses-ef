@@ -16,6 +16,8 @@ public interface ICoursesRepo
     Task<DetailedCourse?> GetSpecificCourseById(int id);
     Task<IReadOnlyList<CourseResponse>> ListCompactCourses();
 
+    Task<IReadOnlyList<DetailedCourse>> ListCourses();
+
 
     IQueryable<CourseResponse> OrderCoursesQuery();
     Task<PagedResult<CourseResponse>> GetCoursePages(int pageNumber, int amountOfCourses);
@@ -61,7 +63,7 @@ public class CoursesRepo : ICoursesRepo
     => await _context.Courses.FindAsync(id);
 
 
-    public record DetailedCourse(int Id, string Name, DateOnly startDate, DateOnly endDate, IReadOnlyList<Skill> skills,
+    public record DetailedCourse(int Id, string Name, DateOnly startDate, DateOnly endDate, IReadOnlyList<Skill> Skills,
     IReadOnlyList<shortTimeslot> ListOfTimeslots, CoachForCourseResponse? assignedCoach);
     public record shortTimeslot(string Day, int beginhour, int endhour);
     public record CoachForCourseResponse(int? id, string? name);
@@ -69,7 +71,7 @@ public class CoursesRepo : ICoursesRepo
     public async Task<DetailedCourse?> GetSpecificCourseById(int id)
     {
         return await _context.Courses.AsNoTracking()
-                                    .Where(d => d.CourseId != 0)
+                                    .Where(d => d.CourseId == id)
                                     .OrderBy(d => d.CourseId).ThenBy(d => d.NameCourse)
                                     .Select(d => new DetailedCourse(
                                         d.CourseId,
@@ -105,6 +107,30 @@ public class CoursesRepo : ICoursesRepo
         .ToListAsync();
 
         });
+    }
+
+    public async Task<IReadOnlyList<DetailedCourse>> ListCourses()
+    {
+        return await _context.Courses.AsNoTracking()
+                                   .Where(d => d.CoachId != null)
+                                   .OrderBy(d => d.CourseId).ThenBy(d => d.NameCourse)
+                                   .Select(d => new DetailedCourse(
+                                       d.CourseId,
+                                       d.NameCourse,
+                                       d.StartDateCourse,
+                                       d.EndDateCourse,
+                                       d.ListOfCourseSkills,
+                                       d.CourseTimeslots
+                                           .OrderBy(t => t.BeginTimeslot)
+                                           .Select(t => new shortTimeslot(
+                                               t.Day,
+                                               t.BeginTimeslot,
+                                               t.EndTimeslot))
+                                           .ToList(),
+                                       d.CoachForCourse == null ? null : new CoachForCourseResponse(
+                                           d.CoachForCourse.CoachId,
+                                           d.CoachForCourse.NameCoach)))
+                                   .ToListAsync();
     }
 
 

@@ -2,10 +2,10 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using HorsesForCourses.Blazor.Services
 @using System.ComponentModel.DataAnnotations
-@inject HorsesForCourses.Blazor.Services.CoachFromDatabase Api
+@inject HorsesForCourses.Blazor.Services.FromDatabase Api
 @inject IJSRuntime JS
 
-<PageTitle>Coaches</PageTitle>
+<PageTitle>Coaches and courses</PageTitle>
 
 <h1>Coaches</h1>
 <h2>Add Coach</h2>
@@ -57,7 +57,7 @@ else
         <th>Name</th>
         <th>Email</th>
     </tr>
-    @foreach (Coach coach in coaches)
+    @foreach (Coach coach in Coaches)
     {
         <tr>
             <td>@coach.Id</td>
@@ -66,10 +66,139 @@ else
         </tr>
     }
 </table>
+
+
 @* } }  *@
 
+
+
+<h2>Assigned coaches</h2>
+<table>
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Skills</th>
+        <th>Courses</th>
+    </tr>
+    @foreach (AssignedCoach coach in AssignedCoaches)
+    {
+        <tr>
+            <td>@coach.Id</td>
+            <td>@coach.Name</td>
+            <td>@coach.Email</td>
+            <td>
+                <ul>
+                    @if (!coach.ListOfCompetences.Any())
+                    {
+                        <li>No skills added </li>
+                    }
+                    else
+                    {
+                        @for (int i = 0; i < coach.ListOfCompetences.Count(); i++)
+                        {
+                            <li>@coach.ListOfCompetences[i].Name</li>
+                        }
+                    }
+                </ul>
+               
+                
+            </td>
+
+            <td>
+                @if (!coach.ListOfCoursesAssignedTo.Any())
+                    {
+                        <span>No courses assigned</span>
+                    }
+                    else{
+                <ul>
+                    @for (int i = 0; i < coach.ListOfCoursesAssignedTo.Count(); i++)
+                    {
+                        <p>id : @coach.ListOfCoursesAssignedTo[i].Id
+                        name : @coach.ListOfCoursesAssignedTo[i].Name</p>
+                    }</ul>}
+                
+            </td>
+        </tr>
+    }
+</table>
+
+<h1>Courses</h1>
+<h2>Assigned Courses</h2>
+<table>
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Start date</th>
+        <th>End date</th>
+        <th>Skills</th>
+        <th>Timeslots</th>
+        <th>Assigned coach</th>
+    </tr>
+    @foreach (AssignedCourse course in AssignedCourses)
+    {
+        <tr>
+            <td>@course.Id</td>
+            <td>@course.Name</td>
+            <td>@course.startDate</td>
+            <td>@course.endDate</td>
+            <td>
+                <ul>
+                    @if (!course.Skills.Any())
+                    {
+                        <li>No skills added </li>
+                    }
+                    else
+                    {
+                        @for (int i = 0; i < course.Skills.Count(); i++)
+                        {
+                            <li>@course.Skills[i].Name</li>
+                        }
+                    }
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    @if (!course.ListOfTimeslots.Any())
+                    {
+                        <li>No timeslots added</li>
+                    }
+                    else
+                    {
+        @for (int i = 0; i < course.ListOfTimeslots.Count(); i++)
+                        {
+                            <li>@course.ListOfTimeslots[i].Day : from
+                                @course.ListOfTimeslots[i].beginhour h till
+                                @course.ListOfTimeslots[i].endhour h</li>
+                        }
+    }
+                </ul>
+            </td>
+            <td>
+                
+                @if (course.assignedCoach != null)
+                {
+                    <p>id: @course.assignedCoach.id  
+                    name:@course.assignedCoach.name </p>
+                }
+                else
+                {
+                        <span>no assigned course</span>
+                }
+                
+            </td>
+        </tr>
+    }
+</table>
+
+
+
 @code {
-    private IReadOnlyList<Coach> coaches = new List<Coach>();
+    private IReadOnlyList<Coach> Coaches = new List<Coach>();
+
+    private IReadOnlyList<AssignedCoach> AssignedCoaches = new List<AssignedCoach>();
+
+    private IReadOnlyList<AssignedCourse> AssignedCourses = new List<AssignedCourse>();
     @* private bool loading = true;
     private bool submitting = false;
     private string? error; *@
@@ -83,11 +212,26 @@ else
         public string Email { get; set; }
     }
 
-    protected override async Task OnInitializedAsync() => await LoadCoaches();
+    protected override async Task OnInitializedAsync() 
+    {await LoadCoaches();
+    await LoadAssignedCoaches();
+    await LoadAssignedCourses();
+    }
 
+    
     private async Task LoadCoaches()
     {
-        coaches = await Api.GetCoaches();
+        Coaches = await Api.GetCoaches();
+    }
+
+    private async Task LoadAssignedCoaches()
+    {
+        AssignedCoaches = await Api.GetAssignedCoaches();
+    }
+
+    private async Task LoadAssignedCourses()
+    {
+        AssignedCourses = await Api.GetAssignedCourses();
     }
 
     @* private async Task Reload() => await LoadCoaches(); *@

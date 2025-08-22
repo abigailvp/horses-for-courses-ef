@@ -14,6 +14,7 @@ public interface ICoachesRepo
     Task<int> RemoveCoach(int id);
     Task<Coach?> GetCoachById(int id);
     Task<DetailedCoach?> GetSpecificCoachById(int id);
+    Task<IReadOnlyList<DetailedCoach?>> GetAllAssignedCoaches();
     Task<List<CoachResponse>> ListCoaches();
 
     IQueryable<CoachResponse> OrderAndProjectCoaches(int page, int size);
@@ -83,7 +84,7 @@ public class CoachesRepo : ICoachesRepo
     }
 
 
-    public record DetailedCoach(int Id, string Name, string Email, IReadOnlyList<Skill> listOfSkills, IReadOnlyList<AssignedCourse> listOfCourses);
+    public record DetailedCoach(int Id, string Name, string Email, IReadOnlyList<Skill> ListOfCompetences, IReadOnlyList<AssignedCourse> ListOfCoursesAssignedTo);
     public record AssignedCourse(int Id, string Name);
     public async Task<DetailedCoach?> GetSpecificCoachById(int id)
     {
@@ -102,6 +103,26 @@ public class CoachesRepo : ICoachesRepo
                         a.NameCourse))
                     .ToList()))
             .SingleOrDefaultAsync();
+    }
+
+    public async Task<IReadOnlyList<DetailedCoach?>> GetAllAssignedCoaches()
+    {
+
+        return await _context.Coaches
+            .AsNoTracking()
+            .Where(c => c.ListOfCoursesAssignedTo.Any())
+            .OrderBy(c => c.CoachId)
+            .Select(c => new DetailedCoach(
+                c.CoachId,
+                c.NameCoach,
+                c.Email,
+                c.ListOfCompetences,
+                c.ListOfCoursesAssignedTo
+                    .Select(a => new AssignedCourse(
+                        a.CourseId,
+                        a.NameCourse))
+                    .ToList()))
+            .ToListAsync();
     }
 
     public async Task<List<CoachResponse>> ListCoaches()

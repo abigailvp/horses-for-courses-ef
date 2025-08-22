@@ -50,6 +50,16 @@ namespace HorsesForCourses.WebApi.Controllers
         }
 
         [HttpGet]
+        [Route("assigned")]
+        public async Task<ActionResult<DetailedCoach?>> GetAllAssignedCoaches()
+        {
+            var coachdetails = await oneTransaction.Coaches.GetAllAssignedCoaches();
+            if (coachdetails == null)
+                return NotFound();
+            return Ok(coachdetails);
+        }
+
+        [HttpGet]
         [Route("pages")]
         public async Task<ActionResult<IReadOnlyList<CoachResponse>>> GetCoachesByPage([FromQuery] int numberOfPage, [FromQuery] int amountOfCoaches)
         {

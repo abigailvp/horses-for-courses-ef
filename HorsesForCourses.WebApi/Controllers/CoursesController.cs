@@ -89,6 +89,17 @@ namespace HorsesForCourses.WebApi.Controllers
         }
 
         [HttpGet]
+        [Route("Assigned")]
+        public async Task<ActionResult<IReadOnlyList<DetailedCourse?>>> GetAllAssignedCourses()
+        {
+            var allCourses = await transaction.Courses.ListCourses();
+            if (allCourses == null)
+                return NotFound();
+            await transaction.CompleteAsync();
+            return Ok(allCourses);
+        }
+
+        [HttpGet]
         [Route("page{numberOfPage}/{amountOfCourses}")]
         public async Task<ActionResult<PagedResult<CourseResponse>>> GetCoursesByPage(int numberOfPage, int amountOfCourses)
         {
